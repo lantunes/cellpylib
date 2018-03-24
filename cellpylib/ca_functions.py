@@ -11,7 +11,7 @@ def plot(ca):
 
 def evolve(cellular_automaton, n_steps, apply_rule):
     _, cols = cellular_automaton.shape
-    array = np.zeros((n_steps, cols), dtype=np.int)
+    array = np.zeros((n_steps, cols), dtype=np.byte)
     array[0] = cellular_automaton
     for i in range(1, n_steps):
         for j in range(0, cols):
@@ -59,10 +59,10 @@ def nks_rule(state, rule):
 
 
 def init_simple(size):
-    x = np.zeros(size, dtype=np.int)
+    x = np.zeros(size, dtype=np.byte)
     x[len(x)//2] = 1
     return np.array([x])
 
 
 def init_random(size):
-    return np.array([np.random.randint(2, size=size)])
+    return np.array([np.random.randint(2, size=size, dtype=np.byte)])
