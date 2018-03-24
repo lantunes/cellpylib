@@ -3,18 +3,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_ca(ca):
+def plot(ca):
     cmap = plt.get_cmap('Greys')
     plt.imshow(ca, interpolation='none', cmap=cmap)
     plt.show()
 
 
-def step(array, apply_rule):
-    rows, cols = array.shape
-    for i in range(1, rows):
-        for j in range(1, cols):
-            state = array[i-1, j-1:j+2]
+def evolve(cellular_automaton, n_steps, apply_rule):
+    _, cols = cellular_automaton.shape
+    array = np.zeros((n_steps, cols), dtype=np.int)
+    array[0] = cellular_automaton
+    for i in range(1, n_steps):
+        for j in range(0, cols):
+            if j == 0:
+                # left boundary
+                state = [array[i-1, -1], array[i-1, j], array[i-1, j+1]]
+            elif j == cols - 1:
+                # right boundary
+                state = [array[i-1, j-1], array[i-1, j], array[i-1, 0]]
+            else:
+                state = array[i-1, j-1:j+2]
             array[i, j] = apply_rule(state)
+    return array
 
 
 def bits_to_int(bits):
@@ -31,7 +41,7 @@ def int_to_bits(num, num_digits):
 
 
 def nks_rule(state, rule):
-    '''
+    """
     convert state to int, so [1,0,1] -> 5, call this state_int
     convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
     new value is rule_bin_array[7 - state_int]
@@ -42,23 +52,17 @@ def nks_rule(state, rule):
     :param state: a binary array of length 3
     :param rule: an int, from 0 to 255, indicating the cellular automaton rule number in NKS convention
     :return: the result, 0 or 1, of applying the given NKS rule on the given state 
-    '''
+    """
     state_int = bits_to_int(state)
     rule_bin_array = int_to_bits(rule, 8)
     return rule_bin_array[7 - state_int]
 
 
-def start_one_bit(size):
+def init_simple(size):
     x = np.zeros(size, dtype=np.int)
     x[len(x)//2] = 1
-    return x
+    return np.array([x])
 
 
-def start_random(size):
-    return np.random.randint(2, size=size)
-
-
-def create_ca(rows, cols, start):
-    ca = np.zeros((rows, cols))
-    ca[0] = start
-    return ca
+def init_random(size):
+    return np.array([np.random.randint(2, size=size)])

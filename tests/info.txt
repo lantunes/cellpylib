@@ -1,0 +1,21 @@
+The cellular automata in the .ca ending files in this directory were obtained from:
+
+Rule 0:
+- simple (rule0_simple_init.ca): http://atlas.wolfram.com/01/01/0/01_01_16_0.html
+- random (rule0_random_init.ca): http://atlas.wolfram.com/01/01/0/01_01_21_0.html
+
+Rule 30:
+- simple (rule30_simple_init.ca): http://atlas.wolfram.com/01/01/30/01_01_16_30.html
+- random (rule30_random_init.ca): http://atlas.wolfram.com/01/01/30/01_01_21_30.html
+
+Rule 126:
+- simple (rule126_simple_init.ca): http://atlas.wolfram.com/01/01/126/01_01_16_126.html
+- random (rule126_random_init.ca): http://atlas.wolfram.com/01/01/126/01_01_21_126.html
+
+Rule 225:
+- simple (rule225_simple_init.ca): http://atlas.wolfram.com/01/01/225/01_01_16_225.html
+- random (rule225_random_init.ca): http://atlas.wolfram.com/01/01/225/01_01_21_225.html
+
+Rule 255:
+- simple (rule255_simple_init.ca): http://atlas.wolfram.com/01/01/255/01_01_16_255.html
+- random (rule255_random_init.ca): http://atlas.wolfram.com/01/01/255/01_01_21_255.html
