@@ -9,21 +9,23 @@ def plot(ca):
     plt.show()
 
 
-def evolve(cellular_automaton, n_steps, apply_rule):
+def evolve(cellular_automaton, n_steps, apply_rule, r=1):
     _, cols = cellular_automaton.shape
     array = np.zeros((n_steps, cols), dtype=np.byte)
     array[0] = cellular_automaton
+
+    def index_strides(arr, window_size):
+        # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
+        arr = np.concatenate((arr[-window_size//2+1:], arr, arr[:window_size//2]))
+        shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
+        strides = arr.strides + (arr.strides[-1],)
+        return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
+
     for i in range(1, n_steps):
-        for j in range(0, cols):
-            if j == 0:
-                # left boundary
-                state = [array[i-1, -1], array[i-1, j], array[i-1, j+1]]
-            elif j == cols - 1:
-                # right boundary
-                state = [array[i-1, j-1], array[i-1, j], array[i-1, 0]]
-            else:
-                state = array[i-1, j-1:j+2]
-            array[i, j] = apply_rule(state)
+        cells = array[i - 1]
+        strides = index_strides(np.arange(len(cells)), 2*r + 1)
+        states = cells[strides]
+        array[i] = np.apply_along_axis(apply_rule, 1, states)
     return array
 
 
@@ -54,8 +56,22 @@ def nks_rule(state, rule):
     :return: the result, 0 or 1, of applying the given NKS rule on the given state 
     """
     state_int = bits_to_int(state)
-    rule_bin_array = int_to_bits(rule, 8)
-    return rule_bin_array[7 - state_int]
+    n = 2**len(state)
+    rule_bin_array = int_to_bits(rule, n)
+    return rule_bin_array[(n-1) - state_int]
+
+
+def number_rule(state, rule):
+    """
+    The same idea as the NKS rule, except that the neighbourhoods are listed in 
+      lexicographic order (the reverse of the NKS convention).
+    :param state: a binary array of length 2r + 1
+    :param rule: an int indicating the cellular automaton rule number
+    :return: the result, 0 or 1, of applying the given rule on the given state
+    """
+    state_int = bits_to_int(state)
+    rule_bin_array = int_to_bits(rule, 2**len(state))
+    return rule_bin_array[state_int]
 
 
 def init_simple(size):
