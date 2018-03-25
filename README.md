@@ -54,8 +54,6 @@ ca.plot(cellular_automaton)
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/density_classification.png" width="50%"/>
 
 For more information, see:
-```
-Melanie Mitchell, James P. Crutchfield, and Rajarshi Das, "Evolving Cellular Automata with Genetic Algorithms: A 
-Review of Recent Work", In Proceedings of the First International Conference on Evolutionary Computation and Its 
-Applications (EvCA'96), Russian Academy of Sciences (1996).
-```
+
+> Melanie Mitchell, James P. Crutchfield, and Rajarshi Das, "Evolving Cellular Automata with Genetic Algorithms: A Review of Recent Work", In Proceedings of the First International Conference on Evolutionary Computation and Its Applications (EvCA'96), Russian Academy of Sciences (1996).
+
