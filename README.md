@@ -13,7 +13,8 @@ import cellpylib as ca
 cellular_automaton = ca.init_simple(200)
 
 # evolve the CA for 100 time steps, using Rule 30 as defined in NKS
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=100, apply_rule=lambda state: ca.nks_rule(state, 30))
+cellular_automaton = ca.evolve(cellular_automaton, n_steps=100, 
+                               apply_rule=lambda state: ca.nks_rule(state, 30))
 
 # plot the resulting CA evolution
 ca.plot(cellular_automaton)
