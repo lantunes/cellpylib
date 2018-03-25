@@ -21,3 +21,5 @@ ca.plot(cellular_automaton)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule30.png" width="50%"/>
+
+Requirements for using this library are Python 3.5, numpy, and matplotlib.
