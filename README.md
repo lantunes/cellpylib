@@ -35,7 +35,7 @@ As an example, consider the work of M. Mitchell et al., carried out in the 1990s
 a cellular automaton that solves the density classification problem: if the initial random binary vector contains 
 more than 50% of 1s, then a cellular automaton that solves this problem will give rise to a vector that contains only
 1s after a fixed number of time steps, and likewise for the case of 0s. A very effective cellular automaton that solves
-this problem was found using a Genetic Algorithm.
+this problem most of the time was found using a Genetic Algorithm.
 
 ```python
 import cellpylib as ca
