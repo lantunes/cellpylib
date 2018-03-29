@@ -67,7 +67,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def _create_ca(self, expected, rule):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
-        return ca.evolve(cellular_automaton, n_steps=rows, apply_rule=lambda state: ca.nks_rule(state, rule))
+        return ca.evolve(cellular_automaton, n_steps=rows, apply_rule=lambda state, c: ca.nks_rule(state, rule))
 
 if __name__ == '__main__':
     unittest.main()

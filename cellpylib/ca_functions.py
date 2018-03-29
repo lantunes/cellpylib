@@ -25,7 +25,7 @@ def evolve(cellular_automaton, n_steps, apply_rule, r=1):
         cells = array[i - 1]
         strides = index_strides(np.arange(len(cells)), 2*r + 1)
         states = cells[strides]
-        array[i] = np.apply_along_axis(apply_rule, 1, states)
+        array[i] = np.array([apply_rule(s, c) for c, s in enumerate(states)])
     return array
 
 
