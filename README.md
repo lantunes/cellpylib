@@ -63,7 +63,7 @@ The number of states that a cell can adopt is given by _k_. For example, a binar
 assume only values of 0 and 1, has _k_ = 2. CellPyLib supports any value of _k_. A built-in function, `totalistic_rule`,
 is an implementation of the [Totalistic cellular automaton rule](http://mathworld.wolfram.com/TotalisticCellularAutomaton.html), 
 as described in Wolfram's NKS. The code snippet below illustrates using this rule. A value of _k_ of 3 is used, but
-any value between (and including) 2 and 10 is currently supported. The rule number is given in base 10 but is 
+any value between (and including) 2 and 36 is currently supported. The rule number is given in base 10 but is 
 interpreted as the rule in base _k_ (thus rule 777 corresponds to '1001210').
 
 ```python
