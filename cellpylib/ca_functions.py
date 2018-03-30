@@ -11,7 +11,7 @@ def plot(ca):
 
 def evolve(cellular_automaton, n_steps, apply_rule, r=1):
     _, cols = cellular_automaton.shape
-    array = np.zeros((n_steps, cols), dtype=np.byte)
+    array = np.zeros((n_steps, cols), dtype=np.int)
     array[0] = cellular_automaton
 
     def index_strides(arr, window_size):
@@ -94,11 +94,23 @@ def totalistic_rule(state, k, rule):
     return int(rule_string[(3*k - 3) - state_sum], k)
 
 
-def init_simple(size):
-    x = np.zeros(size, dtype=np.byte)
-    x[len(x)//2] = 1
+def init_simple(size, val=1):
+    """
+    Returns an array initialized with zeroes, with its center value set to the specified value, or 1 by default.
+    :param size: the size of the array to be created 
+    :param val: the value to be used in the center of the array (1, by default)
+    :return: an array with specified size, with its center value initialized to the specified value, or 1 by default 
+    """
+    x = np.zeros(size, dtype=np.int)
+    x[len(x)//2] = val
     return np.array([x])
 
 
-def init_random(size):
-    return np.array([np.random.randint(2, size=size, dtype=np.byte)])
+def init_random(size, k=2):
+    """
+    Returns a randomly initialized array with values consisting of whole numbers in [0, k - 1], where k = 2 by default.
+    :param size: the size of the array to be created
+    :param k: the number of states in the cellular automaton (2, by default)
+    :return: an array with the specified size, randomly initialized with whole numbers in [0, k - 1]
+    """
+    return np.array([np.random.randint(k, size=size, dtype=np.int)])
