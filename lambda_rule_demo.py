@@ -1,6 +1,6 @@
 import cellpylib as ca
 
-rule_table = ca.create_lambda_table(lambda_val=0.45, k=4, r=2)
+rule_table = ca.create_lambda_table(lambda_val=0.45, k=4, r=2, quiescent_state=3)
 
 cellular_automaton = ca.init_simple(128, val=1)
 # cellular_automaton = ca.init_random(128, k=4)
