@@ -74,6 +74,25 @@ def number_rule(state, rule):
     return rule_bin_array[state_int]
 
 
+def totalistic_rule(state, k, rule):
+    """
+    The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
+    The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
+    3k - 2 possible average colors in the cell neighbourhood.
+    :param state: a k-color array of length 2r + 1
+    :param k: the number of colors in this cellular automaton, where only 2 <= k <= 10 is supported
+    :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
+    :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
+    """
+    # e.g. np.base_repr(777, base=3) -> '1001210'; the zfill pads the string with zeroes: '1'.zfill(3) -> '001'
+    rule_string = np.base_repr(rule, base=k).zfill(3*k - 2)
+    if len(rule_string) > 3*k - 2:
+        raise Exception("rule number out of range")
+    state_sum = sum(state)
+    # the rightmost element of the rule is for the average color 0, in NKS convention
+    return int(rule_string[(3*k - 3) - state_sum])
+
+
 def init_simple(size):
     x = np.zeros(size, dtype=np.byte)
     x[len(x)//2] = 1

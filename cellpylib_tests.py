@@ -55,6 +55,26 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 255)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_totalistic_3color_rule777_simple_init(self):
+        expected = self._convert_to_numpy_matrix("tests/tot3_rule777_simple_init.ca")
+        actual = self._create_totalistic_ca(expected, 3, 777)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_3color_rule777_random_init(self):
+        expected = self._convert_to_numpy_matrix("tests/tot3_rule777_random_init.ca")
+        actual = self._create_totalistic_ca(expected, 3, 777)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_4color_rule107396_simple_init(self):
+        expected = self._convert_to_numpy_matrix("tests/tot4_rule107396_simple_init.ca")
+        actual = self._create_totalistic_ca(expected, 4, 107396)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_4color_rule107396_random_init(self):
+        expected = self._convert_to_numpy_matrix("tests/tot4_rule107396_random_init.ca")
+        actual = self._create_totalistic_ca(expected, 4, 107396)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def _convert_to_numpy_matrix(self, filename):
         with open(filename, 'r') as content_file:
             content = content_file.read()
@@ -68,6 +88,12 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
         return ca.evolve(cellular_automaton, n_steps=rows, apply_rule=lambda state, c: ca.nks_rule(state, rule))
+
+    def _create_totalistic_ca(self, expected, k, rule):
+        rows, _ = expected.shape
+        cellular_automaton = expected[0]
+        return ca.evolve(cellular_automaton, n_steps=rows,
+                         apply_rule=lambda state, c: ca.totalistic_rule(state, k, rule))
 
 if __name__ == '__main__':
     unittest.main()
