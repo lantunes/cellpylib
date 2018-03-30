@@ -95,29 +95,38 @@ def totalistic_rule(state, k, rule):
     return int(rule_string[(3*k - 3) - state_sum], k)
 
 
-def lambda_rule(state, lambda_table):
+def table_rule(state, table):
+    """
+    A rule where the state is converted into a string, and looked up in the given table, to yield the return value.
+    :param state: a k-color array of length 2r + 1
+    :param table: a table (map) of string representations of each neighbourhood state to the associated next 
+           cell state value; for example, for k = 2 and r = 2, a valid table might be: 
+           {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
+    :return: a number, from 0 to k - 1, associated with the given state as specified in the given table
+    """
     state_repr = ''.join(str(x) for x in state)
-    if not state_repr in lambda_table:
+    if not state_repr in table:
         raise Exception("could not find state '%s' in table" % state_repr)
-    return lambda_table[state_repr]
+    return table[state_repr]
 
-def create_lambda_table(lambda_val, K, r):
+
+def create_lambda_table(lambda_val, k, r):
     """
     Constructs and returns a "lambda" rule, as described in [Langton, C. G. (1990). Computation at the edge of 
     chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.], using 
     the "random-table" method.
     :param lambda_val: a real number in (0., 1.), representing the value of lambda
-    :param K: the number of cell states
+    :param k: the number of cell states
     :param r: the radius of the cellular automaton neighbourhood
     :return: a table describing a rule, constructed using the "random-table" table method as described by C. G. Langton
     """
     states = []
-    N = 2*r + 1
-    for i in range(0, K**N):
-        states.append(np.base_repr(i, K).zfill(N))
+    n = 2*r + 1
+    for i in range(0, k**n):
+        states.append(np.base_repr(i, k).zfill(n))
     table = {}
-    quiescent_state = np.random.randint(K, dtype=np.int)
-    other_states = [x for x in range(0, K) if x != quiescent_state]
+    quiescent_state = np.random.randint(k, dtype=np.int)
+    other_states = [x for x in range(0, k) if x != quiescent_state]
     for state in states:
         if random.random() < (1. - lambda_val):
             next_state = quiescent_state
