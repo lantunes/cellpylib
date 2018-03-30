@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot(ca):
+def plot(ca, title=''):
     cmap = plt.get_cmap('Greys')
+    plt.title(title)
     plt.imshow(ca, interpolation='none', cmap=cmap)
     plt.show()
 
