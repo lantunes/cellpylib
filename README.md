@@ -62,9 +62,9 @@ For more information, see:
 The number of states that a cell can adopt is given by _k_. For example, a binary cellular automaton, in which a cell can 
 assume only values of 0 and 1, has _k_ = 2. CellPyLib supports any value of _k_. A built-in function, `totalistic_rule`,
 is an implementation of the [Totalistic cellular automaton rule](http://mathworld.wolfram.com/TotalisticCellularAutomaton.html), 
-as described in Wolfram's NKS. The code snippet below illustrates using this rule. A value of _k_ of 3 is used, but
-any value between (and including) 2 and 36 is currently supported. The rule number is given in base 10 but is 
-interpreted as the rule in base _k_ (thus rule 777 corresponds to '1001210' when _k_ = 3).
+as described in [Wolfram's NKS](https://www.wolframscience.com/nks/). The code snippet below illustrates using this rule. 
+A value of _k_ of 3 is used, but any value between (and including) 2 and 36 is currently supported. The rule number is 
+given in base 10 but is interpreted as the rule in base _k_ (thus rule 777 corresponds to '1001210' when _k_ = 3).
 
 ```python
 import cellpylib as ca
@@ -79,3 +79,29 @@ ca.plot(cellular_automaton)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot3_rule777.png" width="50%"/>
+
+## Rule Tables
+
+One way to specify cellular automata rules is with rule tables. Rule tables are enumerations of all possible 
+neighbourhood states together with their cell state mappings. For any given neighbourhood state, a rule table provides 
+the associated cell state value. CellPyLib provides a built-in function for creating random rule tables. The following
+snippet demonstrates its usage:
+```python
+import cellpylib as ca
+
+rule_table, actual_lambda, quiescent_state = ca.random_rule_table(lambda_val=0.45, k=4, r=2,
+                                                                  strong_quiescence=True, isotropic=True)
+
+cellular_automaton = ca.init_random(128, k=4)
+
+# use the built-in table_rule to use the generated rule table
+cellular_automaton = ca.evolve(cellular_automaton, n_steps=200,
+                               apply_rule=lambda state, c: ca.table_rule(state, rule_table), r=2)
+```
+The following plots demonstrate the effect of varying the lambda parameter:
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/phase_transition.png" width="50%"/>
+
+C. G. Langton describes the transition from order to complexity to chaos in cellular automata in the paper:
+
+> Langton, C. G. (1990). Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.

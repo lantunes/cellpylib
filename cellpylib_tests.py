@@ -140,6 +140,40 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(table['122'], table['221'])
         self.assertEqual(table['102'], table['201'])
 
+    def test_table_walk_through_increasing(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state)
+        self.assertEqual(new_lambda, 1.0)
+
+    def test_table_walk_through_decreasing(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state)
+        self.assertEqual(new_lambda, 0.0)
+
+    def test_table_walk_through_increasing_strong_quiescence(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0, strong_quiescence=True)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                  strong_quiescence=True)
+        np.testing.assert_almost_equal(new_lambda, 0.96, decimal=2)
+
+    def test_table_walk_through_decreasing_strong_quiescence(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0, strong_quiescence=True)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                  strong_quiescence=True)
+        np.testing.assert_almost_equal(new_lambda, 0.07, decimal=2)
+
+    def test_table_walk_through_increasing_isotropic(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0, isotropic=True)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                  isotropic=True)
+        self.assertEqual(new_lambda, 1.0)
+
+    def test_table_walk_through_decreasing_isotropic(self):
+        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0, isotropic=True)
+        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                  isotropic=True)
+        self.assertEqual(new_lambda, 0.0)
+
     def _convert_to_numpy_matrix(self, filename):
         with open(filename, 'r') as content_file:
             content = content_file.read()
