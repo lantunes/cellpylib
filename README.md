@@ -59,7 +59,7 @@ For more information, see:
 
 ## Varying the Number of Colors
 
-The number of states that a cell can adopt is given by _k_. For example, a binary cellular automaton, in which a cell can 
+The number of states, or colors, that a cell can adopt is given by _k_. For example, a binary cellular automaton, in which a cell can 
 assume only values of 0 and 1, has _k_ = 2. CellPyLib supports any value of _k_. A built-in function, `totalistic_rule`,
 is an implementation of the [Totalistic cellular automaton rule](http://mathworld.wolfram.com/TotalisticCellularAutomaton.html), 
 as described in [Wolfram's NKS](https://www.wolframscience.com/nks/). The code snippet below illustrates using this rule. 
