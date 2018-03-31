@@ -100,7 +100,7 @@ cellular_automaton = ca.evolve(cellular_automaton, n_steps=200,
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
-<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/phase_transition.png" width="85%"/>
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/phase_transition.png" width="100%"/>
 
 C. G. Langton describes the transition from order to complexity to chaos in cellular automata in the paper:
 
