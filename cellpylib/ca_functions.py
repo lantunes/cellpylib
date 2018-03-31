@@ -51,36 +51,41 @@ def int_to_bits(num, num_digits):
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
 
-def nks_rule(state, rule):
+def binary_rule(state, rule, scheme=None):
     """
-    convert state to int, so [1,0,1] -> 5, call this state_int
-    convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
-    new value is rule_bin_array[7 - state_int]
-      we subtract 7 from state_int to be consistent with the numbering scheme used in NKS
-      in NKS, rule 254 for a 1D binary cellular automaton is described as:
+    Converts the given rule number to a binary representation, and uses this to determine the value to return.
+    The process is approximately described as:
+    1. convert state to int, so [1,0,1] -> 5, call this state_int
+    2. convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
+    3. new value is rule_bin_array[7 - state_int]
+         we subtract 7 from state_int to be consistent with the numbering scheme used in NKS
+         in NKS, rule 254 for a 1D binary cellular automaton is described as:
         [1,1,1]  [1,1,0]  [1,0,1]  [1,0,0]  [0,1,1]  [0,1,0]  [0,0,1]  [0,0,0]
            1        1        1        1        1        1        1        0
-    :param state: a binary array of length 3
-    :param rule: an int, from 0 to 255, indicating the cellular automaton rule number in NKS convention
-    :return: the result, 0 or 1, of applying the given NKS rule on the given state 
+    If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of 
+    the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the 
+    neighbourhoods.
+    :param state: a binary array of length 2r + 1
+    :param rule: an int indicating the cellular automaton rule number
+    :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
+    :return: the result, 0 or 1, of applying the given rule on the given state
     """
     state_int = bits_to_int(state)
     n = 2**len(state)
     rule_bin_array = int_to_bits(rule, n)
-    return rule_bin_array[(n-1) - state_int]
+    if scheme == 'nks':
+        return rule_bin_array[(n-1) - state_int]
+    return rule_bin_array[state_int]
 
 
-def number_rule(state, rule):
+def nks_rule(state, rule):
     """
-    The same idea as the NKS rule, except that the neighbourhoods are listed in 
-      lexicographic order (the reverse of the NKS convention).
+    A convenience function, that calls binary_rule with scheme = 'nks'.
     :param state: a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
-    :return: the result, 0 or 1, of applying the given rule on the given state
+    :return: 
     """
-    state_int = bits_to_int(state)
-    rule_bin_array = int_to_bits(rule, 2**len(state))
-    return rule_bin_array[state_int]
+    return binary_rule(state, rule, scheme='nks')
 
 
 def totalistic_rule(state, k, rule):
