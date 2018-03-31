@@ -1,7 +1,7 @@
 CellPyLib
 =========
 
-CellPyLib is a library for working with Cellular Automata, for Python. Currently, only uniform 1-dimensional _k_-color 
+CellPyLib is a library for working with Cellular Automata, for Python. Currently, only 1-dimensional _k_-color 
 cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The 
 cellular automata produced by this library match the corresponding cellular automata available 
 at [atlas.wolfram.com](http://atlas.wolfram.com).
