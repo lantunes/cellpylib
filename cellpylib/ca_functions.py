@@ -111,34 +111,53 @@ def table_rule(state, table):
     return table[state_repr]
 
 
-def create_lambda_table(lambda_val, k, r, quiescent_state=None):
+def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):
     """
-    Constructs and returns a "lambda" rule, as described in [Langton, C. G. (1990). Computation at the edge of 
+    Constructs and returns a random rule table, as described in [Langton, C. G. (1990). Computation at the edge of 
     chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.], using 
     the "random-table" method.
-    :param lambda_val: a real number in (0., 1.), representing the value of lambda
     :param k: the number of cell states
     :param r: the radius of the cellular automaton neighbourhood
-    :param quiescent_state: the state, a whole number in [0, k - 1], to use as the quiescent state
-    :return: a table describing a rule, constructed using the "random-table" table method as described by C. G. Langton
+    :param lambda_val: a real number in (0., 1.), representing the value of lambda; if None, a default value of 
+                       1.0 - 1/k will be used, where all states will be represented equally in the rule table
+    :param quiescent_state: the state, a number in {0,...,k - 1}, to use as the quiescent state
+    :param strong_quiescence: if True, all neighbourhood states uniform in cell state i will map to cell state i
+    :param isotropic: if True, all planar rotations of a neighbourhood state will map to the same cell state
+    :return: a tuple containing: a table describing a rule, constructed using the "random-table" table method as 
+             described by C. G. Langton, the actual lambda value, and the quiescent state used
     """
     states = []
     n = 2*r + 1
     for i in range(0, k**n):
         states.append(np.base_repr(i, k).zfill(n))
     table = {}
+    if lambda_val is None:
+        lambda_val = 1. - (1. / k)
     if quiescent_state is None:
         quiescent_state = np.random.randint(k, dtype=np.int)
     if not (0 <= quiescent_state <= k - 1):
-        raise Exception("quiescent state must be a whole number in [0, k - 1]")
+        raise Exception("quiescent state must be a number in {0,...,k - 1}")
     other_states = [x for x in range(0, k) if x != quiescent_state]
+    quiescent_state_count = 0
     for state in states:
-        if random.random() < (1. - lambda_val):
-            next_state = quiescent_state
+        if strong_quiescence and len(set(state)) == 1:
+            # if the cell states in neighbourhood are all the same, e.g. '111'
+            next_state = int(state[0], k)
+            if next_state == quiescent_state: quiescent_state_count += 1
         else:
-            next_state = random.choice(other_states)
+            state_reversed = state[::-1]
+            if isotropic and state_reversed in table:
+                next_state = table[state_reversed]
+                if next_state == quiescent_state: quiescent_state_count += 1
+            else:
+                if random.random() < (1. - lambda_val):
+                    next_state = quiescent_state
+                    quiescent_state_count += 1
+                else:
+                    next_state = random.choice(other_states)
         table[state] = next_state
-    return table
+    actual_lambda_val = (k**n - quiescent_state_count) / k**n
+    return table, actual_lambda_val, quiescent_state
 
 
 def init_simple(size, val=1):
@@ -155,9 +174,9 @@ def init_simple(size, val=1):
 
 def init_random(size, k=2):
     """
-    Returns a randomly initialized array with values consisting of whole numbers in [0, k - 1], where k = 2 by default.
+    Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     :param size: the size of the array to be created
     :param k: the number of states in the cellular automaton (2, by default)
-    :return: an array with the specified size, randomly initialized with whole numbers in [0, k - 1]
+    :return: an array with the specified size, randomly initialized with numbers in {0,...,k - 1}
     """
     return np.array([np.random.randint(k, size=size, dtype=np.int)])
