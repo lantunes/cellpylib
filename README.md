@@ -102,6 +102,7 @@ The following plots demonstrate the effect of varying the lambda parameter:
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/phase_transition.png" width="100%"/>
 
-C. G. Langton describes the transition from order to complexity to chaos in cellular automata in the paper:
+C. G. Langton describes the lambda parameter, and the transition from order to criticality to chaos in cellular 
+automata while varying the lambda parameter, in the paper:
 
 > Langton, C. G. (1990). Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.

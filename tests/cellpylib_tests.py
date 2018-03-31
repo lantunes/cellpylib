@@ -1,77 +1,82 @@
 import unittest
-import cellpylib as ca
+
 import numpy as np
+import os
+
+import cellpylib as ca
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestCellularAutomataFunctions(unittest.TestCase):
 
     def test_rule0_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule0_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("rule0_simple_init.ca")
         actual = self._create_ca(expected, 0)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule0_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule0_random_init.ca")
+        expected = self._convert_to_numpy_matrix("rule0_random_init.ca")
         actual = self._create_ca(expected, 0)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule30_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule30_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("rule30_simple_init.ca")
         actual = self._create_ca(expected, 30)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule30_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule30_random_init.ca")
+        expected = self._convert_to_numpy_matrix("rule30_random_init.ca")
         actual = self._create_ca(expected, 30)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule126_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule126_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("rule126_simple_init.ca")
         actual = self._create_ca(expected, 126)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule126_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule126_random_init.ca")
+        expected = self._convert_to_numpy_matrix("rule126_random_init.ca")
         actual = self._create_ca(expected, 126)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule225_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule225_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("rule225_simple_init.ca")
         actual = self._create_ca(expected, 225)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule225_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule225_random_init.ca")
+        expected = self._convert_to_numpy_matrix("rule225_random_init.ca")
         actual = self._create_ca(expected, 225)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule255_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule255_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("rule255_simple_init.ca")
         actual = self._create_ca(expected, 255)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule255_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/rule255_random_init.ca")
+        expected = self._convert_to_numpy_matrix("rule255_random_init.ca")
         actual = self._create_ca(expected, 255)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_3color_rule777_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/tot3_rule777_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("tot3_rule777_simple_init.ca")
         actual = self._create_totalistic_ca(expected, 3, 777)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_3color_rule777_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/tot3_rule777_random_init.ca")
+        expected = self._convert_to_numpy_matrix("tot3_rule777_random_init.ca")
         actual = self._create_totalistic_ca(expected, 3, 777)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_4color_rule107396_simple_init(self):
-        expected = self._convert_to_numpy_matrix("tests/tot4_rule107396_simple_init.ca")
+        expected = self._convert_to_numpy_matrix("tot4_rule107396_simple_init.ca")
         actual = self._create_totalistic_ca(expected, 4, 107396)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_4color_rule107396_random_init(self):
-        expected = self._convert_to_numpy_matrix("tests/tot4_rule107396_random_init.ca")
+        expected = self._convert_to_numpy_matrix("tot4_rule107396_random_init.ca")
         actual = self._create_totalistic_ca(expected, 4, 107396)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
@@ -174,8 +179,62 @@ class TestCellularAutomataFunctions(unittest.TestCase):
                                                   isotropic=True)
         self.assertEqual(new_lambda, 0.0)
 
+    def test_init_random(self):
+        arr = ca.init_random(3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 1)
+        self.assertTrue(0 <= arr[0][1] <= 1)
+        self.assertTrue(0 <= arr[0][2] <= 1)
+
+        arr = ca.init_random(3, k=3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertTrue(0 <= arr[0][2] <= 2)
+
+        arr = ca.init_random(3, k=3, n_randomized=1, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 9)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertEqual(arr[0][2], 9)
+
+        arr = ca.init_random(3, k=3, n_randomized=0, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 9)
+        self.assertEqual(arr[0][1], 9)
+        self.assertEqual(arr[0][2], 9)
+
+        arr = ca.init_random(3, k=3, n_randomized=3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertTrue(0 <= arr[0][2] <= 2)
+
+        arr = ca.init_random(3, k=3, n_randomized=2, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertEqual(arr[0][2], 9)
+
+        arr = ca.init_random(1, k=3, n_randomized=1, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+
+        arr = ca.init_random(1, k=3, n_randomized=0, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        arr = arr[0]
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(arr[0], 9)
+
     def _convert_to_numpy_matrix(self, filename):
-        with open(filename, 'r') as content_file:
+        with open(os.path.join(THIS_DIR, filename), 'r') as content_file:
             content = content_file.read()
         content = content.replace('{{', '')
         content = content.replace('}}', '')
