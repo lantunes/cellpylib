@@ -233,6 +233,23 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(len(arr), 1)
         self.assertEqual(arr[0], 9)
 
+    def test_shannon_entropy(self):
+        entropy = ca.shannon_entropy('1111111')
+        self.assertEqual(entropy, 0)
+        entropy = ca.shannon_entropy('0000000')
+        self.assertEqual(entropy, 0)
+        entropy = ca.shannon_entropy('01010101')
+        self.assertEqual(entropy, 1.0)
+        entropy = ca.shannon_entropy('00010001')
+        np.testing.assert_almost_equal(entropy, 0.8113, decimal=4)
+        entropy = ca.shannon_entropy('1234')
+        self.assertEqual(entropy, 2.0)
+
+    def test_average_cell_entropy(self):
+        cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
+        avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
+        np.testing.assert_almost_equal(avg_cell_entropy, 1.7208, decimal=4)
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, filename), 'r') as content_file:
             content = content_file.read()

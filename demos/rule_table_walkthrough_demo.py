@@ -19,6 +19,7 @@ for i in range(0, 3):
                                    apply_rule=lambda state, c: ca.table_rule(state, rule_table), r=2)
 
     ca_list.append(cellular_automaton)
-    titles.append(r'$\lambda$ = %s' % lambda_vals[i])
+    avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
+    titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s' % (lambda_vals[i], "{:.4}".format(avg_cell_entropy)))
 
 ca.plot_multiple(ca_list, titles)

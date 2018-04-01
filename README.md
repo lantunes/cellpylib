@@ -106,3 +106,30 @@ C. G. Langton describes the lambda parameter, and the transition from order to c
 automata while varying the lambda parameter, in the paper:
 
 > Langton, C. G. (1990). Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.
+
+## Measures of Complexity
+
+CellPyLib provides various built-in functions which can act as measures of complexity in the cellular automata being
+examined.
+
+# Average Cell Entropy
+
+Average cell entropy can reveal something about the presence of information within cellular automata dynamics. The 
+built-in function `average_cell_entropy` provides the average Shannon entropy per single cell in a given cellular 
+automaton. The following snippet demonstrates the calculation of the average cell entropy:
+
+```python
+import cellpylib as ca
+
+cellular_automaton = ca.init_random(200)
+
+cellular_automaton = ca.evolve(cellular_automaton, n_steps=1000,
+                               apply_rule=lambda state, c: ca.nks_rule(state, 30))
+
+# calculate the average cell entropy; the value will be ~0.999 in this case
+avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
+```
+
+The following plots illustrate how average cell entropy changes as a function of lambda:
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_cell_entropy.png" width="100%"/>
