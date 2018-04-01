@@ -20,6 +20,8 @@ for i in range(0, 3):
 
     ca_list.append(cellular_automaton)
     avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
-    titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s' % (lambda_vals[i], "{:.4}".format(avg_cell_entropy)))
+    avg_mutual_information = ca.average_mutual_information(cellular_automaton)
+    titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s, $\widebar{I}$ = %s' %
+                  (lambda_vals[i], "{:.4}".format(avg_cell_entropy), "{:.4}".format(avg_mutual_information)))
 
 ca.plot_multiple(ca_list, titles)

@@ -133,3 +133,27 @@ avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
 The following plots illustrate how average cell entropy changes as a function of lambda:
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_cell_entropy.png" width="100%"/>
+
+### Average Mutual Information
+
+The degree to which a cell state is correlated to its state in the next time step can be described using mutual 
+information. Ideal levels of correlation are required for effective processing of information. The built-in function 
+`average_mutual_information` provides the average mutual information between a cell and itself in the next time step 
+(the temporal distance can be adjusted). The following snippet demonstrates the calculation of the average mutual 
+information:
+
+```python
+import cellpylib as ca
+
+cellular_automaton = ca.init_random(200)
+
+cellular_automaton = ca.evolve(cellular_automaton, n_steps=1000,
+                               apply_rule=lambda state, c: ca.nks_rule(state, 30))
+
+# calculate the average mutual information between a cell and itself in the next time step
+avg_mutual_information = ca.average_mutual_information(cellular_automaton)
+```
+
+The following plots illustrate how average mutual information changes as a function of lambda:
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_mutual_information.png" width="100%"/>
