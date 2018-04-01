@@ -112,7 +112,7 @@ automata while varying the lambda parameter, in the paper:
 CellPyLib provides various built-in functions which can act as measures of complexity in the cellular automata being
 examined.
 
-# Average Cell Entropy
+### Average Cell Entropy
 
 Average cell entropy can reveal something about the presence of information within cellular automata dynamics. The 
 built-in function `average_cell_entropy` provides the average Shannon entropy per single cell in a given cellular 
