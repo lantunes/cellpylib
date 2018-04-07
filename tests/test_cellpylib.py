@@ -179,7 +179,27 @@ class TestCellularAutomataFunctions(unittest.TestCase):
                                                   isotropic=True)
         self.assertEqual(new_lambda, 0.0)
 
-    def test_init_random(self):
+    def test_init_simple_1(self):
+        arr = ca.init_simple(1)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertEqual(arr[0][0], 1)
+
+    def test_init_simple_1_val2(self):
+        arr = ca.init_simple(1, val=2)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertEqual(arr[0][0], 2)
+
+    def test_init_simple_3(self):
+        arr = ca.init_simple(3)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 0)
+        self.assertEqual(arr[0][1], 1)
+        self.assertEqual(arr[0][2], 0)
+
+    def test_init_random_3(self):
         arr = ca.init_random(3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -187,6 +207,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1] <= 1)
         self.assertTrue(0 <= arr[0][2] <= 1)
 
+    def test_init_random_3_k3(self):
         arr = ca.init_random(3, k=3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -194,6 +215,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1] <= 2)
         self.assertTrue(0 <= arr[0][2] <= 2)
 
+    def test_init_random_3_k3_n1(self):
         arr = ca.init_random(3, k=3, n_randomized=1, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -201,6 +223,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1] <= 2)
         self.assertEqual(arr[0][2], 9)
 
+    def test_init_random_3_k3_n0(self):
         arr = ca.init_random(3, k=3, n_randomized=0, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -208,6 +231,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(arr[0][1], 9)
         self.assertEqual(arr[0][2], 9)
 
+    def test_init_random_3_k3_n3(self):
         arr = ca.init_random(3, k=3, n_randomized=3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -215,6 +239,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1] <= 2)
         self.assertTrue(0 <= arr[0][2] <= 2)
 
+    def test_init_random_3_k3_n2(self):
         arr = ca.init_random(3, k=3, n_randomized=2, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
@@ -222,11 +247,13 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1] <= 2)
         self.assertEqual(arr[0][2], 9)
 
+    def test_init_random_1_k3_n1(self):
         arr = ca.init_random(1, k=3, n_randomized=1, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 1)
         self.assertTrue(0 <= arr[0][0] <= 2)
 
+    def test_init_random_1_k3_n0(self):
         arr = ca.init_random(1, k=3, n_randomized=0, empty_value=9)
         self.assertEqual(len(arr), 1)
         arr = arr[0]
@@ -274,7 +301,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         np.testing.assert_almost_equal(avg_mutual_information, 1.1225, decimal=4)
 
     def _convert_to_numpy_matrix(self, filename):
-        with open(os.path.join(THIS_DIR, filename), 'r') as content_file:
+        with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
         content = content.replace('{{', '')
         content = content.replace('}}', '')
