@@ -1,21 +1,49 @@
-The cellular automata in the .ca ending files in this directory were obtained from:
+The cellular automata in the .ca-ending files in this directory were obtained from:
 
-Rule 0:
-- simple (rule0_simple_init.ca): http://atlas.wolfram.com/01/01/0/01_01_16_0.html
-- random (rule0_random_init.ca): http://atlas.wolfram.com/01/01/0/01_01_21_0.html
+rule0_simple_init.ca:
+http://atlas.wolfram.com/01/01/0/01_01_16_0.html
 
-Rule 30:
-- simple (rule30_simple_init.ca): http://atlas.wolfram.com/01/01/30/01_01_16_30.html
-- random (rule30_random_init.ca): http://atlas.wolfram.com/01/01/30/01_01_21_30.html
+rule0_random_init.ca:
+http://atlas.wolfram.com/01/01/0/01_01_21_0.html
 
-Rule 126:
-- simple (rule126_simple_init.ca): http://atlas.wolfram.com/01/01/126/01_01_16_126.html
-- random (rule126_random_init.ca): http://atlas.wolfram.com/01/01/126/01_01_21_126.html
+rule30_simple_init.ca:
+http://atlas.wolfram.com/01/01/30/01_01_16_30.html
 
-Rule 225:
-- simple (rule225_simple_init.ca): http://atlas.wolfram.com/01/01/225/01_01_16_225.html
-- random (rule225_random_init.ca): http://atlas.wolfram.com/01/01/225/01_01_21_225.html
+rule30_random_init.ca:
+http://atlas.wolfram.com/01/01/30/01_01_21_30.html
 
-Rule 255:
-- simple (rule255_simple_init.ca): http://atlas.wolfram.com/01/01/255/01_01_16_255.html
-- random (rule255_random_init.ca): http://atlas.wolfram.com/01/01/255/01_01_21_255.html
+rule126_simple_init.ca:
+http://atlas.wolfram.com/01/01/126/01_01_16_126.html
+
+rule126_random_init.ca:
+http://atlas.wolfram.com/01/01/126/01_01_21_126.html
+
+rule225_simple_init.ca:
+http://atlas.wolfram.com/01/01/225/01_01_16_225.html
+
+rule225_random_init.ca:
+http://atlas.wolfram.com/01/01/225/01_01_21_225.html
+
+rule255_simple_init.ca:
+http://atlas.wolfram.com/01/01/255/01_01_16_255.html
+
+rule255_random_init.ca:
+http://atlas.wolfram.com/01/01/255/01_01_21_255.html
+
+tot3_rule777_random_init.ca:
+http://atlas.wolfram.com/01/02/777/01_02_21_777.html
+
+tot3_rule777_simple_init.ca:
+http://atlas.wolfram.com/01/02/777/01_02_16_777.html
+
+tot4_rule107396_random_init.ca:
+http://atlas.wolfram.com/01/03/107396/01_03_21_107396.html
+
+tot4_rule107396_simple_init.ca:
+http://atlas.wolfram.com/01/03/107396/01_03_16_107396.html
+
+tot_rule26_2d_n5_simple_init.ca:
+CellularAutomaton[<|"TotalisticCode" -> 26, "Dimension" -> 2,"Neighborhood" -> 5|>, PadLeft[{{1}}, {60, 60}, 0, Floor[{60, 60}/2]], 30]
+
+tot_rule126_2d_n9_simple_init.ca:
+CellularAutomaton[<|"TotalisticCode" -> 126, "Dimension" -> 2,"Neighborhood" -> 9|>, PadLeft[{{1}}, {60, 60}, 0, Floor[{60, 60}/2]], 30]

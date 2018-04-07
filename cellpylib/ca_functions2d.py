@@ -1,4 +1,64 @@
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 import numpy as np
+
+
+def plot2d(ca, timestep=None, title=''):
+    cmap = plt.get_cmap('Greys')
+    plt.title(title)
+    if timestep is not None:
+        data = ca[timestep]
+    else:
+        data = ca[:, len(ca[0])//2]
+    plt.imshow(data, interpolation='none', cmap=cmap)
+    plt.show()
+
+
+def plot2d_spacetime(ca, alpha=None, title=''):
+    fig = plt.figure(figsize=(10, 7))
+    plt.title(title)
+    ax = fig.gca(projection='3d')
+    ca = ca[::-1]
+    xs = np.arange(ca.shape[2])[None, None, :]
+    ys = np.arange(ca.shape[1])[None, :, None]
+    zs = np.arange(ca.shape[0])[:, None, None]
+    xs, ys, zs = np.broadcast_arrays(xs, ys, zs)
+    masked_data = np.ma.masked_where(ca == 0, ca)
+    ax.scatter(xs.ravel(),
+               ys.ravel(),
+               zs.ravel(),
+               c=masked_data, cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
+    plt.show()
+
+
+def evolve2d(cellular_automaton, n_steps, apply_rule, r=1, neighbourhood='Moore'):
+    # """
+    #
+    # :param cellular_automaton:
+    # :param n_steps:
+    # :param apply_rule:
+    # :param r:
+    # :param neighbourhood: the neighbourhood type; valid values are 'Moore', 9, 'von Neumann', and 5
+    # :return:
+    # """
+    # _, rows, cols = cellular_automaton.shape
+    # array = np.zeros((n_steps, rows, cols), dtype=np.int)
+    # array[0] = cellular_automaton
+    #
+    # def index_strides(arr, window_size):
+    #     # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
+    #     arr = np.concatenate((arr[-window_size//2+1:], arr, arr[:window_size//2]))
+    #     shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
+    #     strides = arr.strides + (arr.strides[-1],)
+    #     return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
+    #
+    # for i in range(1, n_steps):
+    #     cell_layer = array[i - 1]
+    #     strides = index_strides(np.arange(len(cell_layer)), 2*r + 1)
+    #     states = cell_layer[strides]
+    #     array[i] = np.array([apply_rule(s, c) for c, s in enumerate(states)])
+    # return array
+    pass  # TODO implement this
 
 
 def init_simple2d(rows, cols, val=1):

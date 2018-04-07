@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import os
 
 import cellpylib as ca
@@ -106,3 +107,32 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1][0] <= 1)
         self.assertTrue(0 <= arr[0][1][1] <= 1)
         self.assertTrue(0 <= arr[0][1][2] <= 1)
+
+    def test_tot_rule126_2d_n9_simple_init(self):
+        # TODO fix this test
+        expected = self._convert_to_numpy_matrix("tot_rule126_2d_n9_simple_init.ca")
+        actual = self._create_ca(expected, 0)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_tot_rule26_2d_n5_simple_init(self):
+        # TODO fix this test
+        expected = self._convert_to_numpy_matrix("tot_rule26_2d_n5_simple_init.ca")
+        actual = self._create_ca(expected, 0)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def _convert_to_numpy_matrix(self, filename):
+        with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
+            content = content_file.read()
+            content = content.replace('{{{', '')
+        content = content.replace('}}}', '')
+        content = content.replace('{{', '')
+        content = content.replace('{', '')
+        content = [x.split('},') for x in content.split('}},')]
+        content = [[h.split(',') for h in x] for x in content]
+        content = [[[int(i) for i in h] for h in x] for x in content]
+        return np.array(content, dtype=np.int)
+
+    def _create_ca(self, expected, rule):
+        steps, _, _ = expected.shape
+        cellular_automaton = np.array([expected[0]])
+        return ca.evolve2d(cellular_automaton, n_steps=steps, apply_rule=lambda state, c: ca.nks_rule(state, rule))
