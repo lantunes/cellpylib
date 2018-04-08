@@ -9,6 +9,17 @@ def plot2d(ca, timestep=None, title=''):
     if timestep is not None:
         data = ca[timestep]
     else:
+        data = ca[-1]
+    plt.imshow(data, interpolation='none', cmap=cmap)
+    plt.show()
+
+
+def plot2d_slice(ca, slice=None, title=''):
+    cmap = plt.get_cmap('Greys')
+    plt.title(title)
+    if slice is not None:
+        data = ca[:, slice]
+    else:
         data = ca[:, len(ca[0])//2]
     plt.imshow(data, interpolation='none', cmap=cmap)
     plt.show()
