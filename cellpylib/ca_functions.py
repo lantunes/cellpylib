@@ -18,9 +18,27 @@ def plot_multiple(ca_list, titles):
     plt.show()
 
 
-def evolve(cellular_automaton, n_steps, apply_rule, r=1):
+def evolve(cellular_automaton, timesteps, apply_rule, r=1):
+    """
+    Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during
+    the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function expects
+    an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton. The final
+    result is a matrix, where the number of rows equal the number of time steps specified.
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step; 
+                               e.g. [[0,0,0,0,1,0,0,0,0]] 
+    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
+                      time steps in this cellular automaton evolution, which includes the initial condition  
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a 
+                       scalar representing the time step in the evolution
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps 
+             specified
+    """
     _, cols = cellular_automaton.shape
-    array = np.zeros((n_steps, cols), dtype=np.int)
+    array = np.zeros((timesteps, cols), dtype=np.int)
     array[0] = cellular_automaton
 
     def index_strides(arr, window_size):
@@ -30,11 +48,11 @@ def evolve(cellular_automaton, n_steps, apply_rule, r=1):
         strides = arr.strides + (arr.strides[-1],)
         return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
 
-    for i in range(1, n_steps):
-        cells = array[i - 1]
+    for t in range(1, timesteps):
+        cells = array[t - 1]
         strides = index_strides(np.arange(len(cells)), 2*r + 1)
-        states = cells[strides]
-        array[i] = np.array([apply_rule(s, c) for c, s in enumerate(states)])
+        neighbourhoods = cells[strides]
+        array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
     return array
 
 
@@ -51,7 +69,7 @@ def int_to_bits(num, num_digits):
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
 
-def binary_rule(state, rule, scheme=None):
+def binary_rule(neighbourhood, rule, scheme=None):
     """
     Converts the given rule number to a binary representation, and uses this to determine the value to return.
     The process is approximately described as:
@@ -65,35 +83,35 @@ def binary_rule(state, rule, scheme=None):
     If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of 
     the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the 
     neighbourhoods.
-    :param state: a binary array of length 2r + 1
+    :param neighbourhood: a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
     :return: the result, 0 or 1, of applying the given rule on the given state
     """
-    state_int = bits_to_int(state)
-    n = 2**len(state)
+    state_int = bits_to_int(neighbourhood)
+    n = 2**len(neighbourhood)
     rule_bin_array = int_to_bits(rule, n)
     if scheme == 'nks':
         return rule_bin_array[(n-1) - state_int]
     return rule_bin_array[state_int]
 
 
-def nks_rule(state, rule):
+def nks_rule(neighbourhood, rule):
     """
     A convenience function, that calls binary_rule with scheme = 'nks'.
-    :param state: a binary array of length 2r + 1
+    :param neighbourhood: a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :return: 
     """
-    return binary_rule(state, rule, scheme='nks')
+    return binary_rule(neighbourhood, rule, scheme='nks')
 
 
-def totalistic_rule(state, k, rule):
+def totalistic_rule(neighbourhood, k, rule):
     """
     The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
     The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
     3k - 2 possible average colors in the cell neighbourhood.
-    :param state: a k-color array of length 2r + 1
+    :param neighbourhood: a k-color array of length 2r + 1
     :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
     :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
     :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
@@ -103,9 +121,9 @@ def totalistic_rule(state, k, rule):
     rule_string = np.base_repr(rule, base=k).zfill(3*k - 2)
     if len(rule_string) > 3*k - 2:
         raise Exception("rule number out of range")
-    state_sum = sum(state)
+    neighbourhood_sum = sum(neighbourhood)
     # the rightmost element of the rule is for the average color 0, in NKS convention
-    return int(rule_string[(3*k - 3) - state_sum], k)
+    return int(rule_string[(3*k - 3) - neighbourhood_sum], k)
 
 
 def init_simple(size, val=1):

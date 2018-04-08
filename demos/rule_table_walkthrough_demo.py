@@ -14,9 +14,9 @@ for i in range(0, 3):
                                                       quiescent_state=quiescent_state, strong_quiescence=True)
     print(actual_lambda)
 
-    # evolve the cellular automaton for n time steps
-    cellular_automaton = ca.evolve(cellular_automaton, n_steps=200,
-                                   apply_rule=lambda state, c: ca.table_rule(state, rule_table), r=2)
+    # evolve the cellular automaton for 200 time steps
+    cellular_automaton = ca.evolve(cellular_automaton, timesteps=200,
+                                   apply_rule=lambda n, c, t: ca.table_rule(n, rule_table), r=2)
 
     ca_list.append(cellular_automaton)
     avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)

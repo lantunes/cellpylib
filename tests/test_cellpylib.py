@@ -300,6 +300,27 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         avg_mutual_information = ca.average_mutual_information(cellular_automaton, temporal_distance=3)
         np.testing.assert_almost_equal(avg_mutual_information, 1.1225, decimal=4)
 
+    def test_evolve_apply_rule_1_step(self):
+        cellular_automaton = np.array([[1, 2, 3, 4, 5]])
+        cellular_automaton = ca.evolve(cellular_automaton, timesteps=1, apply_rule=lambda n, c, t: 1)
+        np.testing.assert_equal(cellular_automaton.tolist(), [[1, 2, 3, 4, 5]])
+
+    def test_evolve_apply_rule_3_steps(self):
+        cellular_automaton = np.array([[1, 2, 3, 4, 5]])
+        neighbourhoods = []
+        cell_identities = []
+        timesteps = []
+        def apply_rule(n, c, t):
+            neighbourhoods.append(n.tolist())
+            cell_identities.append(c)
+            timesteps.append(t)
+            return n[1]
+        ca.evolve(cellular_automaton, timesteps=3, apply_rule=apply_rule)
+        np.testing.assert_equal(neighbourhoods, [[5, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 1],
+                                                 [5, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 1]])
+        np.testing.assert_equal(cell_identities, [0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
+        np.testing.assert_equal(timesteps, [1, 1, 1, 1, 1, 2, 2, 2, 2, 2])
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
@@ -312,13 +333,13 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def _create_ca(self, expected, rule):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
-        return ca.evolve(cellular_automaton, n_steps=rows, apply_rule=lambda state, c: ca.nks_rule(state, rule))
+        return ca.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: ca.nks_rule(n, rule))
 
     def _create_totalistic_ca(self, expected, k, rule):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
-        return ca.evolve(cellular_automaton, n_steps=rows,
-                         apply_rule=lambda state, c: ca.totalistic_rule(state, k, rule))
+        return ca.evolve(cellular_automaton, timesteps=rows,
+                         apply_rule=lambda n, c, t: ca.totalistic_rule(n, k, rule))
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,8 +14,8 @@ import cellpylib as ca
 cellular_automaton = ca.init_simple(200)
 
 # evolve the CA for 100 time steps, using Rule 30 as defined in NKS
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=100, 
-                               apply_rule=lambda state, c: ca.nks_rule(state, 30))
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=100, 
+                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
 
 # plot the resulting CA evolution
 ca.plot(cellular_automaton)
@@ -46,8 +46,8 @@ cellular_automaton = ca.init_random(149)
 rule_number = 6667021275756174439087127638698866559
 
 # evolve the CA, setting r to 3, for a neighbourhood size of 7
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=149,
-                               apply_rule=lambda state, c: ca.binary_rule(state, rule_number), r=3)
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=149,
+                               apply_rule=lambda n, c, t: ca.binary_rule(n, rule_number), r=3)
 
 ca.plot(cellular_automaton)
 ```
@@ -72,8 +72,8 @@ import cellpylib as ca
 cellular_automaton = ca.init_simple(200)
 
 # evolve the CA, using totalistic rule 777 for a 3-color CA
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=100,
-                               apply_rule=lambda state, c: ca.totalistic_rule(state, k=3, rule=777))
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=100,
+                               apply_rule=lambda n, c, t: ca.totalistic_rule(n, k=3, rule=777))
 
 ca.plot(cellular_automaton)
 ```
@@ -95,8 +95,8 @@ rule_table, actual_lambda, quiescent_state = ca.random_rule_table(lambda_val=0.4
 cellular_automaton = ca.init_random(128, k=4)
 
 # use the built-in table_rule to use the generated rule table
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=200,
-                               apply_rule=lambda state, c: ca.table_rule(state, rule_table), r=2)
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=200,
+                               apply_rule=lambda n, c, t: ca.table_rule(n, rule_table), r=2)
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
@@ -123,8 +123,8 @@ import cellpylib as ca
 
 cellular_automaton = ca.init_random(200)
 
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=1000,
-                               apply_rule=lambda state, c: ca.nks_rule(state, 30))
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=1000,
+                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
 
 # calculate the average cell entropy; the value will be ~0.999 in this case
 avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
@@ -147,8 +147,8 @@ import cellpylib as ca
 
 cellular_automaton = ca.init_random(200)
 
-cellular_automaton = ca.evolve(cellular_automaton, n_steps=1000,
-                               apply_rule=lambda state, c: ca.nks_rule(state, 30))
+cellular_automaton = ca.evolve(cellular_automaton, timesteps=1000,
+                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
 
 # calculate the average mutual information between a cell and itself in the next time step
 avg_mutual_information = ca.average_mutual_information(cellular_automaton)

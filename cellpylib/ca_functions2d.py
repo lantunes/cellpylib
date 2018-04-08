@@ -42,8 +42,34 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     plt.show()
 
 
-def evolve2d(cellular_automaton, n_steps, apply_rule, r=1, neighbourhood='Moore'):
+def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):
     # """
+    # >>> x
+    # array([[1, 2, 3],
+    #        [4, 5, 6],
+    #        [7, 8, 9]])
+    # >>> x[np.ix_([-1,0,1],[-1,0,1])]
+    # array([[9, 7, 8],
+    #        [3, 1, 2],
+    #        [6, 4, 5]])
+    # >>> x[np.ix_([-2,-1,0,1,2],[-2,-1,0,1,2])]
+    # array([[5, 6, 4, 5, 6],
+    #        [8, 9, 7, 8, 9],
+    #        [2, 3, 1, 2, 3],
+    #        [5, 6, 4, 5, 6],
+    #        [8, 9, 7, 8, 9]])
+    # >>> x[np.ix_([0,1,2],[0,1,2])]
+    # array([[1, 2, 3],
+    #        [4, 5, 6],
+    #        [7, 8, 9]])
+    # >>> x[np.ix_([0,1,2],[-1,0,1])]
+    # array([[3, 1, 2],
+    #        [6, 4, 5],
+    #        [9, 7, 8]])
+    # >>> x[np.ix_([-1,0,1],[0,1,2])]
+    # array([[7, 8, 9],
+    #        [1, 2, 3],
+    #        [4, 5, 6]])
     #
     # :param cellular_automaton:
     # :param n_steps:
