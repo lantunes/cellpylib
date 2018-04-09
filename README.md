@@ -1,7 +1,7 @@
 CellPyLib
 =========
 
-CellPyLib is a library for working with Cellular Automata, for Python. Currently, only 1-dimensional _k_-color 
+CellPyLib is a library for working with Cellular Automata, for Python. Currently, only 1- and 2-dimensional _k_-color 
 cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The 
 cellular automata produced by this library match the corresponding cellular automata available 
 at [atlas.wolfram.com](http://atlas.wolfram.com).
@@ -157,3 +157,68 @@ avg_mutual_information = ca.average_mutual_information(cellular_automaton)
 The following plots illustrate how average mutual information changes as a function of lambda:
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_mutual_information.png" width="100%"/>
+
+## 2D Cellular Automata
+
+CellPyLib supports 2-dimensional cellular automata with periodic boundary conditions. The number of states, _k_, can be
+any whole number. The neighbourhood radius, _r_, can also be any whole number, and both Moore and von Neumann 
+neighbourhood types are supported. The following snippet demonstrates creating a 2D totalistic cellular automaton:
+
+```python
+import cellpylib as ca
+
+# initialize a 60x60 2D cellular automaton 
+cellular_automaton = ca.init_simple2d(60, 60)
+
+# evolve the cellular automaton for 30 time steps, 
+#  applying totalistic rule 126 to each cell with a Moore neighbourhood
+cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=30, neighbourhood='Moore',
+                               apply_rule=lambda n, c, t: ca.totalistic_rule(n, k=2, rule=126))
+
+ca.plot2d(cellular_automaton)
+```
+
+The `plot2D` function plots the state of the cellular automaton at the final time step:
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot_rule126_2d_moore.png" width="100%"/>
+
+### Conway's Game of Life
+
+There are a number of built-in plotting functions for 2D cellular automata. For example, `plot2d_animate` will animate 
+the evolution of the cellular automaton. This is illustrated in the following snippet, which demonstrates the built-in 
+Game of Life rule:
+
+```python
+import cellpylib as ca
+
+# Glider
+cellular_automaton = ca.init_simple2d(60, 60)
+cellular_automaton[0][28][30] = 1
+cellular_automaton[0][29][31] = 1
+cellular_automaton[0][30][29] = 1
+cellular_automaton[0][30][31] = 1
+
+# Blinker
+cellular_automaton[0][40][15] = 1
+cellular_automaton[0][40][16] = 1
+cellular_automaton[0][40][17] = 1
+
+# Light Weight Space Ship (LWSS)
+cellular_automaton[0][18][45] = 1
+cellular_automaton[0][18][48] = 1
+cellular_automaton[0][19][44] = 1
+cellular_automaton[0][20][44] = 1
+cellular_automaton[0][21][44] = 1
+cellular_automaton[0][21][45] = 1
+cellular_automaton[0][21][46] = 1
+cellular_automaton[0][21][47] = 1
+cellular_automaton[0][20][48] = 1
+
+# evolve the cellular automaton for 60 time steps
+cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
+                                 apply_rule=ca.game_of_life_rule)
+
+ca.plot2d_animate(cellular_automaton)
+```
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/game_of_life.gif" width="100%"/>
