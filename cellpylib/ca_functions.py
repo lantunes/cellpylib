@@ -110,20 +110,22 @@ def totalistic_rule(neighbourhood, k, rule):
     """
     The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
     The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
-    3k - 2 possible average colors in the cell neighbourhood.
-    :param neighbourhood: a k-color array of length 2r + 1
+    3k - 2 possible average colors in the 3-cell neighbourhood. There are n(k - 1) + 1 possible average colors for a 
+    k-color cellular automaton with an n-cell neighbourhood.
+    :param neighbourhood: a k-color array of any size
     :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
     :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
     :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
     """
     # e.g. np.base_repr(777, base=3) -> '1001210'; the zfill pads the string with zeroes: '1'.zfill(3) -> '001'
     #   Bases greater than 36 not handled in base_repr.
-    rule_string = np.base_repr(rule, base=k).zfill(3*k - 2)
-    if len(rule_string) > 3*k - 2:
+    n = neighbourhood.size
+    rule_string = np.base_repr(rule, base=k).zfill(n*(k - 1) + 1)
+    if len(rule_string) > n*(k - 1) + 1:
         raise Exception("rule number out of range")
-    neighbourhood_sum = sum(neighbourhood)
+    neighbourhood_sum = np.sum(neighbourhood)
     # the rightmost element of the rule is for the average color 0, in NKS convention
-    return int(rule_string[(3*k - 3) - neighbourhood_sum], k)
+    return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
 
 
 def init_simple(size, val=1):

@@ -109,15 +109,13 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         self.assertTrue(0 <= arr[0][1][2] <= 1)
 
     def test_tot_rule126_2d_n9_simple_init(self):
-        # TODO fix this test
         expected = self._convert_to_numpy_matrix("tot_rule126_2d_n9_simple_init.ca")
-        actual = self._create_ca(expected, 0)
+        actual = self._create_ca(expected, 126, 'Moore')
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_tot_rule26_2d_n5_simple_init(self):
-        # TODO fix this test
         expected = self._convert_to_numpy_matrix("tot_rule26_2d_n5_simple_init.ca")
-        actual = self._create_ca(expected, 0)
+        actual = self._create_ca(expected, 26, 'von Neumann')
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def _convert_to_numpy_matrix(self, filename):
@@ -132,7 +130,8 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         content = [[[int(i) for i in h] for h in x] for x in content]
         return np.array(content, dtype=np.int)
 
-    def _create_ca(self, expected, rule):
+    def _create_ca(self, expected, rule, neighbourhood):
         steps, _, _ = expected.shape
         cellular_automaton = np.array([expected[0]])
-        return ca.evolve2d(cellular_automaton, n_steps=steps, apply_rule=lambda state, c: ca.nks_rule(state, rule))
+        return ca.evolve2d(cellular_automaton, timesteps=steps, r=1, neighbourhood=neighbourhood,
+                           apply_rule=lambda n, c, t: ca.totalistic_rule(n, k=2, rule=rule))
