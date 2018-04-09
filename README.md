@@ -24,7 +24,7 @@ cpl.plot(cellular_automaton)
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule30.png" width="50%"/>
 
-Requirements for using this library are Python 3.5, numpy, and matplotlib.
+Requirements for using this library are Python 3.5.3, numpy 1.14.0, and matplotlib 2.0.2.
 
 ## Varying the Neighbourhood Size
 
