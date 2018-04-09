@@ -222,3 +222,7 @@ ca.plot2d_animate(cellular_automaton)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/game_of_life.gif" width="65%"/>
+
+For more information about Conway's Game of Life, see:
+
+> Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
