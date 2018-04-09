@@ -178,7 +178,7 @@ cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=30, neighbourhoo
 cpl.plot2d(cellular_automaton)
 ```
 
-The `plot2D` function plots the state of the cellular automaton at the final time step:
+The `plot2d` function plots the state of the cellular automaton at the final time step:
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot_rule126_2d_moore.png" width="30%"/>
 
