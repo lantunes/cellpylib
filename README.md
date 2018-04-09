@@ -180,7 +180,7 @@ ca.plot2d(cellular_automaton)
 
 The `plot2D` function plots the state of the cellular automaton at the final time step:
 
-<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot_rule126_2d_moore.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot_rule126_2d_moore.png" width="30%"/>
 
 ### Conway's Game of Life
 
@@ -221,4 +221,4 @@ cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=60, neighbourhood
 ca.plot2d_animate(cellular_automaton)
 ```
 
-<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/game_of_life.gif" width="100%"/>
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/game_of_life.gif" width="65%"/>
