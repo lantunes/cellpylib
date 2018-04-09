@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import os
 
-import cellpylib as ca
+import cellpylib as cpl
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,7 +81,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_random_rule_table(self):
-        table, _, _ = ca.random_rule_table(k=2, r=1)
+        table, _, _ = cpl.random_rule_table(k=2, r=1)
         self.assertTrue(0 <= table['000'] <= 1)
         self.assertTrue(0 <= table['001'] <= 1)
         self.assertTrue(0 <= table['010'] <= 1)
@@ -92,7 +92,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= table['111'] <= 1)
 
     def test_random_rule_table_lambda1(self):
-        table, actual_lambda, quiescent_val = ca.random_rule_table(k=2, r=1, lambda_val=1.0, quiescent_state=1)
+        table, actual_lambda, quiescent_val = cpl.random_rule_table(k=2, r=1, lambda_val=1.0, quiescent_state=1)
         self.assertEqual(table['000'], 0)
         self.assertEqual(table['001'], 0)
         self.assertEqual(table['010'], 0)
@@ -105,7 +105,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(quiescent_val, 1)
 
     def test_random_rule_table_lambda0(self):
-        table, actual_lambda, quiescent_val = ca.random_rule_table(k=2, r=1, lambda_val=0.0, quiescent_state=1)
+        table, actual_lambda, quiescent_val = cpl.random_rule_table(k=2, r=1, lambda_val=0.0, quiescent_state=1)
         self.assertEqual(table['000'], 1)
         self.assertEqual(table['001'], 1)
         self.assertEqual(table['010'], 1)
@@ -118,14 +118,14 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(quiescent_val, 1)
 
     def test_random_rule_table_strong_quiescence(self):
-        table, _, _ = ca.random_rule_table(k=4, r=1, strong_quiescence=True)
+        table, _, _ = cpl.random_rule_table(k=4, r=1, strong_quiescence=True)
         self.assertEqual(table['000'], 0)
         self.assertEqual(table['111'], 1)
         self.assertEqual(table['222'], 2)
         self.assertEqual(table['333'], 3)
 
     def test_random_rule_table_isotropic(self):
-        table, _, _ = ca.random_rule_table(k=3, r=1, isotropic=True)
+        table, _, _ = cpl.random_rule_table(k=3, r=1, isotropic=True)
         self.assertTrue(0 <= table['000'] <= 2)
         self.assertTrue(0 <= table['111'] <= 2)
         self.assertTrue(0 <= table['222'] <= 2)
@@ -146,53 +146,53 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(table['102'], table['201'])
 
     def test_table_walk_through_increasing(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=0.0)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state)
         self.assertEqual(new_lambda, 1.0)
 
     def test_table_walk_through_decreasing(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=1.0)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state)
         self.assertEqual(new_lambda, 0.0)
 
     def test_table_walk_through_increasing_strong_quiescence(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0, strong_quiescence=True)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
-                                                  strong_quiescence=True)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=0.0, strong_quiescence=True)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                   strong_quiescence=True)
         np.testing.assert_almost_equal(new_lambda, 0.96, decimal=2)
 
     def test_table_walk_through_decreasing_strong_quiescence(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0, strong_quiescence=True)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
-                                                  strong_quiescence=True)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=1.0, strong_quiescence=True)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                   strong_quiescence=True)
         np.testing.assert_almost_equal(new_lambda, 0.07, decimal=2)
 
     def test_table_walk_through_increasing_isotropic(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=0.0, isotropic=True)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
-                                                  isotropic=True)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=0.0, isotropic=True)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                   isotropic=True)
         self.assertEqual(new_lambda, 1.0)
 
     def test_table_walk_through_decreasing_isotropic(self):
-        table, actual_lambda, quiescent_state = ca.random_rule_table(k=3, r=1, lambda_val=1.0, isotropic=True)
-        table, new_lambda = ca.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
-                                                  isotropic=True)
+        table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=1.0, isotropic=True)
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
+                                                   isotropic=True)
         self.assertEqual(new_lambda, 0.0)
 
     def test_init_simple_1(self):
-        arr = ca.init_simple(1)
+        arr = cpl.init_simple(1)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 1)
         self.assertEqual(arr[0][0], 1)
 
     def test_init_simple_1_val2(self):
-        arr = ca.init_simple(1, val=2)
+        arr = cpl.init_simple(1, val=2)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 1)
         self.assertEqual(arr[0][0], 2)
 
     def test_init_simple_3(self):
-        arr = ca.init_simple(3)
+        arr = cpl.init_simple(3)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertEqual(arr[0][0], 0)
@@ -200,7 +200,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(arr[0][2], 0)
 
     def test_init_random_3(self):
-        arr = ca.init_random(3, empty_value=9)
+        arr = cpl.init_random(3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertTrue(0 <= arr[0][0] <= 1)
@@ -208,7 +208,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][2] <= 1)
 
     def test_init_random_3_k3(self):
-        arr = ca.init_random(3, k=3, empty_value=9)
+        arr = cpl.init_random(3, k=3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertTrue(0 <= arr[0][0] <= 2)
@@ -216,7 +216,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][2] <= 2)
 
     def test_init_random_3_k3_n1(self):
-        arr = ca.init_random(3, k=3, n_randomized=1, empty_value=9)
+        arr = cpl.init_random(3, k=3, n_randomized=1, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertEqual(arr[0][0], 9)
@@ -224,7 +224,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(arr[0][2], 9)
 
     def test_init_random_3_k3_n0(self):
-        arr = ca.init_random(3, k=3, n_randomized=0, empty_value=9)
+        arr = cpl.init_random(3, k=3, n_randomized=0, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertEqual(arr[0][0], 9)
@@ -232,7 +232,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(arr[0][2], 9)
 
     def test_init_random_3_k3_n3(self):
-        arr = ca.init_random(3, k=3, n_randomized=3, empty_value=9)
+        arr = cpl.init_random(3, k=3, n_randomized=3, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertTrue(0 <= arr[0][0] <= 2)
@@ -240,7 +240,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0 <= arr[0][2] <= 2)
 
     def test_init_random_3_k3_n2(self):
-        arr = ca.init_random(3, k=3, n_randomized=2, empty_value=9)
+        arr = cpl.init_random(3, k=3, n_randomized=2, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 3)
         self.assertTrue(0 <= arr[0][0] <= 2)
@@ -248,61 +248,61 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(arr[0][2], 9)
 
     def test_init_random_1_k3_n1(self):
-        arr = ca.init_random(1, k=3, n_randomized=1, empty_value=9)
+        arr = cpl.init_random(1, k=3, n_randomized=1, empty_value=9)
         self.assertEqual(len(arr), 1)
         self.assertEqual(len(arr[0]), 1)
         self.assertTrue(0 <= arr[0][0] <= 2)
 
     def test_init_random_1_k3_n0(self):
-        arr = ca.init_random(1, k=3, n_randomized=0, empty_value=9)
+        arr = cpl.init_random(1, k=3, n_randomized=0, empty_value=9)
         self.assertEqual(len(arr), 1)
         arr = arr[0]
         self.assertEqual(len(arr), 1)
         self.assertEqual(arr[0], 9)
 
     def test_shannon_entropy(self):
-        entropy = ca.shannon_entropy('1111111')
+        entropy = cpl.shannon_entropy('1111111')
         self.assertEqual(entropy, 0)
-        entropy = ca.shannon_entropy('0000000')
+        entropy = cpl.shannon_entropy('0000000')
         self.assertEqual(entropy, 0)
-        entropy = ca.shannon_entropy('01010101')
+        entropy = cpl.shannon_entropy('01010101')
         self.assertEqual(entropy, 1.0)
-        entropy = ca.shannon_entropy('00010001')
+        entropy = cpl.shannon_entropy('00010001')
         np.testing.assert_almost_equal(entropy, 0.8113, decimal=4)
-        entropy = ca.shannon_entropy('1234')
+        entropy = cpl.shannon_entropy('1234')
         self.assertEqual(entropy, 2.0)
 
     def test_average_cell_entropy(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
-        avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
+        avg_cell_entropy = cpl.average_cell_entropy(cellular_automaton)
         np.testing.assert_almost_equal(avg_cell_entropy, 1.7208, decimal=4)
 
     def test_joint_shannon_entropy(self):
-        joint_entropy = ca.joint_shannon_entropy('0010101', '3232223')
+        joint_entropy = cpl.joint_shannon_entropy('0010101', '3232223')
         np.testing.assert_almost_equal(joint_entropy, 1.842, decimal=3)
 
     def test_mutual_information(self):
-        mutual_information = ca.mutual_information('0010101', '3232223')
+        mutual_information = cpl.mutual_information('0010101', '3232223')
         np.testing.assert_almost_equal(mutual_information, 0.1281, decimal=4)
-        mutual_information = ca.mutual_information('0010101', '1101010')
+        mutual_information = cpl.mutual_information('0010101', '1101010')
         np.testing.assert_almost_equal(mutual_information, 0.9852, decimal=4)
-        mutual_information = ca.mutual_information('0010101', '0010101')
+        mutual_information = cpl.mutual_information('0010101', '0010101')
         np.testing.assert_almost_equal(mutual_information, 0.9852, decimal=4)
-        mutual_information = ca.mutual_information('0010101', '0001001')
+        mutual_information = cpl.mutual_information('0010101', '0001001')
         np.testing.assert_almost_equal(mutual_information, 0.0060, decimal=4)
 
     def test_average_mutual_information(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
-        avg_mutual_information = ca.average_mutual_information(cellular_automaton)
+        avg_mutual_information = cpl.average_mutual_information(cellular_automaton)
         np.testing.assert_almost_equal(avg_mutual_information, 0.7225, decimal=4)
-        avg_mutual_information = ca.average_mutual_information(cellular_automaton, temporal_distance=2)
+        avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=2)
         np.testing.assert_almost_equal(avg_mutual_information, 1.1214, decimal=4)
-        avg_mutual_information = ca.average_mutual_information(cellular_automaton, temporal_distance=3)
+        avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=3)
         np.testing.assert_almost_equal(avg_mutual_information, 1.1225, decimal=4)
 
     def test_evolve_apply_rule_1_step(self):
         cellular_automaton = np.array([[1, 2, 3, 4, 5]])
-        cellular_automaton = ca.evolve(cellular_automaton, timesteps=1, apply_rule=lambda n, c, t: 1)
+        cellular_automaton = cpl.evolve(cellular_automaton, timesteps=1, apply_rule=lambda n, c, t: 1)
         np.testing.assert_equal(cellular_automaton.tolist(), [[1, 2, 3, 4, 5]])
 
     def test_evolve_apply_rule_3_steps(self):
@@ -315,7 +315,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
             cell_identities.append(c)
             timesteps.append(t)
             return n[1]
-        ca.evolve(cellular_automaton, timesteps=3, apply_rule=apply_rule)
+        cpl.evolve(cellular_automaton, timesteps=3, apply_rule=apply_rule)
         np.testing.assert_equal(neighbourhoods, [[5, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 1],
                                                  [5, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 1]])
         np.testing.assert_equal(cell_identities, [0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
@@ -333,13 +333,13 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def _create_ca(self, expected, rule):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
-        return ca.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: ca.nks_rule(n, rule))
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: cpl.nks_rule(n, rule))
 
     def _create_totalistic_ca(self, expected, k, rule):
         rows, _ = expected.shape
         cellular_automaton = expected[0]
-        return ca.evolve(cellular_automaton, timesteps=rows,
-                         apply_rule=lambda n, c, t: ca.totalistic_rule(n, k, rule))
+        return cpl.evolve(cellular_automaton, timesteps=rows,
+                          apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule))
 
 if __name__ == '__main__':
     unittest.main()

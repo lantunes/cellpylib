@@ -1,7 +1,7 @@
-import cellpylib as ca
+import cellpylib as cpl
 
 # Glider
-cellular_automaton = ca.init_simple2d(60, 60)
+cellular_automaton = cpl.init_simple2d(60, 60)
 cellular_automaton[0][28][30] = 1
 cellular_automaton[0][29][31] = 1
 cellular_automaton[0][30][29] = 1
@@ -24,7 +24,7 @@ cellular_automaton[0][21][47] = 1
 cellular_automaton[0][20][48] = 1
 
 # evolve the cellular automaton for 60 time steps
-cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
-                                 apply_rule=ca.game_of_life_rule)
+cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
+                                  apply_rule=cpl.game_of_life_rule)
 
-ca.plot2d_animate(cellular_automaton)
+cpl.plot2d_animate(cellular_automaton)

@@ -8,17 +8,17 @@ at [atlas.wolfram.com](http://atlas.wolfram.com).
 
 Example usage:
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
 # initialize a CA with 200 cells (a random initialization is also available) 
-cellular_automaton = ca.init_simple(200)
+cellular_automaton = cpl.init_simple(200)
 
 # evolve the CA for 100 time steps, using Rule 30 as defined in NKS
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=100, 
-                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
+                                apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 # plot the resulting CA evolution
-ca.plot(cellular_automaton)
+cpl.plot(cellular_automaton)
 
 ```
 
@@ -38,18 +38,18 @@ more than 50% of 1s, then a cellular automaton that solves this problem will giv
 this problem most of the time was found using a Genetic Algorithm.
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
-cellular_automaton = ca.init_random(149)
+cellular_automaton = cpl.init_random(149)
 
 # Mitchell et al. discovered this rule using a Genetic Algorithm
 rule_number = 6667021275756174439087127638698866559
 
 # evolve the CA, setting r to 3, for a neighbourhood size of 7
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=149,
-                               apply_rule=lambda n, c, t: ca.binary_rule(n, rule_number), r=3)
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=149,
+                                apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number), r=3)
 
-ca.plot(cellular_automaton)
+cpl.plot(cellular_automaton)
 ```
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/density_classification.png" width="50%"/>
 
@@ -67,15 +67,15 @@ A value of _k_ of 3 is used, but any value between (and including) 2 and 36 is c
 given in base 10 but is interpreted as the rule in base _k_ (thus rule 777 corresponds to '1001210' when _k_ = 3).
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
-cellular_automaton = ca.init_simple(200)
+cellular_automaton = cpl.init_simple(200)
 
 # evolve the CA, using totalistic rule 777 for a 3-color CA
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=100,
-                               apply_rule=lambda n, c, t: ca.totalistic_rule(n, k=3, rule=777))
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
+                                apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=3, rule=777))
 
-ca.plot(cellular_automaton)
+cpl.plot(cellular_automaton)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/tot3_rule777.png" width="50%"/>
@@ -87,16 +87,16 @@ neighbourhood states together with their cell state mappings. For any given neig
 the associated cell state value. CellPyLib provides a built-in function for creating random rule tables. The following
 snippet demonstrates its usage:
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
-rule_table, actual_lambda, quiescent_state = ca.random_rule_table(lambda_val=0.45, k=4, r=2,
-                                                                  strong_quiescence=True, isotropic=True)
+rule_table, actual_lambda, quiescent_state = cpl.random_rule_table(lambda_val=0.45, k=4, r=2,
+                                                                   strong_quiescence=True, isotropic=True)
 
-cellular_automaton = ca.init_random(128, k=4)
+cellular_automaton = cpl.init_random(128, k=4)
 
 # use the built-in table_rule to use the generated rule table
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=200,
-                               apply_rule=lambda n, c, t: ca.table_rule(n, rule_table), r=2)
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=200,
+                                apply_rule=lambda n, c, t: cpl.table_rule(n, rule_table), r=2)
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
@@ -119,15 +119,15 @@ built-in function `average_cell_entropy` provides the average Shannon entropy pe
 automaton. The following snippet demonstrates the calculation of the average cell entropy:
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
-cellular_automaton = ca.init_random(200)
+cellular_automaton = cpl.init_random(200)
 
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=1000,
-                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=1000,
+                                apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 # calculate the average cell entropy; the value will be ~0.999 in this case
-avg_cell_entropy = ca.average_cell_entropy(cellular_automaton)
+avg_cell_entropy = cpl.average_cell_entropy(cellular_automaton)
 ```
 
 The following plots illustrate how average cell entropy changes as a function of lambda:
@@ -143,15 +143,15 @@ information. Ideal levels of correlation are required for effective processing o
 information:
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
-cellular_automaton = ca.init_random(200)
+cellular_automaton = cpl.init_random(200)
 
-cellular_automaton = ca.evolve(cellular_automaton, timesteps=1000,
-                               apply_rule=lambda n, c, t: ca.nks_rule(n, 30))
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=1000,
+                                apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 # calculate the average mutual information between a cell and itself in the next time step
-avg_mutual_information = ca.average_mutual_information(cellular_automaton)
+avg_mutual_information = cpl.average_mutual_information(cellular_automaton)
 ```
 
 The following plots illustrate how average mutual information changes as a function of lambda:
@@ -165,17 +165,17 @@ any whole number. The neighbourhood radius, _r_, can also be any whole number, a
 neighbourhood types are supported. The following snippet demonstrates creating a 2D totalistic cellular automaton:
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
 # initialize a 60x60 2D cellular automaton 
-cellular_automaton = ca.init_simple2d(60, 60)
+cellular_automaton = cpl.init_simple2d(60, 60)
 
 # evolve the cellular automaton for 30 time steps, 
 #  applying totalistic rule 126 to each cell with a Moore neighbourhood
-cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=30, neighbourhood='Moore',
-                               apply_rule=lambda n, c, t: ca.totalistic_rule(n, k=2, rule=126))
+cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=30, neighbourhood='Moore',
+                                  apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=126))
 
-ca.plot2d(cellular_automaton)
+cpl.plot2d(cellular_automaton)
 ```
 
 The `plot2D` function plots the state of the cellular automaton at the final time step:
@@ -189,10 +189,10 @@ the evolution of the cellular automaton. This is illustrated in the following sn
 Game of Life rule:
 
 ```python
-import cellpylib as ca
+import cellpylib as cpl
 
 # Glider
-cellular_automaton = ca.init_simple2d(60, 60)
+cellular_automaton = cpl.init_simple2d(60, 60)
 cellular_automaton[0][28][30] = 1
 cellular_automaton[0][29][31] = 1
 cellular_automaton[0][30][29] = 1
@@ -215,10 +215,10 @@ cellular_automaton[0][21][47] = 1
 cellular_automaton[0][20][48] = 1
 
 # evolve the cellular automaton for 60 time steps
-cellular_automaton = ca.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
-                                 apply_rule=ca.game_of_life_rule)
+cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
+                                  apply_rule=cpl.game_of_life_rule)
 
-ca.plot2d_animate(cellular_automaton)
+cpl.plot2d_animate(cellular_automaton)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/game_of_life.gif" width="65%"/>
