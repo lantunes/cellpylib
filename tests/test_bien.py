@@ -599,5 +599,10 @@ class TestBiEntropy(unittest.TestCase):
         self.assertEqual(cpl.cyclic_binary_derivative('01010101'), '11111111')
 
     def test_ktbien(self):
+        # 2-bit strings
+        self.assertEqual(cpl.ktbien('00'), 0.0)
+        self.assertEqual(cpl.ktbien('01'), 1.0)
+        self.assertEqual(cpl.ktbien('10'), 1.0)
+        self.assertEqual(cpl.ktbien('11'), 0.0)
+        # other cases
         self.assertAlmostEqual(cpl.ktbien('10101110'), 0.9209131731629818)
-        pass
