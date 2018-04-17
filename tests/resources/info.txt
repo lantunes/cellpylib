@@ -47,3 +47,6 @@ CellularAutomaton[<|"TotalisticCode" -> 26, "Dimension" -> 2,"Neighborhood" -> 5
 
 tot_rule126_2d_n9_simple_init.ca:
 CellularAutomaton[<|"TotalisticCode" -> 126, "Dimension" -> 2,"Neighborhood" -> 9|>, PadLeft[{{1}}, {60, 60}, 0, Floor[{60, 60}/2]], 30]
+
+rule150R_simple_init.ca:
+CellularAutomaton[{Mod[Total[Flatten[#]], 2] &, {}, {{-1, 0}, {0, -1}, {0, 0}, {0, 1}}, 2}, {{{1}, {1}}, 0}, 100]

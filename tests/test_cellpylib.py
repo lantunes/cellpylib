@@ -321,6 +321,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         np.testing.assert_equal(cell_identities, [0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
         np.testing.assert_equal(timesteps, [1, 1, 1, 1, 1, 2, 2, 2, 2, 2])
 
+    def test_rule150R_simple_init(self):
+        expected = self._convert_to_numpy_matrix("rule150R_simple_init.ca")
+        actual = self._create_reversible_ca(expected, 150)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
@@ -340,6 +345,13 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         cellular_automaton = expected[0]
         return cpl.evolve(cellular_automaton, timesteps=rows,
                           apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule))
+
+    def _create_reversible_ca(self, expected, rule):
+        rows, _ = expected.shape
+        cellular_automaton = expected[0]
+        r = cpl.ReversibleRule(cellular_automaton.tolist()[0], rule)
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r.apply_rule)
+
 
 if __name__ == '__main__':
     unittest.main()

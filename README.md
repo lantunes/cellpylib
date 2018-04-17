@@ -158,6 +158,26 @@ The following plots illustrate how average mutual information changes as a funct
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_mutual_information.png" width="100%"/>
 
+## Reversible Rules
+
+Elementary cellular automata rules can be explicitly made to be reversible. The following example demonstrates the 
+creation of the elementary reversible cellular automaton rule 90R:
+  
+```python
+import cellpylib as cpl
+
+cellular_automaton = cpl.init_random(200)
+r = cpl.ReversibleRule(cellular_automaton[0], 90)
+
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
+                                apply_rule=r.apply_rule)
+
+cpl.plot(cellular_automaton)
+```
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule90R.png" width="100%"/>
+
+
 ## 2D Cellular Automata
 
 CellPyLib supports 2-dimensional cellular automata with periodic boundary conditions. The number of states, _k_, can be

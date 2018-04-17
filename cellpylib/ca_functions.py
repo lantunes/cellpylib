@@ -159,3 +159,24 @@ def init_random(size, k=2, n_randomized=None, empty_value=0):
     pad_right = (size - n_randomized) - pad_left
     return np.array([np.pad(np.array(np.random.randint(k, size=n_randomized, dtype=np.int)), (pad_left, pad_right),
                             'constant', constant_values=empty_value)])
+
+
+class ReversibleRule:
+    """
+    An elementary cellular automaton rule explicitly set up to be reversible.
+    """
+    def __init__(self, init_state, rule_number):
+        """
+        Creates a reversible elementary cellular automata rule by taking into consideration the previous state of a 
+        cell, by taking the XOR of the rule's normal output with the previous state to get the new state.
+        :param init_state: a vector representing the initial state of the cells, consisting of binary values
+        :param rule_number: the elementary cellular automata rule number to be used, in NKS convention
+        """
+        self._previous_state = init_state
+        self._rule_number = rule_number
+
+    def apply_rule(self, n, c, t):
+        regular_result = nks_rule(n, self._rule_number)
+        new_result = regular_result ^ self._previous_state[c]
+        self._previous_state[c] = n[len(n) // 2]
+        return new_result
