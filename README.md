@@ -175,7 +175,7 @@ cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
 cpl.plot(cellular_automaton)
 ```
 
-<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule90R.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule90R.png" width="50%"/>
 
 
 ## 2D Cellular Automata
