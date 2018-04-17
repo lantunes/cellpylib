@@ -169,7 +169,7 @@ class ReversibleRule:
         """
         Creates a reversible elementary cellular automata rule by taking into consideration the previous state of a 
         cell, by taking the XOR of the rule's normal output with the previous state to get the new state.
-        :param init_state: a vector representing the initial state of the cells, consisting of binary values
+        :param init_state: a vector representing the initial previous state of the cells, consisting of binary values
         :param rule_number: the elementary cellular automata rule number to be used, in NKS convention
         """
         self._previous_state = init_state
