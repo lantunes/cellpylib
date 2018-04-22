@@ -158,9 +158,9 @@ The following plots illustrate how average mutual information changes as a funct
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/avg_mutual_information.png" width="100%"/>
 
-## Reversible Rules
+## Reversible Cellular Automata
 
-Elementary cellular automata rules can be explicitly made to be reversible. The following example demonstrates the 
+Elementary cellular automata can be explicitly made to be reversible. The following example demonstrates the 
 creation of the elementary reversible cellular automaton rule 90R:
   
 ```python
@@ -177,6 +177,12 @@ cpl.plot(cellular_automaton)
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule90R.png" width="50%"/>
 
+## Continuous Cellular Automata
+
+In addition to discrete values, cellular automata can assume continuous values. CellPyLib supports 
+continuous-valued automata. To create cellular automata with continuous values--or any kind of data type--simply 
+specify the `dtype` parameter when invoking any of the `init` and `evolve` built-in functions. For example, to create
+a cellular automata with continuous values, one might specify the following parameter: `dtype=np.float32`.
 
 ## 2D Cellular Automata
 

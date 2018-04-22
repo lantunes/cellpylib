@@ -326,6 +326,26 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_reversible_ca(expected, 150)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_dtype(self):
+        cellular_automaton = cpl.init_simple(11, dtype=np.float32)
+        cellular_automaton = cpl.evolve(cellular_automaton, timesteps=6,
+                                        apply_rule=lambda n, c, t: sum(n) / len(n))
+        np.testing.assert_almost_equal(cellular_automaton.tolist(), [
+            [0.0,   0.0,   0.0,   0.0,   0.0,   1.0,   0.0,   0.0,   0.0,   0.0,    0.0],
+            [0.0,   0.0,   0.0,   0.0,   0.333, 0.333, 0.333, 0.0,   0.0,   0.0,    0.0],
+            [0.0,   0.0,   0.0,   0.111, 0.222, 0.333, 0.222, 0.111, 0.0,   0.0,    0.0],
+            [0.0,   0.0,   0.037, 0.111, 0.222, 0.259, 0.222, 0.111, 0.037, 0.0,    0.0],
+            [0.0,   0.012, 0.049, 0.123, 0.198, 0.235, 0.198, 0.123, 0.049, 0.0123, 0.0],
+            [0.004, 0.021, 0.062, 0.123, 0.185, 0.210, 0.185, 0.123, 0.062, 0.021,  0.004]], decimal=3)
+
+    def test_init_random_dtype(self):
+        arr = cpl.init_random(3, dtype=np.float32)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0.0 <= arr[0][0] < 1.0)
+        self.assertTrue(0.0 <= arr[0][1] < 1.0)
+        self.assertTrue(0.0 <= arr[0][2] < 1.0)
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
