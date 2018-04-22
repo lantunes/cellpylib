@@ -38,7 +38,7 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
              specified
     """
     _, cols = cellular_automaton.shape
-    array = np.zeros((timesteps, cols), dtype=np.int)
+    array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = cellular_automaton
 
     def index_strides(arr, window_size):
@@ -128,19 +128,19 @@ def totalistic_rule(neighbourhood, k, rule):
     return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
 
 
-def init_simple(size, val=1):
+def init_simple(size, val=1, dtype=np.int):
     """
     Returns an array initialized with zeroes, with its center value set to the specified value, or 1 by default.
     :param size: the size of the array to be created 
     :param val: the value to be used in the center of the array (1, by default)
     :return: a vector with shape (1, size), with its center value initialized to the specified value, or 1 by default 
     """
-    x = np.zeros(size, dtype=np.int)
+    x = np.zeros(size, dtype=dtype)
     x[len(x)//2] = val
     return np.array([x])
 
 
-def init_random(size, k=2, n_randomized=None, empty_value=0):
+def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     """
     Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     :param size: the size of the array to be created
@@ -157,5 +157,5 @@ def init_random(size, k=2, n_randomized=None, empty_value=0):
         raise Exception("the number of randomized sites, if specified, must be >= 0 and <= size")
     pad_left = (size - n_randomized) // 2
     pad_right = (size - n_randomized) - pad_left
-    return np.array([np.pad(np.array(np.random.randint(k, size=n_randomized, dtype=np.int)), (pad_left, pad_right),
+    return np.array([np.pad(np.array(np.random.randint(k, size=n_randomized, dtype=dtype)), (pad_left, pad_right),
                             'constant', constant_values=empty_value)])
