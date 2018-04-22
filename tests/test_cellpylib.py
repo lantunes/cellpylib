@@ -338,6 +338,23 @@ class TestCellularAutomataFunctions(unittest.TestCase):
             [0.0,   0.012, 0.049, 0.123, 0.198, 0.235, 0.198, 0.123, 0.049, 0.0123, 0.0],
             [0.004, 0.021, 0.062, 0.123, 0.185, 0.210, 0.185, 0.123, 0.062, 0.021,  0.004]], decimal=3)
 
+    def test_sequential_left_to_right(self):
+        expected = self._convert_to_numpy_matrix("rule60_sequential_simple_init.ca")
+        cellular_automaton = cpl.init_simple(21)
+        r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60), update_order=range(1, 20))
+        cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
+                                        apply_rule=r.apply_rule)
+        np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
+
+    def test_sequential_random(self):
+        expected = self._convert_to_numpy_matrix("rule90_sequential_simple_init.ca")
+        cellular_automaton = cpl.init_simple(21)
+        update_order = [19, 11, 4, 9, 6, 16, 10, 2, 17, 1, 12, 15, 5, 3, 8, 18, 7, 13, 14]
+        r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 90), update_order=update_order)
+        cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
+                                        apply_rule=r.apply_rule)
+        np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
+
     def test_init_random_dtype(self):
         arr = cpl.init_random(3, dtype=np.float32)
         self.assertEqual(len(arr), 1)

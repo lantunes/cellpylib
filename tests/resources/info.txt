@@ -50,3 +50,11 @@ CellularAutomaton[<|"TotalisticCode" -> 126, "Dimension" -> 2,"Neighborhood" -> 
 
 rule150R_simple_init.ca:
 CellularAutomaton[{Mod[Total[Flatten[#]], 2] &, {}, {{-1, 0}, {0, -1}, {0, 0}, {0, 1}}, 2}, {{{1}, {1}}, 0}, 100]
+
+rule60_sequential_simple_init.ca:
+NKS Notes on Chapter 9, section 10: "Sequential cellular automata"
+http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/
+
+rule90_sequential_simple_init.ca:
+NKS Notes on Chapter 9, section 10: "Sequential cellular automata"
+http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/
