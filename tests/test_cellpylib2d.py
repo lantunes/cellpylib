@@ -129,6 +129,23 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         actual = self._create_ca(expected, 26, 'von Neumann')
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_sequential_rule_2d(self):
+        cellular_automaton = cpl.init_simple2d(3, 3)
+        r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=126),
+                                 update_order=range(0, 9))
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=18, neighbourhood='Moore',
+                                          apply_rule=r.apply_rule)
+        expected = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 0]],
+                    [[1, 1, 0], [0, 1, 0], [0, 0, 0]], [[1, 1, 1], [0, 1, 0], [0, 0, 0]],
+                    [[1, 1, 1], [1, 1, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 0], [0, 0, 0]],
+                    [[1, 1, 1], [1, 1, 1], [0, 0, 0]], [[1, 1, 1], [1, 1, 1], [1, 0, 0]],
+                    [[1, 1, 1], [1, 1, 1], [1, 0, 0]], [[1, 1, 1], [1, 1, 1], [1, 0, 0]],
+                    [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 0, 0]],
+                    [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 0, 0]],
+                    [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 0, 0]],
+                    [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 1, 0]]]
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()

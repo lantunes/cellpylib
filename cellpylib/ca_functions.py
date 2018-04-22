@@ -191,8 +191,8 @@ class ReversibleRule:
 class AsynchronousRule:
     """
     Creates an asynchronous cellular automaton rule with a cyclic update scheme. Also known as a sequential cellular
-    automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous.
-    NOTE: this currently only works for 1D cellular automata
+    automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous. This rule works for 
+    both 1D and 2D cellular automata.
     """
     def __init__(self, apply_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
         """
@@ -200,7 +200,10 @@ class AsynchronousRule:
         specified. If no update_order is given, then the num_cells parameter must be specified, and an update order
         list will be constructed and shuffled.
         :param apply_rule: the rule that will be made asynchronous
-        :param update_order: a list containing the indices of the cells in the CA, specifying the update order
+        :param update_order: a list containing the indices of the cells in the CA, specifying the update order; if the
+                             CA is 2D, then the indices will refer to the cells in the matrix as if the matrix were an
+                             array (e.g. for a 2x3 2D CA, the mapping from cell coordinate to cell index is: 
+                             (0,0)->0, (0,1)->1, (0,2)->2, (1,0)->3, (1,1)->4, (1,2)->5)
         :param num_cells: the total number of cells in the CA
         :param randomize_each_cycle: whether to shuffle the update order list after each complete cycle
         """
@@ -221,13 +224,31 @@ class AsynchronousRule:
         self._update_order = self._update_order.tolist()
 
     def apply_rule(self, n, c, t):
-        if c in self._update_order:
+        if self._in_update_order(c, n):
             self._num_applied += 1
-        if c != self._update_order[self._curr]:
+        if not self._should_update(c, n):
             self._check_for_end_of_cycle()
-            return n[len(n)//2]  # the current state of the cell TODO: this should work for 2D as well
+            return self._current_cell_value(n)
         self._check_for_end_of_cycle()
         return self._apply_rule(n, c, t)
+
+    def _in_update_order(self, c, n):
+        if len(n.shape) == 1:
+            return c in self._update_order
+        elif len(n.shape) == 2:
+            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
+            return i in self._update_order
+        else:
+            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+
+    def _should_update(self, c, n):
+        if len(n.shape) == 1:
+            return c == self._update_order[self._curr]
+        elif len(n.shape) == 2:
+            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
+            return i == self._update_order[self._curr]
+        else:
+            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
 
     def _check_for_end_of_cycle(self):
         if self._num_applied == len(self._update_order):
@@ -235,3 +256,11 @@ class AsynchronousRule:
             self._num_applied = 0
             if self._randomize_each_cycle:
                 self._shuffle_update_order(len(self._update_order))
+
+    def _current_cell_value(self, n):
+        if len(n.shape) == 1:
+            return n[len(n)//2]
+        elif len(n.shape) == 2:
+            return n[n.shape[0]//2][n.shape[1]//2]
+        else:
+            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
