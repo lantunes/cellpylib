@@ -239,3 +239,16 @@ cpl.plot2d_animate(cellular_automaton)
 For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
+
+<!--
+## Asynchronous Cellular Automata
+
+### The Hopfield Net
+
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/hopfield_net.png" width="30%"/>
+
+For more information on the Hopfield network, see:
+
+> J. J. Hopfield, "Neural networks and physical systems with emergent collective computational abilities", Proceedings of the National Academy of Sciences of the USA, vol. 79 no. 8 pp. 2554–2558, April 1982.
+-->
