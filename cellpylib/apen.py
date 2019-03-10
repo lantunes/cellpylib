@@ -4,10 +4,10 @@ import numpy as np
 def apen(sequence, m=1, r=0):
     """
     Calculates the Approximate Entropy, or ApEn, of the given sequence, as described in:
-    Pincus, S. M.; Gladstone, I. M.; Ehrenkranz, R. A. (1991). "A Regularity Statistic For Medical Data Analysis". 
-      Journal of Clinical Monitoring and Computing. 7 (4): 335–345. 
+    Pincus, S. M.; Gladstone, I. M.; Ehrenkranz, R. A. (1991). "A Regularity Statistic For Medical Data Analysis".
+     Journal of Clinical Monitoring and Computing. 7 (4): 335-345.
     The implementation here is based on the Python implementation described in:
-      https://en.wikipedia.org/wiki/Approximate_entropy
+       https://en.wikipedia.org/wiki/Approximate_entropy
     :param sequence: a string of whole numbers, such as '012301', or an array of whole numbers, such as [0,1,2,3,0,1], 
                      or a numpy array of whole numbers
     :param m: the length of compared runs of data
