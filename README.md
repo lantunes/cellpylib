@@ -26,6 +26,12 @@ cpl.plot(cellular_automaton)
 
 Requirements for using this library are Python 3.5.3, numpy 1.14.0, and matplotlib 2.0.2.
 
+CellPyLib can be installed via pip:
+
+```
+pip install cellpylib
+```
+
 ## Varying the Neighbourhood Size
 
 The size of the cell neighbourhood can be varied by setting the parameter _*r*_ when calling the `evolve` function. The
