@@ -248,15 +248,36 @@ For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
 
-<!--
-## Asynchronous Cellular Automata
+### Citation Info
 
-### The Hopfield Net
+This project has been published on [Zenodo](https://zenodo.org/record/3893115#.XuUIDJ5KhZI),
+which provides a DOI, as well as an easy way to generate citations in a number of formats.
+For example, this project may be cited as:
 
+```
+Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for working with Cellular Automata (Version 0.1.1).
+Zenodo. http://doi.org/10.5281/zenodo.3893115
+```
 
-<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/hopfield_net.png" width="30%"/>
+BibTeX:
+```
+@software{antunes_luis_m_2019_3893115,
+  author       = {Antunes, Luis M.},
+  title        = {{CellPyLib: A Python Library for working with
+                   Cellular Automata}},
+  month        = mar,
+  year         = 2019,
+  publisher    = {Zenodo},
+  version      = {0.1.1},
+  doi          = {10.5281/zenodo.3893115},
+  url          = {https://doi.org/10.5281/zenodo.3893115}
+}
+```
 
-For more information on the Hopfield network, see:
+### Stars
 
-> J. J. Hopfield, "Neural networks and physical systems with emergent collective computational abilities", Proceedings of the National Academy of Sciences of the USA, vol. 79 no. 8 pp. 2554–2558, April 1982.
--->
+Please star this repository if you find it useful, or use it as part of your research.
+
+### Copyrights
+
+Copyright (c) 2018-2020 Luis M. Antunes (@lantunes) All rights reserved.
