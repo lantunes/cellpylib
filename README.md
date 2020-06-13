@@ -248,16 +248,19 @@ For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
 
+--------------------
+
 ### Citation Info
 
 This project has been published on [Zenodo](https://zenodo.org/record/3893115#.XuUIDJ5KhZI),
 which provides a DOI, as well as an easy way to generate citations in a number of formats.
 For example, this project may be cited as:
 
-```
-Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for working with Cellular Automata (Version 0.1.1).
+
+> Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for
+working with Cellular Automata (Version 0.1.1).
 Zenodo. http://doi.org/10.5281/zenodo.3893115
-```
+
 
 BibTeX:
 ```
