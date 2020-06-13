@@ -257,9 +257,8 @@ which provides a DOI, as well as an easy way to generate citations in a number o
 For example, this project may be cited as:
 
 
-> Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for
-working with Cellular Automata (Version 0.1.1).
-Zenodo. http://doi.org/10.5281/zenodo.3893115
+> Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for working with Cellular
+Automata. Zenodo. http://doi.org/10.5281/zenodo.3893115
 
 
 BibTeX:
@@ -271,7 +270,6 @@ BibTeX:
   month        = mar,
   year         = 2019,
   publisher    = {Zenodo},
-  version      = {0.1.1},
   doi          = {10.5281/zenodo.3893115},
   url          = {https://doi.org/10.5281/zenodo.3893115}
 }
