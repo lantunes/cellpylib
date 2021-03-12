@@ -86,16 +86,18 @@ def binary_rule(neighbourhood, rule, scheme=None, powers_of_two=None):
     :param neighbourhood: a binary array of length 2r + 1
     :param rule: an int or a binary array indicating the cellular automaton rule number
     :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
-    :param powers_of_two: a pre-computed array containing the powers of two; can be None (default) or an array of length
-     len(neighbourhood); if an array is given, it will used to speed up the calculation of state_int
+    :param powers_of_two: a pre-computed array containing the powers of two, e.g. [4,2,1]; can be None (default) or an
+    array of length len(neighbourhood); if an array is given, it will used to speed up the calculation of state_int
     :return: the result, 0 or 1, of applying the given rule on the given state
     """
     if powers_of_two is None:
         state_int = bits_to_int(neighbourhood)
     else:
+        assert len(powers_of_two) == len(neighbourhood)
         state_int = neighbourhood.dot(powers_of_two)
     n = 2 ** len(neighbourhood)
-    if isinstance(rule, np.ndarray):
+    if isinstance(rule, (list, np.ndarray)):
+        assert len(rule) == n
         rule_bin_array = rule
     else:
         rule_bin_array = int_to_bits(rule, n)
