@@ -389,6 +389,67 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         r = cpl.ReversibleRule(cellular_automaton.tolist()[0], rule)
         return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r.apply_rule)
 
+    def test_binary_rule(self):
+        rule_number = 6667021275756174439087127638698866559
+        radius = 3
+        timesteps = 12
+        init = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1]])
+
+        actual = cpl.evolve(init, timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number), r=radius)
+
+        expected = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
+                             [1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+                             [1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_binary_rule_powers_of_two_nks(self):
+        rule_number = 30
+        radius = 1
+        size = 149
+        timesteps = 149
+
+        expected = cpl.evolve(cpl.init_simple(size=size), timesteps=timesteps,
+                              apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number, scheme="nks"), r=radius)
+
+        powers_of_two = 2 ** np.arange(radius * 2 + 1)[::-1]
+        rule = list(map(int, bin(rule_number)[2:]))
+        rule_bin_array = np.pad(rule, ((2 ** (radius * 2 + 1)) - len(rule), 0), 'constant').tolist()
+        actual = cpl.evolve(cpl.init_simple(size=size), timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_bin_array, scheme="nks",
+                                                                       powers_of_two=powers_of_two),
+                            r=radius)
+
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_binary_rule_powers_of_two_default(self):
+        rule_number = 6667021275756174439087127638698866559
+        radius = 3
+        timesteps = 49
+        init = np.array([[1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                          1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1]])
+
+        expected = cpl.evolve(init, timesteps=timesteps,
+                              apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number), r=radius)
+
+        powers_of_two = 2 ** np.arange(radius * 2 + 1)[::-1]
+        rule = list(map(int, bin(rule_number)[2:]))
+        rule_bin_array = np.pad(rule, ((2 ** (radius * 2 + 1)) - len(rule), 0), 'constant')
+        actual = cpl.evolve(init, timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_bin_array, powers_of_two=powers_of_two),
+                            r=radius)
+
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
 
 if __name__ == '__main__':
     unittest.main()
