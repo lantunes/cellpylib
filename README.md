@@ -250,6 +250,11 @@ For more information about Conway's Game of Life, see:
 
 --------------------
 
+<b>NOTE: Be sure to have a look at the [Netomaton](https://github.com/lantunes/netomaton) project, a more general 
+framework for analyzing complex systems. It supports everything that CellPyLib can do, and more.</b>
+
+--------------------
+
 ### Citation Info
 
 This project has been published on [Zenodo](https://zenodo.org/record/3893115#.XuUIDJ5KhZI),
