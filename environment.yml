@@ -1,0 +1,15 @@
+name: cellpylib_dev_env
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.6
+  - matplotlib=3.0.2
+  - numpy=1.15.4
+  - sphinx=3.5.4
+  - pytest
+  - pip
+  - pip:
+      - sphinx-rtd-theme
+      - sphinx-prompt==1.4.0

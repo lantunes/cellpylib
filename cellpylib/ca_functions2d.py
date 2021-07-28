@@ -60,22 +60,32 @@ def plot2d_animate(ca, title=''):
 
 
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):
-    # """
-    #
-    # :param cellular_automaton:
-    # :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
-    #                   time steps in this cellular automaton evolution, which includes the initial condition
-    # :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
-    #                    will be given three arguments, in the following order: the neighbourhood, which is a numpy
-    #                    2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
-    #                    'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
-    #                    which is a tuple representing the row and column indices of the cell in the cellular automaton
-    #                    matrix, as (row, col); the time step, which is a scalar representing the time step in the
-    #                    evolution
-    # :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
-    # :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
-    # :return:
-    # """
+    """
+    Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during
+    the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function expects
+    an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton. The final
+    result is a matrix, where the number of rows equal the number of time steps specified.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
+                      time steps in this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
     _, rows, cols = cellular_automaton.shape
     array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
     array[0] = cellular_automaton
@@ -112,11 +122,16 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
 def init_simple2d(rows, cols, val=1, dtype=np.int):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
+
     :param rows: the number of rows in the matrix
-    :param cols: the number of columns in the matrix 
+
+    :param cols: the number of columns in the matrix
+
     :param val: the value to be used in the center of the matrix (1, by default)
+
     :param dtype: the data type
-    :return: a tensor with shape (1, rows, cols), with the center value initialized to the specified value, or 1 by default 
+
+    :return: a tensor with shape (1, rows, cols), with the center value initialized to the specified value, or 1 by default
     """
     x = np.zeros((rows, cols), dtype=dtype)
     x[x.shape[0]//2][x.shape[1]//2] = val
@@ -127,10 +142,15 @@ def init_random2d(rows, cols, k=2, dtype=np.int):
     """
     Returns a randomly initialized matrix with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).
+
     :param rows: the number of rows in the matrix
-    :param cols: the number of columns in the matrix 
+
+    :param cols: the number of columns in the matrix
+
     :param k: the number of states in the cellular automaton (2, by default)
+
     :param dtype: the data type
+
     :return: a tensor with shape (1, rows, cols), randomly initialized with numbers in {0,...,k - 1}
     """
     if np.issubdtype(dtype, np.integer):

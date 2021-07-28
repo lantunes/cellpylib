@@ -5,9 +5,15 @@ from .entropy import shannon_entropy
 
 def binary_derivative(string):
     """
-    Calculates the binary derivative of the given string, according to 
-    Nathanson, M. B. (1971). Derivatives of binary sequences. SIAM Journal on Applied Mathematics, 21(3), 407-412
-    :param string: a binary string, such as '110011' 
+    Calculates the binary derivative of the given string, according to:
+
+    .. code-block:: text
+
+        Nathanson, M. B. (1971). Derivatives of binary sequences.
+        SIAM Journal on Applied Mathematics, 21(3), 407-412
+
+    :param string: a binary string, such as '110011'
+
     :return: a binary string representing the binary derivative of the given string
     """
     result = []
@@ -20,10 +26,17 @@ def binary_derivative(string):
 
 def bien(string):
     """
-    Calculate the BiEntropy of the given string, according to 
-    Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String. arXiv preprint arXiv:1305.0954.
+    Calculate the BiEntropy of the given string, according to:
+
+    .. code-block:: text
+
+        Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String.
+        arXiv preprint arXiv:1305.0954.
+
     This version of BiEntropy is suitable for strings with length <= 32.
+
     :param string: a binary string, such as '110011'
+
     :return: a real number representing the BiEntropy of the given string
     """
     tot = 0.0
@@ -36,10 +49,17 @@ def bien(string):
 
 def tbien(string):
     """
-    Calculates the logarithmic weighting BiEntropy of the given string, according to
-    Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String. arXiv preprint arXiv:1305.0954.
+    Calculates the logarithmic weighting BiEntropy of the given string, according to:
+
+    .. code-block:: text
+
+        Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String.
+        arXiv preprint arXiv:1305.0954.
+
     This version of BiEntropy is suitable for strings with length > 32.
+
     :param string: a binary string, such as '110011'
+
     :return: a real number representing the logarithmic weighting BiEntropy of the given string
     """
     tot = 0.0
@@ -57,8 +77,14 @@ def cyclic_binary_derivative(string):
     """
     Calculates the cyclic binary derivative, which is the "binary string of length n formed by XORing adjacent pairs of 
     digits including the last and the first." See:
-    Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice. arXiv preprint arXiv:1802.03772.
-    :param string: a binary string, such as '110011' 
+
+    .. code-block:: text
+
+        Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice.
+        arXiv preprint arXiv:1802.03772.
+
+    :param string: a binary string, such as '110011'
+
     :return: a binary string representing the cyclic binary derivative of the given string
     """
     result = []
@@ -74,9 +100,15 @@ def cyclic_binary_derivative(string):
 
 def ktbien(string):
     """
-    Calculates the knot logarithmic weighting BiEntropy of the given string, according to
-    Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice. arXiv preprint arXiv:1802.03772.
+    Calculates the knot logarithmic weighting BiEntropy of the given string, according to:
+
+    .. code-block:: text
+
+        Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice.
+        arXiv preprint arXiv:1802.03772.
+
     :param string: a binary string, such as '110011'
+
     :return: a real number representing the knot logarithmic weighting BiEntropy of the given string
     """
     tot = 0.0
