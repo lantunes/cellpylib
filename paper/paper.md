@@ -54,4 +54,50 @@ of non-trivial algorithms. The availability of a user-friendly Python library fo
 researchers to consider these fascinating dynamical and computational systems. Moreover, having a standard 
 implementation of CA in the Python environment helps to ensure that scientific results are reproducible.
 
+# Example Usage
+
+`CellPyLib` can be readily installed using `pip`:
+
+```
+$ pip install cellpylib
+```
+
+It has minimal dependencies, depending only on the commonly used libraries NumPy [@harris2020array] and Matplotlib 
+[@Hunter:2007].
+
+The following example illustrates the evolution of the Rule 30 CA, described in `A New Kind of Science` 
+[@wolfram2002new], as implemented with `CellPyLib`:
+
+```python
+import cellpylib as cpl
+
+cellular_automaton = cpl.init_simple(200)
+
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
+                                apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
+```
+
+First, the initial conditions are instantiated using the function `init_simple`, which, in this example, creates a 
+200-dimensional vector consisting of zeroes, except for the component in the center of the vector, which is initialized
+with a value of 1. Next, the system is subjected to evolution by calling the `evolve` function. The system evolves under 
+the rule specified through the `apply_rule` parameter. Any function that accepts the three arguments `n`, `c` and `t` 
+can be supplied as a rule, but in this case the built-in function `nks_rule` is invoked to provide Rule 30. The CA is 
+evolved for 100 `timesteps`, or 100 applications of the rule to the initial and subsequent conditions.
+
+During each timestep, the function supplied to `apply_rule` is invoked for each cell. The `n` argument refers to the 
+neighbourhood of the current cell, and consists of an array (in the 1-dimensional CA case) of the activities (i.e. 
+states) of the cells comprising the current cell's neighbourhood (a array with length 3, in the case of a 1-dimensional 
+CA with radius of 1). The `c` argument refers to index of the cell under consideration. It serves as a label identifying 
+the current cell. The `t` argument is an integer specifying the current timestep.
+
+Finally, to visualize the results, the `plot` function can be utilized:
+
+```python
+cpl.plot(cellular_automaton)
+```
+
+![Rule 30.\label{fig:rule30}](rule30.png)
+
+The result is rendered, as depicted in \autoref{fig:rule30}.
+
 # References
