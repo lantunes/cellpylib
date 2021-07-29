@@ -18,7 +18,7 @@ bibliography: paper.bib
 
 # Summary
 
-Cellular Automata (CA) are discrete dynamical systems with a rich history. [@ilachinski2001cellular] Introduced by John 
+Cellular Automata (CA) are discrete dynamical systems with a rich history [@ilachinski2001cellular]. Introduced by John 
 von Neumann and Stanislaw Ulam in the 1940s [@von1951general], CA have continued to fascinate, as their conceptual 
 simplicity serves as a powerful microscope that allows us to explore the nature of computation and complexity, and the 
 origins of emergence. Popularized and investigated by Stephen Wolfram in his book `A New Kind of Science` 
@@ -86,7 +86,7 @@ evolved for 100 `timesteps`, or 100 applications of the rule to the initial and 
 
 During each timestep, the function supplied to `apply_rule` is invoked for each cell. The `n` argument refers to the 
 neighbourhood of the current cell, and consists of an array (in the 1-dimensional CA case) of the activities (i.e. 
-states) of the cells comprising the current cell's neighbourhood (a array with length 3, in the case of a 1-dimensional 
+states) of the cells comprising the current cell's neighbourhood (an array with length 3, in the case of a 1-dimensional 
 CA with radius of 1). The `c` argument refers to index of the cell under consideration. It serves as a label identifying 
 the current cell. The `t` argument is an integer specifying the current timestep.
 
@@ -96,7 +96,7 @@ Finally, to visualize the results, the `plot` function can be utilized:
 cpl.plot(cellular_automaton)
 ```
 
-![Rule 30.\label{fig:rule30}](rule30.png)
+![Rule 30, as rendered with CellPyLib.\label{fig:rule30}](rule30.png){ width=60% }
 
 The result is rendered, as depicted in \autoref{fig:rule30}.
 
