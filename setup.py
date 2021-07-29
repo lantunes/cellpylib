@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="cellpylib",
-      version="0.2.0",
+      version="1.0.0",
       description="CellPyLib, A library for working with Cellular Automata, for Python.",
       long_description="CellPyLib is a library for working with Cellular Automata, for Python. "
                        "Currently, only 1- and 2-dimensional k-color cellular automata with "
@@ -9,7 +9,7 @@ setup(name="cellpylib",
                        "neighbourhood can be adjusted. ",
       license="Apache License 2.0",
       classifiers=[
-            'Development Status :: 3 - Alpha',
+            'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
             'Topic :: Scientific/Engineering :: Artificial Intelligence',
             'License :: OSI Approved :: Apache Software License',
