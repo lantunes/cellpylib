@@ -5,6 +5,15 @@ import numpy as np
 
 
 def plot2d(ca, timestep=None, title=''):
+    """
+    Plots the state of the given 2D cellular automaton at the given timestep.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param timestep: the timestep of interest
+
+    :param title: the title to place on the plot
+    """
     cmap = plt.get_cmap('Greys')
     plt.title(title)
     if timestep is not None:
@@ -44,6 +53,13 @@ def plot2d_spacetime(ca, alpha=None, title=''):
 
 
 def plot2d_animate(ca, title=''):
+    """
+    Animate the given 2D cellular automaton.
+
+    :param ca:  the 2D cellular automaton to animate
+
+    :param title: the title to place on the plot
+    """
     cmap = plt.get_cmap('Greys')
     fig = plt.figure()
     plt.title(title)
@@ -161,6 +177,17 @@ def init_random2d(rows, cols, k=2, dtype=np.int):
 
 
 def game_of_life_rule(neighbourhood, c, t):
+    """
+    Conway's Game of Life rule.
+
+    :param neighbourhood: the current cell's neighbourhood
+
+    :param c: the index of the current cell
+
+    :param t: the current timestep
+
+    :return: the state of the current cell at the next timestep
+    """
     center_cell = neighbourhood[1][1]
     total = np.sum(neighbourhood)
     if center_cell == 1:
