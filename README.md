@@ -32,7 +32,7 @@ CellPyLib can be installed via pip:
 pip install cellpylib
 ```
 
-Requirements for using this library are Python 3.5.3, numpy 1.14.0, and matplotlib 2.0.2.
+Requirements for using this library are Python 3.6, numpy 1.15.4, and matplotlib 3.0.2.
 
 ## Varying the Neighbourhood Size
 
@@ -250,8 +250,33 @@ For more information about Conway's Game of Life, see:
 
 --------------------
 
-<b>NOTE: Be sure to have a look at the [Netomaton](https://github.com/lantunes/netomaton) project, a more general 
-framework for analyzing complex systems. It supports everything that CellPyLib can do, and more.</b>
+### Development
+
+Create a Conda environment from the provided environment YAML file:
+```
+$ conda env create -f environment.yml
+```
+
+**Documentation**
+
+To build the Sphinx documentation locally, from the `docsrc` directory:
+```
+$ make clean html
+```
+The generated files will be in `_build/html`.
+
+To build the documentation for publication, from the `docsrc` directory:
+```
+$ make github
+```
+The generated files will be in `_build/html` and in the `docs` folder.
+
+**Testing**
+
+There are a number of unit tests for this project. To run the tests:
+```
+$ python -m pytest tests
+```
 
 --------------------
 
