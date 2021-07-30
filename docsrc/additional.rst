@@ -38,8 +38,9 @@ automata while varying the lambda parameter, in the paper:
 Reversible CA
 ~~~~~~~~~~~~~
 
-Elementary CA can be explicitly made to be reversible. The following example demonstrates the creation of the
-elementary reversible CA rule 90R:
+Elementary CA can be explicitly made to be reversible. CellPyLib has a class, `ReversibleRule`, which can be used to
+decorate a rule, making it reversible. The following example demonstrates the creation of the elementary reversible CA
+rule 90R:
 
 .. code-block::
 
@@ -58,3 +59,30 @@ elementary reversible CA rule 90R:
 
 Asynchronous CA
 ~~~~~~~~~~~~~~~
+
+Typically, evolving a CA involves the synchronous updating of all the cells in a given timestep. However, it is also
+possible to consider CA in which the cells are updated asynchronously. There are various schemes for achieving this.
+`Wikipedia <https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton>`_ has a page dedicated to this topic.
+
+CellPyLib has a class, `AsynchronousRule`, which can be used to decorate a rule, making it asynchronous. In the
+following example, the rule 60 sequential CA from the notes of `A New Kind of Science` (Chapter 9, section 10:
+`Sequential cellular automata <http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/>`_) is
+implemented:
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    cellular_automaton = cpl.init_simple(21)
+
+    r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60),
+                             update_order=range(1, 20))
+
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
+                                    apply_rule=r.apply_rule)
+
+    # get every 19th row, including the first, as a cycle is completed every 19 rows
+    cpl.plot(cellular_automaton[::19])
+
+.. image:: _static/rule60sequential.png
+    :width: 300

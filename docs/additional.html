@@ -195,8 +195,9 @@ and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.
 </div>
 <div class="section" id="reversible-ca">
 <h2>Reversible CA<a class="headerlink" href="#reversible-ca" title="Permalink to this headline">¶</a></h2>
-<p>Elementary CA can be explicitly made to be reversible. The following example demonstrates the creation of the
-elementary reversible CA rule 90R:</p>
+<p>Elementary CA can be explicitly made to be reversible. CellPyLib has a class, <cite>ReversibleRule</cite>, which can be used to
+decorate a rule, making it reversible. The following example demonstrates the creation of the elementary reversible CA
+rule 90R:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cellpylib</span> <span class="k">as</span> <span class="nn">cpl</span>
 
 <span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">init_random</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
@@ -212,6 +213,28 @@ elementary reversible CA rule 90R:</p>
 </div>
 <div class="section" id="asynchronous-ca">
 <h2>Asynchronous CA<a class="headerlink" href="#asynchronous-ca" title="Permalink to this headline">¶</a></h2>
+<p>Typically, evolving a CA involves the synchronous updating of all the cells in a given timestep. However, it is also
+possible to consider CA in which the cells are updated asynchronously. There are various schemes for achieving this.
+<a class="reference external" href="https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton">Wikipedia</a> has a page dedicated to this topic.</p>
+<p>CellPyLib has a class, <cite>AsynchronousRule</cite>, which can be used to decorate a rule, making it asynchronous. In the
+following example, the rule 60 sequential CA from the notes of <cite>A New Kind of Science</cite> (Chapter 9, section 10:
+<a class="reference external" href="http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/">Sequential cellular automata</a>) is
+implemented:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cellpylib</span> <span class="k">as</span> <span class="nn">cpl</span>
+
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">init_simple</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">AsynchronousRule</span><span class="p">(</span><span class="n">apply_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">cpl</span><span class="o">.</span><span class="n">nks_rule</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+                         <span class="n">update_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">19</span><span class="o">*</span><span class="mi">20</span><span class="p">,</span>
+                                <span class="n">apply_rule</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">apply_rule</span><span class="p">)</span>
+
+<span class="c1"># get every 19th row, including the first, as a cycle is completed every 19 rows</span>
+<span class="n">cpl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">[::</span><span class="mi">19</span><span class="p">])</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/rule60sequential.png"><img alt="_images/rule60sequential.png" src="_images/rule60sequential.png" style="width: 300px;" /></a>
 </div>
 </div>
 
