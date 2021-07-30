@@ -29,6 +29,7 @@ the Shannon entropy and mutual information, are provided.
   :maxdepth: 5
 
   reference
+  Source <https://github.com/lantunes/cellpylib>
   license
 
 Indices and tables
