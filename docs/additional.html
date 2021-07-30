@@ -89,9 +89,9 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="working.html">Working with Cellular Automata</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Additional Features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#asynchronous-ca">Asynchronous CA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#reversible-ca">Reversible CA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#langton-s-lambda">Langton’s Lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reversible-ca">Reversible CA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#asynchronous-ca">Asynchronous CA</a></li>
 </ul>
 </li>
 </ul>
@@ -166,14 +166,52 @@
             
   <div class="section" id="additional-features">
 <h1>Additional Features<a class="headerlink" href="#additional-features" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="asynchronous-ca">
-<h2>Asynchronous CA<a class="headerlink" href="#asynchronous-ca" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="langton-s-lambda">
+<h2>Langton’s Lambda<a class="headerlink" href="#langton-s-lambda" title="Permalink to this headline">¶</a></h2>
+<p>One way to specify CA rules is with rule tables. Rule tables are enumerations of all possible neighbourhood states
+together with their cell state mappings. For any given neighbourhood state, a rule table provides the associated cell
+state value. CellPyLib provides a built-in function for creating random rule tables. The following snippet demonstrates
+its usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cellpylib</span> <span class="k">as</span> <span class="nn">cpl</span>
+
+<span class="n">rule_table</span><span class="p">,</span> <span class="n">actual_lambda</span><span class="p">,</span> <span class="n">quiescent_state</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">random_rule_table</span><span class="p">(</span><span class="n">lambda_val</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                                   <span class="n">strong_quiescence</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                   <span class="n">isotropic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">init_random</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># use the built-in table_rule to use the generated rule table</span>
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                                <span class="n">apply_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">cpl</span><span class="o">.</span><span class="n">table_rule</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">rule_table</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following plots demonstrate the effect of varying the lambda parameter:</p>
+<a class="reference internal image-reference" href="_images/phase_transition.png"><img alt="_images/phase_transition.png" src="_images/phase_transition.png" style="width: 650px;" /></a>
+<p>C. G. Langton describes the lambda parameter, and the transition from order to criticality to chaos in cellular
+automata while varying the lambda parameter, in the paper:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Langton, C. G. (1990). Computation at the edge of chaos: phase transitions
+and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.
+</pre></div>
+</div>
 </div>
 <div class="section" id="reversible-ca">
 <h2>Reversible CA<a class="headerlink" href="#reversible-ca" title="Permalink to this headline">¶</a></h2>
+<p>Elementary CA can be explicitly made to be reversible. The following example demonstrates the creation of the
+elementary reversible CA rule 90R:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cellpylib</span> <span class="k">as</span> <span class="nn">cpl</span>
+
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">init_random</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">ReversibleRule</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">90</span><span class="p">)</span>
+
+<span class="n">cellular_automaton</span> <span class="o">=</span> <span class="n">cpl</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                <span class="n">apply_rule</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">apply_rule</span><span class="p">)</span>
+
+<span class="n">cpl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cellular_automaton</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="langton-s-lambda">
-<h2>Langton’s Lambda<a class="headerlink" href="#langton-s-lambda" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/rule90R.png"><img alt="_images/rule90R.png" src="_images/rule90R.png" style="width: 400px;" /></a>
+</div>
+<div class="section" id="asynchronous-ca">
+<h2>Asynchronous CA<a class="headerlink" href="#asynchronous-ca" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
