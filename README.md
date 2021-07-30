@@ -259,11 +259,17 @@ $ conda env create -f environment.yml
 
 **Documentation**
 
-To build the Sphinx documentation, from the `doc` directory:
+To build the Sphinx documentation locally, from the `docsrc` directory:
 ```
 $ make clean html
 ```
 The generated files will be in `_build/html`.
+
+To build the documentation for publication, from the `docsrc` directory:
+```
+$ make github
+```
+The generated files will be in `_build/html` and in the `docs` folder.
 
 **Testing**
 
