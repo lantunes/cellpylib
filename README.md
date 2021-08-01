@@ -32,7 +32,8 @@ CellPyLib can be installed via pip:
 pip install cellpylib
 ```
 
-Requirements for using this library are Python 3.6, numpy 1.15.4, and matplotlib 3.0.2.
+Requirements for using this library are Python 3.6, NumPy, and Matplotlib. Have a look at the documentation, located at 
+[cellpylib.org](https://cellpylib.org), for more information.
 
 ## Varying the Neighbourhood Size
 
@@ -259,17 +260,17 @@ $ conda env create -f environment.yml
 
 **Documentation**
 
-To build the Sphinx documentation locally, from the `docsrc` directory:
+To build the Sphinx documentation locally, from the `doc` directory:
 ```
 $ make clean html
 ```
 The generated files will be in `_build/html`.
 
-To build the documentation for publication, from the `docsrc` directory:
+To build the documentation for publication, from the `doc` directory:
 ```
 $ make github
 ```
-The generated files will be in `_build/html` and in the `docs` folder.
+The generated files will be in `_build/html` and in the `site/docs` folder.
 
 **Testing**
 

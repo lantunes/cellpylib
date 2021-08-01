@@ -19,6 +19,7 @@ src/
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
-/docsrc/_build/
+/doc/_build/
+/site/
 /.cache/
 /.pytest_cache/

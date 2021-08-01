@@ -16,9 +16,11 @@ help:
 
 github:
 	@make clean html
-	@rm -rf ../docs
-	@cp -a _build/html/. ../docs
-	@touch ../docs/.nojekyll
+	@rm -rf ../site/docs
+	@mkdir -p ../site/docs
+	@cp -a _build/html/. ../site/docs
+	@touch ../site/docs/.nojekyll
+	@echo "cellpylib.org\c" > ../site/docs/CNAME
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
