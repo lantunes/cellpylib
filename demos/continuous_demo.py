@@ -5,7 +5,7 @@ import numpy as np
 
 import cellpylib as cpl
 
-cellular_automaton = cpl.init_simple(200, dtype=np.float32)
+cellular_automaton = cpl.init_simple(200, dtype=np.float64)
 
 
 # NKS page 157
@@ -14,7 +14,7 @@ def apply_rule(n, c, t):
     frac, whole = math.modf(result)
     return frac
 
-cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=150,
                                 apply_rule=apply_rule)
 
 pprint(cellular_automaton[:6, 95:106].tolist(), width=100)
