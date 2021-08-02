@@ -21,7 +21,6 @@ class HopfieldNet:
                           this implementation
         """
         self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells).apply_rule
-        # TODO we need to implement the adjancency matrix, so that we aren't restricted to an odd number of total cells
         self._r = num_cells // 2
 
     def train(self, P):

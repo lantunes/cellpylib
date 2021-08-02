@@ -53,21 +53,28 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     plt.show()
 
 
-def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6):
+def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
+                   interval=50, save=False):
     """
     Animate the given 2D cellular automaton.
 
     :param ca:  the 2D cellular automaton to animate
 
-    :param title: the title to place on the plot
+    :param title: the title to place on the plot (default is "")
 
-    :param colormap: the color map to use
+    :param colormap: the color map to use (default is "Greys")
 
-    :param show_grid: whether to display a grid
+    :param show_grid: whether to display a grid (default is False)
 
-    :param show_margin: whether to display the margin
+    :param show_margin: whether to display the margin (default is True)
 
-    :param scale: the scale of the figure
+    :param scale: the scale of the figure (default is 0.6)
+
+    :param dpi: the dots per inch of the image (default is 80)
+
+    :param interval: the delay between frames in milliseconds (default is 50)
+
+    :param save: whether to save the animation to a local file (default is False)
     """
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
@@ -100,7 +107,9 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
             i['index'] = 0
         im.set_array(ca[i['index']])
         return im, grid
-    ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
 
 
@@ -164,9 +173,11 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     return array
 
 
-def init_simple2d(rows, cols, val=1, dtype=np.int):
+def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
+    If the `coords` argument is specified, then the specified cell at the given coordinates will have its value
+    set to `val`, otherwise the center cell will be set.
 
     :param rows: the number of rows in the matrix
 
@@ -174,12 +185,19 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
 
     :param val: the value to be used in the center of the matrix (1, by default)
 
-    :param dtype: the data type
+    :param dtype: the data type (np.int by default)
+
+    :param coords: a 2-tuple specifying the row and column of the cell to be initialized (None by default)
 
     :return: a tensor with shape (1, rows, cols), with the center value initialized to the specified value, or 1 by default
     """
     x = np.zeros((rows, cols), dtype=dtype)
-    x[x.shape[0]//2][x.shape[1]//2] = val
+    if coords is not None:
+        if not isinstance(coords, (tuple, list)) or len(coords) != 2:
+            raise Exception("coords must be a list or tuple of length 2")
+        x[coords[0]][coords[1]] = val
+    else:
+        x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array([x])
 
 
