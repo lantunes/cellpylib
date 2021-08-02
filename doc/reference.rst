@@ -29,6 +29,13 @@ cellpylib.ca_functions2d
    :members:
    :undoc-members:
 
+cellpylib.ctrbl_rule
+--------------------
+
+.. automodule:: cellpylib.ctrbl_rule
+  :members:
+  :undoc-members:
+
 cellpylib.entropy
 -----------------
 
@@ -40,6 +47,13 @@ cellpylib.hopfield_net
 ----------------------
 
 .. automodule:: cellpylib.hopfield_net
+   :members:
+   :undoc-members:
+
+cellpylib.langtons_loop
+-----------------------
+
+.. automodule:: cellpylib.langtons_loop
    :members:
    :undoc-members:
 

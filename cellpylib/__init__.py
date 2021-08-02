@@ -5,3 +5,5 @@ from .ca_functions2d import *
 from .bien import *
 from .apen import *
 from .hopfield_net import *
+from .ctrbl_rule import *
+from .langtons_loop import *
