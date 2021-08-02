@@ -25,6 +25,22 @@ the Shannon entropy and mutual information, are provided.
   additional
 
 .. toctree::
+  :caption: Tutorials
+  :maxdepth: 5
+
+  eca
+  neighbourhood
+  colors
+  complexity
+  continuous
+  twodim
+  gol
+  wireworld
+  fredkin
+  hopfield
+  langtons_loop
+
+.. toctree::
   :caption: API Docs and License
   :maxdepth: 5
 

@@ -86,3 +86,48 @@ implemented:
 
 .. image:: _static/rule60sequential.png
     :width: 300
+
+CTRBL Rules
+~~~~~~~~~~~
+
+There exists a class of important CA that exhibit the property of self-reproduction. That is, there are patterns
+observed that reproduce themselves during the evolution of these CA. This phenomenon has obvious relevance to the study
+of Biological systems. These CA are typically 2-dimensional, with a von Neumann neighbourhood of radius 1. The
+convention when specifying the rules for these CA is to enumerate the rule table using the states of the center (C), top
+(T), right (R), bottom (B), and left (L) cells in the von Neumann neighbourhood.
+
+Such CTRBL CA are supported in CellPyLib, through the `CTRBLRule` class. A particularly well-known CA in this class is
+Langton's Loop. CellPyLib has a built-in implementation of this CA, available through the `LangtonsLoop` class.
+
+Here is a simple example of a 2D CA that uses a CTRBL rule:
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    ctrbl = cpl.CTRBLRule(rule_table={
+        (0, 1, 0, 0, 0): 1,
+        (1, 1, 0, 0, 0): 0,
+        (0, 0, 0, 0, 0): 0,
+        (1, 0, 0, 0, 0): 1,
+        (0, 0, 1, 1, 0): 0,
+        (1, 1, 1, 1, 1): 1,
+        (0, 1, 0, 1, 0): 0,
+        (1, 1, 1, 0, 1): 1,
+        (1, 0, 1, 0, 1): 1,
+        (0, 1, 1, 1, 1): 1,
+        (0, 0, 1, 1, 1): 0,
+        (1, 1, 0, 0, 1): 1
+    }, add_rotations=True)
+
+    cellular_automaton = cpl.init_simple2d(rows=10, cols=10)
+
+    cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60,
+                                      apply_rule=ctrbl.rule, neighbourhood="von Neumann")
+
+    cpl.plot2d_animate(cellular_automaton)
+
+.. image:: _static/ctrbl.gif
+    :width: 400
+
+It is a binary CA that always appears to evolve to some stable attractor state.

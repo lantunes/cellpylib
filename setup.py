@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="cellpylib",
-      version="1.0.0",
+      version="1.1.0",
       description="CellPyLib, A library for working with Cellular Automata, for Python.",
       long_description="CellPyLib is a library for working with Cellular Automata, for Python. "
                        "Currently, only 1- and 2-dimensional k-color cellular automata with "

@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import numpy as np
 import os
@@ -52,6 +53,25 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         self.assertEqual(len(arr[0][1]), 3)
         self.assertEqual(arr[0][0].tolist(), [0, 0, 0])
         self.assertEqual(arr[0][1].tolist(), [0, 1, 0])
+
+    def test_init_simple2d_coords(self):
+        arr = cpl.init_simple2d(rows=3, cols=3, coords=(2, 2))
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(len(arr[0][0]), 3)
+        self.assertEqual(len(arr[0][1]), 3)
+        self.assertEqual(len(arr[0][2]), 3)
+        self.assertEqual(arr[0][0].tolist(), [0, 0, 0])
+        self.assertEqual(arr[0][1].tolist(), [0, 0, 0])
+        self.assertEqual(arr[0][2].tolist(), [0, 0, 1])
+
+    def test_init_simple2d_coords_invalid_type(self):
+        with pytest.raises(Exception):
+            cpl.init_simple2d(rows=3, cols=3, coords="a")
+
+    def test_init_simple2d_coords_invalid_length(self):
+        with pytest.raises(Exception):
+            cpl.init_simple2d(rows=3, cols=3, coords=(0, 1, 2))
 
     def test_init_random2d_1x1(self):
         arr = cpl.init_random2d(1, 1)

@@ -1,6 +1,7 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.collections as mcoll
 import numpy as np
 
 
@@ -52,26 +53,63 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     plt.show()
 
 
-def plot2d_animate(ca, title=''):
+def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
+                   interval=50, save=False):
     """
     Animate the given 2D cellular automaton.
 
     :param ca:  the 2D cellular automaton to animate
 
-    :param title: the title to place on the plot
+    :param title: the title to place on the plot (default is "")
+
+    :param colormap: the color map to use (default is "Greys")
+
+    :param show_grid: whether to display a grid (default is False)
+
+    :param show_margin: whether to display the margin (default is True)
+
+    :param scale: the scale of the figure (default is 0.6)
+
+    :param dpi: the dots per inch of the image (default is 80)
+
+    :param interval: the delay between frames in milliseconds (default is 50)
+
+    :param save: whether to save the animation to a local file (default is False)
     """
-    cmap = plt.get_cmap('Greys')
-    fig = plt.figure()
+    cmap = plt.get_cmap(colormap)
+    fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+
+    grid_linewidth = 0.0
+    if show_grid:
+        plt.xticks(np.arange(-.5, len(ca[0][0]), 1), "")
+        plt.yticks(np.arange(-.5, len(ca[0]), 1), "")
+        plt.tick_params(axis='both', which='both', length=0)
+        grid_linewidth = 0.5
+    vertical = np.arange(-.5, len(ca[0][0]), 1)
+    horizontal = np.arange(-.5, len(ca[0]), 1)
+    lines = ([[(x, y) for y in (-.5, horizontal[-1])] for x in vertical] +
+             [[(x, y) for x in (-.5, vertical[-1])] for y in horizontal])
+    grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
+    ax.add_collection(grid)
+
     im = plt.imshow(ca[0], animated=True, cmap=cmap)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
+
     i = {'index': 0}
     def updatefig(*args):
         i['index'] += 1
         if i['index'] == len(ca):
             i['index'] = 0
         im.set_array(ca[i['index']])
-        return im,
-    ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
+        return im, grid
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
 
 
@@ -135,9 +173,11 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     return array
 
 
-def init_simple2d(rows, cols, val=1, dtype=np.int):
+def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
+    If the `coords` argument is specified, then the specified cell at the given coordinates will have its value
+    set to `val`, otherwise the center cell will be set.
 
     :param rows: the number of rows in the matrix
 
@@ -145,12 +185,19 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
 
     :param val: the value to be used in the center of the matrix (1, by default)
 
-    :param dtype: the data type
+    :param dtype: the data type (np.int by default)
+
+    :param coords: a 2-tuple specifying the row and column of the cell to be initialized (None by default)
 
     :return: a tensor with shape (1, rows, cols), with the center value initialized to the specified value, or 1 by default
     """
     x = np.zeros((rows, cols), dtype=dtype)
-    x[x.shape[0]//2][x.shape[1]//2] = val
+    if coords is not None:
+        if not isinstance(coords, (tuple, list)) or len(coords) != 2:
+            raise Exception("coords must be a list or tuple of length 2")
+        x[coords[0]][coords[1]] = val
+    else:
+        x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array([x])
 
 

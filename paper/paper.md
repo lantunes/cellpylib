@@ -21,10 +21,11 @@ bibliography: paper.bib
 Cellular Automata (CA) are discrete dynamical systems with a rich history [@ilachinski2001cellular]. Introduced by John 
 von Neumann and Stanislaw Ulam in the 1940s [@von1951general], CA have continued to fascinate, as their conceptual 
 simplicity serves as a powerful microscope that allows us to explore the nature of computation and complexity, and the 
-origins of emergence. Popularized and investigated by Stephen Wolfram in his book `A New Kind of Science` 
-[@wolfram2002new], CA remain premier reminders of a common theme in the study of the physical world: that simple systems 
-and rules can give rise to remarkable complexity. They are a laboratory for the study of the origins of the complexity 
-we see in the world around us.
+origins of emergence. Far from being an antiquated computational model, investigators are utilizing CA in novel and 
+creative ways, such as the incorporation with Deep Learning [@nichele2017deep] [@mordvintsev2020growing]. Popularized 
+and investigated by Stephen Wolfram in his book `A New Kind of Science` [@wolfram2002new], CA remain premier reminders 
+of a common theme in the study of the physical world: that simple systems and rules can give rise to remarkable 
+complexity. They are a laboratory for the study of the origins of the complexity we see in the world around us.
 
 `CellPyLib` is a Python library for working with CA. It provides a concise and simple interface for defining and 
 analyzing 1- and 2-dimensional CA. The CA can consist of discrete or continuous states. Neighbourhood radii are 
@@ -32,11 +33,12 @@ adjustable, and in the 2-dimensional case, both Moore and von Neumann neighbourh
 is trivial to create Elementary CA, and CA with totalistic rules, as these rules are provided as part of the library. 
 Additionally, the library provides a means for creating asynchronous and reversible CA. Finally, an implementation 
 of C. G. Langton's approach for creating CA rules using the lambda value is provided, allowing for the exploration of 
-complex systems, phase transitions and emergent computation. [@langton1990computation]
+complex systems, phase transitions and emergent computation [@langton1990computation].
 
 Utility functions for plotting and viewing the evolved CA are also provided. These tools make it easy to visualize the
-results of CA evolution. Moreover, utility functions for computing the information-theoretic properties of CA, such as
-the Shannon entropy and mutual information, are included.
+results of CA evolution, and include the option of creating animations of the evolution itself. Moreover, utility 
+functions for computing the information-theoretic properties of CA, such as the Shannon entropy and mutual information, 
+are included.
 
 # Statement of need
 

@@ -80,4 +80,4 @@ cellular_automaton = cpl.evolve(cellular_automaton, timesteps=155,
                                 apply_rule=hopfield_net.apply_rule, r=hopfield_net.r)
 
 cpl.plot(hopfield_net.W)
-cpl.plot2d_animate(np.reshape(cellular_automaton, (155, 7,5)))
+cpl.plot2d_animate(np.reshape(cellular_automaton, (155, 7, 5)))

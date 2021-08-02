@@ -2,15 +2,32 @@ from .ca_functions import *
 
 
 class HopfieldNet:
+    """
+    An implementation of the Hopfield network. Due to limitations of this implementation, only an odd number of cells
+    is supported.
+
+    For more information on Hopfield networks, see:
+
+    .. code-block:: text
+
+        Hopfield, J. J. (1982). Neural networks and physical systems with emergent collective
+        computational abilities. Proceedings of the national academy of sciences, 79(8), 2554-2558.
+    """
     def __init__(self, num_cells):
+        """
+        Create an instance of the Hopfield network.
+
+        :param num_cells: the number of cells in this Hopfield network; only an odd number of cells are supported in
+                          this implementation
+        """
         self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells).apply_rule
-        # TODO we need to implement the adjancency matrix, so that we aren't restricted to an odd number of total cells
         self._r = num_cells // 2
 
     def train(self, P):
         """
         The training set consists of patterns to be learned by this net. The patterns should be composed of 
         bipolar ({-1,1}), and not binary ({0,1}), values.
+
         :param P: the set of training patterns
         """
         self._W = np.zeros((len(P[0]), len(P[0])), dtype=np.int)
@@ -34,8 +51,18 @@ class HopfieldNet:
 
     @property
     def W(self):
+        """
+        Returns the learned weight matrix.
+
+        :return: the learned weight matrix
+        """
         return self._W
 
     @property
     def r(self):
+        """
+        The radius of this automaton.
+
+        :return: the radius
+        """
         return self._r
