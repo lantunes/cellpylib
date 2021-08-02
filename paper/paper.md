@@ -33,7 +33,7 @@ adjustable, and in the 2-dimensional case, both Moore and von Neumann neighbourh
 is trivial to create Elementary CA, and CA with totalistic rules, as these rules are provided as part of the library. 
 Additionally, the library provides a means for creating asynchronous and reversible CA. Finally, an implementation 
 of C. G. Langton's approach for creating CA rules using the lambda value is provided, allowing for the exploration of 
-complex systems, phase transitions and emergent computation. [@langton1990computation]
+complex systems, phase transitions and emergent computation [@langton1990computation].
 
 Utility functions for plotting and viewing the evolved CA are also provided. These tools make it easy to visualize the
 results of CA evolution, and include the option of creating animations of the evolution itself. Moreover, utility 
