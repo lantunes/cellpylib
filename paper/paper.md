@@ -8,6 +8,7 @@ tags:
   - discrete dynamical systems
 authors:
   - name: Luis M. Antunes
+    orcid: 0000-0002-4867-5635
     affiliation: 1
 affiliations:
  - name: Department of Chemistry, University of Reading, Whiteknights, Reading RG6 6DX, United Kingdom
