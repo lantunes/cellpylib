@@ -6,22 +6,8 @@ cellular automata with periodic boundary conditions are supported. The size of t
 cellular automata produced by this library match the corresponding cellular automata available 
 at [atlas.wolfram.com](http://atlas.wolfram.com).
 
-<table>
-    <tr align="center" valign="center">
-      <td>
-        <strong><small>master status</small></strong><br/>
-        <a href="https://github.com/lantunes/cellpylib/actions">
-          <img src="https://github.com/lantunes/cellpylib/actions/workflows/python-app.yml/badge.svg?branch=master" alt="img not loaded">
-        </a>
-      </td>
-      <td>
-        <strong><small>latest version</small></strong><br/>
-        <a href="https://pypi.org/project/cellpylib/">
-          <img src="https://img.shields.io/pypi/v/cellpylib?style=flat-square&logo=PyPi&logoColor=white&color=blue" alt="img not loaded">
-        </a>
-      </td>
-    </tr>
-</table>
+[![testing status](https://github.com/lantunes/cellpylib/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/lantunes/cellpylib/actions)
+[![latest version](https://img.shields.io/pypi/v/cellpylib?style=flat-square&logo=PyPi&logoColor=white&color=blue)](https://pypi.org/project/cellpylib/)
 
 Example usage:
 ```python
