@@ -6,6 +6,8 @@ cellular automata with periodic boundary conditions are supported. The size of t
 cellular automata produced by this library match the corresponding cellular automata available 
 at [atlas.wolfram.com](http://atlas.wolfram.com).
 
+![tests](https://github.com/lantunes/cellpylib/actions/workflows/python-app.yml/badge.svg)
+
 Example usage:
 ```python
 import cellpylib as cpl
