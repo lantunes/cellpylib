@@ -23,7 +23,7 @@ Cellular Automata (CA) are discrete dynamical systems with a rich history [@ilac
 von Neumann and Stanislaw Ulam in the 1940s [@von1951general], CA have continued to fascinate, as their conceptual 
 simplicity serves as a powerful microscope that allows us to explore the nature of computation and complexity, and the 
 origins of emergence. Far from being an antiquated computational model, investigators are utilizing CA in novel and 
-creative ways, such as the incorporation with Deep Learning [@nichele2017deep,@mordvintsev2020growing]. Popularized 
+creative ways, such as the incorporation with Deep Learning [@nichele2017deep; @mordvintsev2020growing]. Popularized 
 and investigated by Stephen Wolfram in his book *A New Kind of Science* [@wolfram2002new], CA remain premier reminders 
 of a common theme in the study of the physical world: that simple systems and rules can give rise to remarkable 
 complexity. They are a laboratory for the study of the origins of the complexity we see in the world around us.
