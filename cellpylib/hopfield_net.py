@@ -30,7 +30,7 @@ class HopfieldNet:
 
         :param P: the set of training patterns
         """
-        self._W = np.zeros((len(P[0]), len(P[0])), dtype=np.int)
+        self._W = np.zeros((len(P[0]), len(P[0])), dtype=np.int32)
         for p in P:
             for i in range(len(p)):
                 for j in range(len(p)):

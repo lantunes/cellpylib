@@ -52,7 +52,7 @@ def joint_shannon_entropy(stringX, stringY):
     for x in set(X):
         for y in set(Y):
             joint_symbol_probabilities.append(np.mean(np.logical_and(X == x, Y == y)))
-    return np.sum(-p * np.log2(p) for p in joint_symbol_probabilities if p != 0)
+    return sum([-p * np.log2(p) for p in joint_symbol_probabilities if p != 0])
 
 
 def mutual_information(stringX, stringY):

@@ -177,7 +177,7 @@ def totalistic_rule(neighbourhood, k, rule):
     return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
 
 
-def init_simple(size, val=1, dtype=np.int):
+def init_simple(size, val=1, dtype=np.int32):
     """
     Returns an array initialized with zeroes, with its center value set to the specified value, or 1 by default.
 
@@ -194,7 +194,7 @@ def init_simple(size, val=1, dtype=np.int):
     return np.array([x])
 
 
-def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
+def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int32):
     """
     Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).

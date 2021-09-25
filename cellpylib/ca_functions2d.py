@@ -173,7 +173,7 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     return array
 
 
-def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
+def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
     If the `coords` argument is specified, then the specified cell at the given coordinates will have its value
@@ -185,7 +185,7 @@ def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
 
     :param val: the value to be used in the center of the matrix (1, by default)
 
-    :param dtype: the data type (np.int by default)
+    :param dtype: the data type (np.int32 by default)
 
     :param coords: a 2-tuple specifying the row and column of the cell to be initialized (None by default)
 
@@ -201,7 +201,7 @@ def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
     return np.array([x])
 
 
-def init_random2d(rows, cols, k=2, dtype=np.int):
+def init_random2d(rows, cols, k=2, dtype=np.int32):
     """
     Returns a randomly initialized matrix with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).

@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import os
+import ast
 
 import cellpylib as cpl
 
@@ -275,7 +276,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def test_average_cell_entropy(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
         avg_cell_entropy = cpl.average_cell_entropy(cellular_automaton)
-        np.testing.assert_almost_equal(avg_cell_entropy, 1.7208, decimal=4)
+        np.testing.assert_almost_equal(avg_cell_entropy, 0.9946, decimal=4)
 
     def test_joint_shannon_entropy(self):
         joint_entropy = cpl.joint_shannon_entropy('0010101', '3232223')
@@ -294,11 +295,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def test_average_mutual_information(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton)
-        np.testing.assert_almost_equal(avg_mutual_information, 0.7225, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0047, decimal=4)
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=2)
-        np.testing.assert_almost_equal(avg_mutual_information, 1.1214, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0050, decimal=4)
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=3)
-        np.testing.assert_almost_equal(avg_mutual_information, 1.1225, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0051, decimal=4)
 
     def test_evolve_apply_rule_1_step(self):
         cellular_automaton = np.array([[1, 2, 3, 4, 5]])
@@ -366,26 +367,22 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
-        content = content.replace('{{', '')
-        content = content.replace('}}', '')
-        content = content.replace('{', '')
-        content = content.replace('},', ';')
-        return np.matrix(content, dtype=np.int)
+        return np.array(ast.literal_eval(content.replace("{", "[").replace("}", "]")), dtype=np.int32)
 
     def _create_ca(self, expected, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: cpl.nks_rule(n, rule))
 
     def _create_totalistic_ca(self, expected, k, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows,
                           apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule))
 
     def _create_reversible_ca(self, expected, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         r = cpl.ReversibleRule(cellular_automaton.tolist()[0], rule)
         return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r.apply_rule)
 

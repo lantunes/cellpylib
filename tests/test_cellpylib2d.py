@@ -176,7 +176,7 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         content = [x.split('},') for x in content.split('}},')]
         content = [[h.split(',') for h in x] for x in content]
         content = [[[int(i) for i in h] for h in x] for x in content]
-        return np.array(content, dtype=np.int)
+        return np.array(content, dtype=np.int32)
 
     def _create_ca(self, expected, rule, neighbourhood):
         steps, _, _ = expected.shape

@@ -55,7 +55,7 @@ def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiesc
     if lambda_val is None:
         lambda_val = 1. - (1. / k)
     if quiescent_state is None:
-        quiescent_state = np.random.randint(k, dtype=np.int)
+        quiescent_state = np.random.randint(k, dtype=np.int32)
     if not (0 <= quiescent_state <= k - 1):
         raise Exception("quiescent state must be a number in {0,...,k - 1}")
     other_states = [x for x in range(0, k) if x != quiescent_state]
