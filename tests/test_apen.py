@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 import numpy as np
 
 import cellpylib as cpl
@@ -124,3 +125,8 @@ class TestApproximateEntropy(unittest.TestCase):
         self.assertAlmostEqual(cpl.apen(np.array([1, 0, 1, 2, 1, 1, 0, 1, 1])), 0.7108955985334597)
         self.assertAlmostEqual(cpl.apen(np.array([1, 0, 2, 0, 1, 2, 2, 1, 2])), 0.8452977993818283)
         self.assertAlmostEqual(cpl.apen(np.array([1, 0, 1, 2, 2, 1, 0, 0, 2])), 0.8075424578717401)
+
+    def test_apen_unsupported_sequence_type(self):
+        with pytest.raises(Exception) as e:
+            cpl.apen({1, 2, 3})
+        self.assertTrue("unsupported sequence type: <class 'set'>" in str(e.value))

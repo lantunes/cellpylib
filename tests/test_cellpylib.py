@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import os
 import ast
+import pytest
 
 import cellpylib as cpl
 
@@ -146,6 +147,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(table['122'], table['221'])
         self.assertEqual(table['102'], table['201'])
 
+    def test_random_rule_table_illegal_quiescent_state(self):
+        with pytest.raises(Exception) as e:
+            table, _, _ = cpl.random_rule_table(k=3, r=1, isotropic=True, quiescent_state=4)
+        self.assertTrue("quiescent state must be a number in {0,...,k - 1}" in str(e.value))
+
     def test_table_walk_through_increasing(self):
         table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=0.0)
         table, new_lambda = cpl.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state)
@@ -179,6 +185,20 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         table, new_lambda = cpl.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
                                                    isotropic=True)
         self.assertEqual(new_lambda, 0.0)
+
+    def test_table_walk_through_lambda_is_actual_lambda(self):
+        table = {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=0.8148148148148148, k=3, r=1, quiescent_state=0,
+                                                   isotropic=True)
+        self.assertEqual(new_lambda, 0.8148148148148148)
+
+    def test_table_rule(self):
+        r = cpl.table_rule([1, 1, 0], {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1})
+        self.assertEqual(r, 1)
+
+        with pytest.raises(Exception) as e:
+            cpl.table_rule([0, 0, 1], {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0})
+        self.assertTrue("could not find state '001' in table" in str(e))
 
     def test_init_simple_1(self):
         arr = cpl.init_simple(1)
@@ -261,6 +281,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(len(arr), 1)
         self.assertEqual(arr[0], 9)
 
+    def test_init_random_illegal_number_of_sites(self):
+        with pytest.raises(Exception) as e:
+            cpl.init_random(5, n_randomized=6)
+        self.assertTrue("the number of randomized sites, if specified, must be >= 0 and <= size" in str(e.value))
+
     def test_shannon_entropy(self):
         entropy = cpl.shannon_entropy('1111111')
         self.assertEqual(entropy, 0)
@@ -300,6 +325,12 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         np.testing.assert_almost_equal(avg_mutual_information, 0.0050, decimal=4)
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=3)
         np.testing.assert_almost_equal(avg_mutual_information, 0.0051, decimal=4)
+
+    def test_average_mutual_information_illegal_temporal_distance(self):
+        cellular_automaton = np.array([[1, 0, 1], [0, 1, 1]])
+        with pytest.raises(Exception) as e:
+            cpl.average_mutual_information(cellular_automaton, temporal_distance=4)
+        self.assertTrue("the temporal distance must be greater than 0 and less than the number of time steps" in str(e.value))
 
     def test_evolve_apply_rule_1_step(self):
         cellular_automaton = np.array([[1, 2, 3, 4, 5]])

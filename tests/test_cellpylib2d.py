@@ -166,6 +166,40 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
                     [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 1, 0]]]
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
+    def test_game_of_life_rule(self):
+        expected = self._convert_to_numpy_matrix("game_of_life.ca").reshape(60, 60, 60)
+
+        # Glider
+        cellular_automaton = cpl.init_simple2d(60, 60)
+        cellular_automaton[:, [28, 29, 30, 30], [30, 31, 29, 31]] = 1
+        # Blinker
+        cellular_automaton[:, [40, 40, 40], [15, 16, 17]] = 1
+        # Light Weight Space Ship (LWSS)
+        cellular_automaton[:, [18, 18, 19, 20, 21, 21, 21, 21, 20], [45, 48, 44, 44, 44, 45, 46, 47, 48]] = 1
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
+                                          apply_rule=cpl.game_of_life_rule)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_langtons_loop(self):
+        expected = self._convert_to_numpy_matrix("langtons_loop.ca")
+
+        langtons_loop = cpl.LangtonsLoop()
+
+        cellular_automaton = langtons_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=langtons_loop.rule)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_evolve_unknown_neighbourhood_type(self):
+        cellular_automaton = np.array([ [[1,1,1], [1,1,1], [1,1,1]] ])
+        with pytest.raises(Exception) as e:
+            cpl.evolve2d(cellular_automaton, timesteps=2, neighbourhood='foo', apply_rule=cpl.game_of_life_rule)
+        self.assertTrue("unknown neighbourhood type: foo" in str(e.value))
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
