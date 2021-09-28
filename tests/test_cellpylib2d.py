@@ -1,12 +1,15 @@
 import unittest
 import pytest
+import matplotlib
 
 import numpy as np
 import os
 
 import cellpylib as cpl
+import warnings
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+matplotlib.use("Agg")
 
 
 class TestCellularAutomataFunctions2D(unittest.TestCase):
@@ -199,6 +202,60 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         with pytest.raises(Exception) as e:
             cpl.evolve2d(cellular_automaton, timesteps=2, neighbourhood='foo', apply_rule=cpl.game_of_life_rule)
         self.assertTrue("unknown neighbourhood type: foo" in str(e.value))
+
+    def test_plot2d(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]]
+            ], title="some test")
+
+    def test_plot2d_with_timestep(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]]
+            ], timestep=1, title="some test")
+
+    def test_plot2d_slice(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d_slice(np.array([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]]
+            ]), title="some test")
+
+    def test_plot2d_slice_with_slice(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d_slice(np.array([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]]
+            ]), slice=1, title="some test")
+
+    def test_plot2d_spacetime(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d_spacetime(np.array([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]]
+            ]), title="some test")
+
+    def test_plot2d_animate(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot2d_animate(np.array([
+                [[1, 0, 1], [1, 1, 1], [1, 1, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]],
+                [[1, 1, 1], [0, 1, 1], [1, 0, 1]]
+            ]), title="some test")
 
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:

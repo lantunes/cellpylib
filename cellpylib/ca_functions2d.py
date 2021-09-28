@@ -49,7 +49,7 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     ax.scatter(xs.ravel(),
                ys.ravel(),
                zs.ravel(),
-               c=masked_data, cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
+               c=masked_data.ravel(), cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
     plt.show()
 
 

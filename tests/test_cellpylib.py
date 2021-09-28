@@ -4,10 +4,13 @@ import numpy as np
 import os
 import ast
 import pytest
+import matplotlib
 
 import cellpylib as cpl
+import warnings
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+matplotlib.use("Agg")
 
 
 class TestCellularAutomataFunctions(unittest.TestCase):
@@ -478,6 +481,21 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_plot(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot([[1, 0, 1], [1, 1, 1]], title="some test")
 
-if __name__ == '__main__':
+    def test_plot_multiple(self):
+        # this test ensures that the following code can run successfully without issue
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            cpl.plot_multiple([
+                [[1, 0, 1], [1, 1, 1]],
+                [[0, 1, 1], [1, 1, 1]]
+            ], titles=["test 1", "test 2"])
+
+
+if __name__ == "__main__":
     unittest.main()
