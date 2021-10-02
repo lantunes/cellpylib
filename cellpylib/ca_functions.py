@@ -76,6 +76,13 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
 
 
 def bits_to_int(bits):
+    """
+    Converts a binary array representing bits into the corresponding int in base 10.
+
+    :param bits: a list of 1s and 0s, representing a binary number
+
+    :return: and int representing the corresponding number in base 10
+    """
     total = 0
     for shift, j in enumerate(bits[::-1]):
         if j:
@@ -84,6 +91,16 @@ def bits_to_int(bits):
 
 
 def int_to_bits(num, num_digits):
+    """
+    Converts the given number, `num`, to the corresponding binary number in the form of a NumPy array of 1s and 0s
+    comprised of `num_digits` digits.
+
+    :param num: the number, in base 10, to convert into binary
+
+    :param num_digits: the number of digits the binary number should contain
+
+    :return: a NumPy array of 1s and 0s representing the corresponding binary number
+    """
     converted = list(map(int, bin(num)[2:]))
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added more test coverage
 - Added `CHANGELOG.md`
+- Added docs and tests for `bits_to_int` and `int_to_bits` functions
 
 ### Changed
 

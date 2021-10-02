@@ -496,6 +496,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
                 [[0, 1, 1], [1, 1, 1]]
             ], titles=["test 1", "test 2"])
 
+    def test_bits_to_int(self):
+        self.assertEqual(9, cpl.bits_to_int([1, 0, 0, 1]))
+
+    def test_int_to_bits(self):
+        np.testing.assert_equal([1, 0, 0, 1], cpl.int_to_bits(9, 4))
 
 if __name__ == "__main__":
     unittest.main()
