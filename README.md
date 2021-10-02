@@ -318,6 +318,6 @@ BibTeX:
 
 Please star this repository if you find it useful, or use it as part of your research.
 
-### Copyrights
+## License
 
-Copyright (c) 2018-2020 Luis M. Antunes (@lantunes) All rights reserved.
+[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
