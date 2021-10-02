@@ -5,17 +5,20 @@ import matplotlib.collections as mcoll
 import numpy as np
 
 
-def plot2d(ca, timestep=None, title=''):
+def plot2d(ca, timestep=None, title='', colormap='Greys'):
     """
-    Plots the state of the given 2D cellular automaton at the given timestep.
+    Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
+    timestep is plotted.
 
     :param ca: the 2D cellular automaton to plot
 
     :param timestep: the timestep of interest
 
     :param title: the title to place on the plot
+
+    :param colormap: the color map to use (default is "Greys")
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     plt.title(title)
     if timestep is not None:
         data = ca[timestep]
@@ -25,8 +28,48 @@ def plot2d(ca, timestep=None, title=''):
     plt.show()
 
 
-def plot2d_slice(ca, slice=None, title=''):
-    cmap = plt.get_cmap('Greys')
+def plot2d_slice(ca, slice=None, title='', colormap='Greys'):
+    """
+    Plots a slice through the evolved states of a 2D cellular automaton. For example, consider the following `ca`,
+    which may represent the evolution of a 3x3 2D cellular automaton over 3 timesteps:
+
+    .. code-block:: text
+
+        [[[ 1,  2,  3],
+          [ 4,  5,  6],
+          [ 7,  8,  9]],
+         [[10, 11, 12],
+          [13, 14, 15],
+          [16, 17, 18]],
+         [[19, 20, 21],
+          [22, 23, 24],
+          [25, 26, 27]]]
+
+    By default, the following would be plotted:
+
+    .. code-block:: text
+
+        [[ 4,  5,  6],
+         [13, 14, 15],
+         [22, 23, 24]]
+
+    If `0` is provided as the `slice` argument, then the following would be plotted:
+
+    .. code-block:: text
+
+        [[ 1,  2,  3],
+         [10, 11, 12],
+         [19, 20, 21]]
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param slice: an int representing the index of the row to plot; by default, the "center" row is used
+
+    :param title: the title to place on the plot
+
+    :param colormap: the color map to use (default is "Greys")
+    """
+    cmap = plt.get_cmap(colormap)
     plt.title(title)
     if slice is not None:
         data = ca[:, slice]
@@ -37,6 +80,15 @@ def plot2d_slice(ca, slice=None, title=''):
 
 
 def plot2d_spacetime(ca, alpha=None, title=''):
+    """
+    Plots the evolution of the given 2D cellular automaton as a 3D space-time plot.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param alpha: the alpha blending value; a real number between 0 (transparent) and 1 (opaque)
+
+    :param title: the title to place on the plot
+    """
     fig = plt.figure(figsize=(10, 7))
     plt.title(title)
     ax = fig.gca(projection='3d')

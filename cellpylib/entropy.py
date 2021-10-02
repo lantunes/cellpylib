@@ -9,7 +9,7 @@ def shannon_entropy(string):
 
     :param string: any string, such as '000101001', '12402', or 'aBcd1234ef5g'
 
-    :return: a real number representing the Shannon entropy
+    :return: a real number representing the Shannon entropy, in bits
     """
     symbols = dict.fromkeys(list(string))
     symbol_probabilities = [float(string.count(symbol)) / len(string) for symbol in symbols]
@@ -25,7 +25,7 @@ def average_cell_entropy(cellular_automaton):
 
     :param cellular_automaton: the cellular automaton to perform this operation on
 
-    :return: a real number representing the average cell Shannon entropy
+    :return: a real number representing the average cell Shannon entropy, in bits
     """
     num_cols = cellular_automaton.shape[1]
     entropies = []
@@ -44,7 +44,7 @@ def joint_shannon_entropy(stringX, stringY):
 
     :param stringY: any string, such as '000101001', '12402', or 'aBcd1234ef5g'
 
-    :return: a real number representing the joint Shannon entropy between the given strings
+    :return: a real number representing the joint Shannon entropy between the given strings, in bits
     """
     X = np.array(list(stringX))
     Y = np.array(list(stringY))
@@ -63,7 +63,7 @@ def mutual_information(stringX, stringY):
 
     :param stringY: any string, such as '000101001', '12402', or 'aBcd1234ef5g'
 
-    :return: a real number representing the mutual information between the given strings
+    :return: a real number representing the mutual information between the given strings, in bits
     """
     return shannon_entropy(stringX) + shannon_entropy(stringY) - joint_shannon_entropy(stringX, stringY)
 
@@ -87,7 +87,8 @@ def average_mutual_information(cellular_automaton, temporal_distance=1):
     :param temporal_distance: the size of temporal separation, where the value must be greater than 0 and
                               less than the number of time steps.
 
-    :return: a real number representing the average mutual information between a cell and itself at the next time step
+    :return: a real number representing the average mutual information between a cell and itself at the next time step,
+             in bits
     """
     num_cols = cellular_automaton.shape[1]
     if not (0 < temporal_distance < num_cols):

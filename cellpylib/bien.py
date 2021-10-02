@@ -12,6 +12,10 @@ def binary_derivative(string):
         Nathanson, M. B. (1971). Derivatives of binary sequences.
         SIAM Journal on Applied Mathematics, 21(3), 407-412
 
+    The derivative of a binary string is simply the bitwise exclusive OR between a binary digit in the string and
+    its successor, if a successor exists. For example, the derivative of the binary string '01010101' is the binary
+    string '1111111'.
+
     :param string: a binary string, such as '110011'
 
     :return: a binary string representing the binary derivative of the given string
@@ -26,14 +30,16 @@ def binary_derivative(string):
 
 def bien(string):
     """
-    Calculate the BiEntropy of the given string, according to:
+    Calculate the BiEntropy of the given binary string, according to:
 
     .. code-block:: text
 
         Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String.
         arXiv preprint arXiv:1305.0954.
 
-    This version of BiEntropy is suitable for strings with length <= 32.
+    The BiEntropy can be used to compare two binary strings in terms of the relative order and disorder of all the
+    digits. It makes use of a weighted average of the Shannon entropies of all but the last binary derivative of the
+    given string. This version of BiEntropy is suitable for strings with length <= 32.
 
     :param string: a binary string, such as '110011'
 
@@ -56,7 +62,9 @@ def tbien(string):
         Croll, G. J. (2013). BiEntropy-The Approximate Entropy of a Finite Binary String.
         arXiv preprint arXiv:1305.0954.
 
-    This version of BiEntropy is suitable for strings with length > 32.
+    The Logarithmic BiEntropy can be used to compare two binary strings in terms of the relative order and disorder of
+    all the digits. It makes use of a logarithmic weighted average of the Shannon entropies of all but the last binary
+    derivative of the given string. This version of BiEntropy is suitable for strings with length > 32.
 
     :param string: a binary string, such as '110011'
 
@@ -83,6 +91,10 @@ def cyclic_binary_derivative(string):
         Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice.
         arXiv preprint arXiv:1802.03772.
 
+    The cyclic derivative of a binary string is simply the bitwise exclusive OR between a binary digit in the string and
+    its successor, where the successor of the last digit in the string is the first digit in the string. For example,
+    the cyclic derivative of the binary string '01010101' is the binary string '11111111'.
+
     :param string: a binary string, such as '110011'
 
     :return: a binary string representing the cyclic binary derivative of the given string
@@ -106,6 +118,10 @@ def ktbien(string):
 
         Croll, G. J. (2018). The BiEntropy of Some Knots on the Simple Cubic Lattice.
         arXiv preprint arXiv:1802.03772.
+
+    The Logarithmic Knot BiEntropy can be used to compare two binary strings in terms of the relative order and disorder
+    of all the digits. It makes use of a logarithmic weighted average of the Shannon entropies of all but the last
+    cyclic binary derivative of the given string. This version of BiEntropy is suitable for strings with length > 32.
 
     :param string: a binary string, such as '110011'
 

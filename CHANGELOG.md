@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more test coverage
 - Added `CHANGELOG.md`
 - Added docs and tests for `bits_to_int` and `int_to_bits` functions
+- Added more documentation to functions in `entropy.py` and `bien.py`, and to `plot2d_slice` and `plot2d_spacetime` 
 
 ### Changed
 
@@ -25,10 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for CTRBL rules
 - Added Langton's Loop implementation
 - Added Wireworld demo code
-
-### Changed
-
-- Added more options to `plot2d_animate`
+- Added more optional arguments to `plot2d_animate` function signature
 
 ## [1.0.0] - 2021-07-29
 
