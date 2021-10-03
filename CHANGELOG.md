@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Addressing test warnings by making subtle adjustments to the code, such as using `np.int32` instead of `np.int`
-- Replaced copyright notice in `README.md` with link to Apache License 2.0 
+- Replaced copyright notice in `README.md` with link to Apache License 2.0
+- Importing modules explicitly in `__init__.py` to avoid polluting namespace
 
 ## [1.1.0] - 2021-08-02
 
