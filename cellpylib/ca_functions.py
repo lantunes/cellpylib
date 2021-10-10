@@ -2,32 +2,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot(ca, title=''):
+def plot(ca, title='', xlabel='', ylabel='time'):
     """
     Plots the given cellular automaton.
 
     :param ca: the cellular automaton to plot
 
-    :param title: the title to place on the plot
+    :param title: the title to place on the plot (default is empty)
+
+    :param xlabel: the label of the x-axis (default is empty)
+
+    :param ylabel: the label of the y-axis (default 'time')
     """
     cmap = plt.get_cmap('Greys')
     plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.imshow(ca, interpolation='none', cmap=cmap)
     plt.show()
 
 
-def plot_multiple(ca_list, titles):
+def plot_multiple(ca_list, titles, xlabel='', ylabel='time'):
     """
     Plots multiple cellular automata separately.
 
     :param ca_list: a list of cellular automata
 
-    :param titles: the titles to give the plots
+    :param titles: the titles to give the plots; there must be one title for each CA
+
+    :param xlabel: the label of the x-axis (default is empty)
+
+    :param ylabel: the label of the y-axis (default 'time')
     """
     cmap = plt.get_cmap('Greys')
     for i in range(0, len(ca_list)):
         plt.figure(i)
         plt.title(titles[i])
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
         plt.imshow(ca_list[i], interpolation='none', cmap=cmap)
     plt.show()
 
