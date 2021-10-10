@@ -157,7 +157,7 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=126),
                                  update_order=range(0, 9))
         cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=18, neighbourhood='Moore',
-                                          apply_rule=r.apply_rule)
+                                          apply_rule=r)
         expected = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 0]],
                     [[1, 1, 0], [0, 1, 0], [0, 0, 0]], [[1, 1, 1], [0, 1, 0], [0, 0, 0]],
                     [[1, 1, 1], [1, 1, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 0], [0, 0, 0]],
@@ -193,7 +193,7 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         cellular_automaton = langtons_loop.init_loops(1, (75, 75), [40], [25])
 
         cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
-                                          apply_rule=langtons_loop.rule)
+                                          apply_rule=langtons_loop)
 
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 

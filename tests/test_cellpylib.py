@@ -378,7 +378,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         cellular_automaton = cpl.init_simple(21)
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60), update_order=range(1, 20))
         cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
-                                        apply_rule=r.apply_rule)
+                                        apply_rule=r)
         np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
 
     def test_sequential_random(self):
@@ -387,7 +387,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         update_order = [19, 11, 4, 9, 6, 16, 10, 2, 17, 1, 12, 15, 5, 3, 8, 18, 7, 13, 14]
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 90), update_order=update_order)
         cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
-                                        apply_rule=r.apply_rule)
+                                        apply_rule=r)
         np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
 
     def test_init_random_dtype(self):
@@ -418,7 +418,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         rows, _ = expected.shape
         cellular_automaton = expected[0].reshape(1, -1)
         r = cpl.ReversibleRule(cellular_automaton.tolist()[0], rule)
-        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r.apply_rule)
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r)
 
     def test_binary_rule(self):
         rule_number = 6667021275756174439087127638698866559

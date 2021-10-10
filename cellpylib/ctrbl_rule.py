@@ -1,6 +1,7 @@
+from .ca_functions import BaseRule
 
 
-class CTRBLRule:
+class CTRBLRule(BaseRule):
     """
     A rule that operates on von Neumann neighbourhoods, taking into account the states of a cell's
     neighbours at the top, right, bottom and left positions. Only supports 2D automata with periodic boundaries and a
@@ -19,7 +20,7 @@ class CTRBLRule:
         """
         self._rule_table = self._init_rule_table(rule_table, add_rotations)
 
-    def rule(self, n, c, t):
+    def __call__(self, n, c, t):
         """
         The CTRBL rule to apply.
 

@@ -243,7 +243,28 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int32):
     return np.array([np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)])
 
 
-class ReversibleRule:
+class BaseRule:
+    """
+    A base rule class for custom rules to extend. A rule is a callable that accepts three parameters:
+    1, the current cell's neighbourhood; 2, the index identifying the current cell; 3, an int identifying the
+    current timestep. The rule returns the activity of the current cell at the next timestep.
+    """
+    def __call__(self, n, c, t):
+        """
+        The rule to be implemented by subclasses.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
+        raise NotImplementedError
+
+
+class ReversibleRule(BaseRule):
     """
     An elementary cellular automaton rule explicitly set up to be reversible.
     """
@@ -259,14 +280,25 @@ class ReversibleRule:
         self._previous_state = init_state
         self._rule_number = rule_number
 
-    def apply_rule(self, n, c, t):
+    def __call__(self, n, c, t):
+        """
+        The reversible rule to apply.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
         regular_result = nks_rule(n, self._rule_number)
         new_result = regular_result ^ self._previous_state[c]
         self._previous_state[c] = n[len(n) // 2]
         return new_result
 
 
-class AsynchronousRule:
+class AsynchronousRule(BaseRule):
     """
     Creates an asynchronous cellular automaton rule with a cyclic update scheme. Also known as a sequential cellular
     automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous. This rule works for 
@@ -305,7 +337,18 @@ class AsynchronousRule:
         np.random.shuffle(self._update_order)
         self._update_order = self._update_order.tolist()
 
-    def apply_rule(self, n, c, t):
+    def __call__(self, n, c, t):
+        """
+        The asynchronous rule to apply.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
         if self._in_update_order(c, n):
             self._num_applied += 1
         if not self._should_update(c, n):

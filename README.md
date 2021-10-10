@@ -179,10 +179,10 @@ creation of the elementary reversible cellular automaton rule 90R:
 import cellpylib as cpl
 
 cellular_automaton = cpl.init_random(200)
-r = cpl.ReversibleRule(cellular_automaton[0], 90)
+rule = cpl.ReversibleRule(cellular_automaton[0], 90)
 
 cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
-                                apply_rule=r.apply_rule)
+                                apply_rule=rule)
 
 cpl.plot(cellular_automaton)
 ```

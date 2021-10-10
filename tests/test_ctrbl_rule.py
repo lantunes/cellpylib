@@ -32,7 +32,7 @@ class TestCTRBLRule(unittest.TestCase):
         })
 
     def test_rule(self):
-        ctrbl = cpl.CTRBLRule({
+        ctrbl_rule = cpl.CTRBLRule({
             (0, 1, 2, 3, 4): "a",
             (5, 6, 7, 8, 9): "b"
         })
@@ -42,11 +42,11 @@ class TestCTRBLRule(unittest.TestCase):
             [4, 0, 2],
             [0, 3, 0]
         ])
-        activity = ctrbl.rule(n, 4, 1)
+        activity = ctrbl_rule(n, 4, 1)
         self.assertEqual("a", activity)
 
     def test_activity_rule_does_not_exist(self):
-        ctrbl = cpl.CTRBLRule({
+        ctrbl_rule = cpl.CTRBLRule({
             (5, 6, 7, 8, 9): "b"
         })
 
@@ -56,5 +56,5 @@ class TestCTRBLRule(unittest.TestCase):
                 [4, 0, 2],
                 [0, 3, 0]
             ])
-            ctrbl.rule(n, 4, 1)
+            ctrbl_rule(n, 4, 1)
         self.assertEqual(e.value.args, ("neighbourhood state (0, 1, 2, 3, 4) not in rule table",))

@@ -1,5 +1,5 @@
-from .ca_functions import AsynchronousRule, ReversibleRule, binary_rule, init_simple, nks_rule, totalistic_rule, \
-    plot_multiple, bits_to_int, int_to_bits, init_random, plot, evolve
+from .ca_functions import BaseRule, AsynchronousRule, ReversibleRule, binary_rule, init_simple, nks_rule, \
+    totalistic_rule, plot_multiple, bits_to_int, int_to_bits, init_random, plot, evolve
 from .rule_tables import random_rule_table, table_walk_through, table_rule
 from .entropy import mutual_information, average_cell_entropy, average_mutual_information, shannon_entropy, \
     joint_shannon_entropy

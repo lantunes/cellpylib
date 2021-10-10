@@ -12,13 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more test coverage
 - Added `CHANGELOG.md`
 - Added docs and tests for `bits_to_int` and `int_to_bits` functions
-- Added more documentation to functions in `entropy.py` and `bien.py`, and to `plot2d_slice` and `plot2d_spacetime` 
+- Added more documentation to functions in `entropy.py` and `bien.py`, and to `plot2d_slice` and `plot2d_spacetime`
+- Added the `BaseRule` class, which provides a base for custom callable rules
 
 ### Changed
 
 - Addressing test warnings by making subtle adjustments to the code, such as using `np.int32` instead of `np.int`
 - Replaced copyright notice in `README.md` with link to Apache License 2.0
 - Importing modules explicitly in `__init__.py` to avoid polluting namespace
+- Changed `AsynchronousRule`, `ReversibleRule`, and `CTRBLRule` so that they extend `BaseRule` and implement `__call__`
 
 ## [1.1.0] - 2021-08-02
 

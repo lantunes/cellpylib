@@ -20,7 +20,7 @@ class HopfieldNet:
         :param num_cells: the number of cells in this Hopfield network; only an odd number of cells are supported in
                           this implementation
         """
-        self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells).apply_rule
+        self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells)
         self._r = num_cells // 2
 
     def train(self, P):

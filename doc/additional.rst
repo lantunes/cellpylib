@@ -47,10 +47,10 @@ rule 90R:
     import cellpylib as cpl
 
     cellular_automaton = cpl.init_random(200)
-    r = cpl.ReversibleRule(cellular_automaton[0], 90)
+    rule = cpl.ReversibleRule(cellular_automaton[0], 90)
 
     cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
-                                    apply_rule=r.apply_rule)
+                                    apply_rule=ule)
 
     cpl.plot(cellular_automaton)
 
@@ -75,11 +75,11 @@ implemented:
 
     cellular_automaton = cpl.init_simple(21)
 
-    r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60),
+    rule = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60),
                              update_order=range(1, 20))
 
     cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
-                                    apply_rule=r.apply_rule)
+                                    apply_rule=rule)
 
     # get every 19th row, including the first, as a cycle is completed every 19 rows
     cpl.plot(cellular_automaton[::19])
@@ -105,7 +105,7 @@ Here is a simple example of a 2D CA that uses a CTRBL rule:
 
     import cellpylib as cpl
 
-    ctrbl = cpl.CTRBLRule(rule_table={
+    ctrbl_rule = cpl.CTRBLRule(rule_table={
         (0, 1, 0, 0, 0): 1,
         (1, 1, 0, 0, 0): 0,
         (0, 0, 0, 0, 0): 0,
@@ -123,7 +123,7 @@ Here is a simple example of a 2D CA that uses a CTRBL rule:
     cellular_automaton = cpl.init_simple2d(rows=10, cols=10)
 
     cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60,
-                                      apply_rule=ctrbl.rule, neighbourhood="von Neumann")
+                                      apply_rule=ctrbl_rule, neighbourhood="von Neumann")
 
     cpl.plot2d_animate(cellular_automaton)
 
@@ -131,3 +131,47 @@ Here is a simple example of a 2D CA that uses a CTRBL rule:
     :width: 400
 
 It is a binary CA that always appears to evolve to some stable attractor state.
+
+Custom Rules
+~~~~~~~~~~~~
+
+A rule is a callable that contains the logic that will be applied to each cell of the CA at each timestep. Any kind of
+callable is valid, but the callable must accept 3 arguments: `n`, `c` and `t`. Furthermore, the callable must return the
+state of the current cell at the next timestep. The `n` argument is the neighbourhood, which is a NumPy array of length
+`2r + 1` representing the state of the neighbourhood of the cell (for 1D CA), where `r` is the neighbourhood radius. The
+state of the current cell will always be located at the "center" of the neighbourhood. The `c` argument is the cell
+identity, which is a scalar representing the index of the cell in the cellular automaton array. Finally, the `t`
+argument is an integer representing the time step in the evolution.
+
+Any kind of callable is supported, and this is particularly useful if more complex handling, like statefulness, is
+required by the rule. For complex rules, the recommended approach is to define a class for the rule, which provides
+a `__call__` function which accepts the `n`, `c`, and `t` arguments. The `BaseRule` class is provided for users to
+extend, which ensures that the custom rule is implemented with the correct `__call__` signature.
+
+As an example, below is a custom rule that simply keeps track of how many times each cell has been invoked:
+
+.. code-block::
+
+    import cellpylib as cpl
+    from collections import defaultdict
+
+    class CustomRule(cpl.BaseRule):
+
+        def __init__(self):
+            self.count = defaultdict(int)
+
+        def __call__(self, n, c, t):
+            self.count[c] += 1
+            return self.count[c]
+
+    rule = CustomRule()
+
+    cellular_automaton = cpl.init_simple(11)
+
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=10,
+                                    apply_rule=rule)
+
+    cpl.plot(cellular_automaton)
+
+.. image:: _static/custom_rule.png
+    :width: 250
