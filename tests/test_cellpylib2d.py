@@ -152,12 +152,11 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         actual = self._create_ca(expected, 26, 'von Neumann')
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
-    def test_sequential_rule_2d(self):
+    def test_sequential_rule_2d_update_order(self):
         cellular_automaton = cpl.init_simple2d(3, 3)
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=126),
-                                 update_order=range(0, 9))
-        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=18, neighbourhood='Moore',
-                                          apply_rule=r)
+                                 update_order=[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)])
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=18, neighbourhood='Moore', apply_rule=r)
         expected = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 0]],
                     [[1, 1, 0], [0, 1, 0], [0, 0, 0]], [[1, 1, 1], [0, 1, 0], [0, 0, 0]],
                     [[1, 1, 1], [1, 1, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 0], [0, 0, 0]],
@@ -167,6 +166,22 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
                     [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 0, 0]],
                     [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 0, 0]],
                     [[0, 1, 1], [1, 1, 1], [1, 0, 0]], [[0, 1, 1], [1, 1, 1], [1, 1, 0]]]
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_sequential_rule_2d_num_cells(self):
+        np.random.seed(0)
+        cellular_automaton = cpl.init_simple2d(3, 3)
+        r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=126), num_cells=(3, 3))
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=18, neighbourhood='Moore', apply_rule=r)
+        expected = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 1, 0]],
+                    [[0, 0, 1], [0, 1, 0], [0, 1, 0]], [[0, 1, 1], [0, 1, 0], [0, 1, 0]],
+                    [[0, 1, 1], [0, 1, 0], [0, 1, 0]], [[0, 1, 1], [0, 1, 0], [0, 1, 1]],
+                    [[0, 1, 1], [0, 1, 0], [1, 1, 1]], [[0, 1, 1], [1, 1, 0], [1, 1, 1]],
+                    [[0, 1, 1], [1, 1, 0], [1, 1, 1]], [[0, 1, 1], [1, 1, 0], [1, 1, 1]],
+                    [[0, 1, 1], [1, 1, 0], [1, 0, 1]], [[0, 1, 1], [1, 1, 0], [1, 0, 1]],
+                    [[0, 1, 1], [1, 1, 0], [1, 0, 1]], [[0, 1, 1], [1, 1, 0], [1, 0, 1]],
+                    [[0, 1, 1], [1, 1, 0], [1, 0, 1]], [[0, 1, 1], [1, 1, 0], [1, 0, 1]],
+                    [[0, 1, 1], [1, 1, 0], [1, 0, 1]], [[1, 1, 1], [1, 1, 0], [1, 0, 1]]]
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
     def test_game_of_life_rule(self):

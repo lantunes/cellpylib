@@ -315,6 +315,15 @@ class AsynchronousRule(BaseRule):
     Creates an asynchronous cellular automaton rule with a cyclic update scheme. Also known as a sequential cellular
     automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous. This rule works for 
     both 1D and 2D cellular automata.
+
+    This rule requires the specification of an update order (if none is provided, then an order is constructed based
+    on the number of cells in the CA). An update order specifies which cell will be updated as the CA evolves. For
+    example, the update order [2, 3, 1] states that cell 2 will be updated in the next timestep, followed by cell 3 in
+    the subsequent timestep, and then cell 1 in the timestep after that. This update order is adhered to for the
+    entire evolution of the CA. Cells that are not being updated do not have the rule applied to them in that timestep.
+
+    An option is provided to randomize the update order at the end of each cycle (i.e. timestep). This is equivalent to
+    selecting a cell randomly at each timestep to update, leaving all others unchanged during that timestep.
     """
     def __init__(self, apply_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
         """
@@ -325,11 +334,10 @@ class AsynchronousRule(BaseRule):
         :param apply_rule: the rule that will be made asynchronous
 
         :param update_order: a list containing the indices of the cells in the CA, specifying the update order; if the
-                             CA is 2D, then the indices will refer to the cells in the matrix as if the matrix were an
-                             array (e.g. for a 2x3 2D CA, the mapping from cell coordinate to cell index is: 
-                             (0,0)->0, (0,1)->1, (0,2)->2, (1,0)->3, (1,1)->4, (1,2)->5)
+                             CA is 2D, then instead of indices, cell coordinates are expected (e.g. ((0,1), (2,3),...))
 
-        :param num_cells: the total number of cells in the CA
+        :param num_cells: an int specifying the total number of cells in the CA if it is 1D, or a 2-tuple representing
+                          the height and width of the CA if it is 2D
 
         :param randomize_each_cycle: whether to shuffle the update order list after each complete cycle
         """
@@ -339,15 +347,22 @@ class AsynchronousRule(BaseRule):
         if update_order is not None:
             self._update_order = update_order
         else:
-            self._shuffle_update_order(num_cells)
+            self._init_update_order(num_cells)
+            self._shuffle_update_order()
         self._curr = 0
         self._num_applied = 0
         self._randomize_each_cycle = randomize_each_cycle
 
-    def _shuffle_update_order(self, num_cells):
-        self._update_order = np.arange(num_cells)
+    def _init_update_order(self, num_cells):
+        if isinstance(num_cells, tuple):
+            self._update_order = [(i, j) for i in range(num_cells[0]) for j in range(num_cells[1])]
+        elif isinstance(num_cells, int):
+            self._update_order = np.arange(num_cells)
+        else:
+            raise Exception("num_cells must be either an int (1D CA) or a 2-tuple (2D CA)")
+
+    def _shuffle_update_order(self):
         np.random.shuffle(self._update_order)
-        self._update_order = self._update_order.tolist()
 
     def __call__(self, n, c, t):
         """
@@ -370,29 +385,17 @@ class AsynchronousRule(BaseRule):
         return self._apply_rule(n, c, t)
 
     def _in_update_order(self, c, n):
-        if len(n.shape) == 1:
-            return c in self._update_order
-        elif len(n.shape) == 2:
-            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
-            return i in self._update_order
-        else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+        return c in self._update_order
 
     def _should_update(self, c, n):
-        if len(n.shape) == 1:
-            return c == self._update_order[self._curr]
-        elif len(n.shape) == 2:
-            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
-            return i == self._update_order[self._curr]
-        else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+        return c == self._update_order[self._curr]
 
     def _check_for_end_of_cycle(self):
         if self._num_applied == len(self._update_order):
             self._curr = (self._curr + 1) % len(self._update_order)
             self._num_applied = 0
             if self._randomize_each_cycle:
-                self._shuffle_update_order(len(self._update_order))
+                self._shuffle_update_order()
 
     def _current_cell_value(self, n):
         if len(n.shape) == 1:

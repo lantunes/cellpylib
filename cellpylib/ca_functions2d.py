@@ -158,6 +158,7 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
         if i['index'] == len(ca):
             i['index'] = 0
         im.set_array(ca[i['index']])
+        im.autoscale()
         return im, grid
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
     if save:

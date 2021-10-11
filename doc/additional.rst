@@ -87,6 +87,36 @@ is implemented:
 .. image:: _static/rule60sequential.png
     :width: 300
 
+The :py:class:`~cellpylib.ca_functions.AsynchronousRule` requires the specification of an update order (if none is
+provided, then an order is constructed based on the number of cells in the CA). An update order specifies which cell
+will be updated as the CA evolves. For example, the update order `[2, 3, 1]` states that cell `2` will be updated in the
+next timestep, followed by cell `3` in the subsequent timestep, and then cell `1` in the timestep after that. This
+update order is adhered to for the entire evolution of the CA. Cells that are not being updated do not have the
+rule applied to them in that timestep.
+
+An option is provided to randomize the update order at the end of each cycle (i.e. timestep). This is equivalent to
+selecting a cell randomly at each timestep to update, leaving all others unchanged during that timestep. The following
+example demonstrates a simplistic 2D CA in which a cell is picked randomly at each timestep, and its state is updated to
+a value of `1` (all cells begin with a state of `0`):
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    cellular_automaton = cpl.init_simple2d(50, 50, val=0)
+
+    apply_rule = cpl.AsynchronousRule(apply_rule=lambda n, c, t: 1, num_cells=(50, 50),
+                                      randomize_each_cycle=True)
+
+    cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=50,
+                                      neighbourhood='Moore', apply_rule=apply_rule)
+
+    cpl.plot2d_animate(cellular_automaton, interval=200)
+
+.. image:: _static/async_random.gif
+    :width: 350
+
+
 CTRBL Rules
 ~~~~~~~~~~~
 
