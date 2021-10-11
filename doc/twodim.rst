@@ -23,8 +23,8 @@ neighbourhood types are supported. The following snippet demonstrates creating a
     :width: 250
 
 The image above represents the state at the final timestep. However, the state of the CA at any timestep can be
-visualized using the `plot2d` `timestep` argument. For example, in the code snippet below, the state at the 10th
-timestep is plotted:
+visualized using the :py:class:`~cellpylib.ca_functions2d.plot2d` ``timestep`` argument. For example, in the code
+snippet below, the state at the 10th timestep is plotted:
 
 .. code-block::
 
@@ -34,7 +34,7 @@ timestep is plotted:
     :width: 255
 
 Note that 2D CA can also be animated, so that the entire evolution of the CA can be visualized, using the
-`plot2d_animate` function:
+:py:class:`~cellpylib.ca_functions2d.plot2d_animate` function:
 
 .. code-block::
 

@@ -38,9 +38,9 @@ automata while varying the lambda parameter, in the paper:
 Reversible CA
 ~~~~~~~~~~~~~
 
-Elementary CA can be explicitly made to be reversible. CellPyLib has a class, `ReversibleRule`, which can be used to
-decorate a rule, making it reversible. The following example demonstrates the creation of the elementary reversible CA
-rule 90R:
+Elementary CA can be explicitly made to be reversible. CellPyLib has a class,
+:py:class:`~cellpylib.ca_functions.ReversibleRule`, which can be used to decorate a rule, making it reversible. The
+following example demonstrates the creation of the elementary reversible CA rule 90R:
 
 .. code-block::
 
@@ -64,10 +64,10 @@ Typically, evolving a CA involves the synchronous updating of all the cells in a
 possible to consider CA in which the cells are updated asynchronously. There are various schemes for achieving this.
 `Wikipedia <https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton>`_ has a page dedicated to this topic.
 
-CellPyLib has a class, `AsynchronousRule`, which can be used to decorate a rule, making it asynchronous. In the
-following example, the rule 60 sequential CA from the notes of `A New Kind of Science` (Chapter 9, section 10:
-`Sequential cellular automata <http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/>`_) is
-implemented:
+CellPyLib has a class, :py:class:`~cellpylib.ca_functions.AsynchronousRule`, which can be used to decorate a rule, making
+it asynchronous. In the following example, the rule 60 sequential CA from the notes of `A New Kind of Science` (Chapter
+9, section 10: `Sequential cellular automata <http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/>`_)
+is implemented:
 
 .. code-block::
 
@@ -96,8 +96,9 @@ of Biological systems. These CA are typically 2-dimensional, with a von Neumann 
 convention when specifying the rules for these CA is to enumerate the rule table using the states of the center (C), top
 (T), right (R), bottom (B), and left (L) cells in the von Neumann neighbourhood.
 
-Such CTRBL CA are supported in CellPyLib, through the `CTRBLRule` class. A particularly well-known CA in this class is
-Langton's Loop. CellPyLib has a built-in implementation of this CA, available through the `LangtonsLoop` class.
+Such CTRBL CA are supported in CellPyLib, through the :py:class:`~cellpylib.ctrbl_rule.CTRBLRule` class. A particularly
+well-known CA in this class is Langton's Loop. CellPyLib has a built-in implementation of this CA, available through
+the :py:class:`~cellpylib.langtons_loop.LangtonsLoop` class.
 
 Here is a simple example of a 2D CA that uses a CTRBL rule:
 
@@ -136,17 +137,18 @@ Custom Rules
 ~~~~~~~~~~~~
 
 A rule is a callable that contains the logic that will be applied to each cell of the CA at each timestep. Any kind of
-callable is valid, but the callable must accept 3 arguments: `n`, `c` and `t`. Furthermore, the callable must return the
-state of the current cell at the next timestep. The `n` argument is the neighbourhood, which is a NumPy array of length
-`2r + 1` representing the state of the neighbourhood of the cell (for 1D CA), where `r` is the neighbourhood radius. The
-state of the current cell will always be located at the "center" of the neighbourhood. The `c` argument is the cell
-identity, which is a scalar representing the index of the cell in the cellular automaton array. Finally, the `t`
-argument is an integer representing the time step in the evolution.
+callable is valid, but the callable must accept 3 arguments: ``n``, ``c`` and ``t``. Furthermore, the callable must
+return the state of the current cell at the next timestep. The ``n`` argument is the neighbourhood, which is a NumPy
+array of length `2r + 1` representing the state of the neighbourhood of the cell (for 1D CA), where ``r`` is the
+neighbourhood radius. The state of the current cell will always be located at the "center" of the neighbourhood. The
+``c`` argument is the cell identity, which is a scalar representing the index of the cell in the cellular automaton
+array. Finally, the ``t`` argument is an integer representing the time step in the evolution.
 
 Any kind of callable is supported, and this is particularly useful if more complex handling, like statefulness, is
 required by the rule. For complex rules, the recommended approach is to define a class for the rule, which provides
-a `__call__` function which accepts the `n`, `c`, and `t` arguments. The `BaseRule` class is provided for users to
-extend, which ensures that the custom rule is implemented with the correct `__call__` signature.
+a ``__call__`` function which accepts the ``n``, ``c``, and ``t`` arguments. The
+:py:class:`~cellpylib.ca_functions.BaseRule` class is provided for users to extend, which ensures that the custom rule
+is implemented with the correct ``__call__`` signature.
 
 As an example, below is a custom rule that simply keeps track of how many times each cell has been invoked:
 

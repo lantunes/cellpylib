@@ -7,12 +7,12 @@ the simplest kind of CA that one can conceive, with 2 states and a neighbourhood
 states of a neighbourhood). It is thus possible to exhaustively explore this space of discrete dynamical systems. As
 such, it is one of the most studied and well understood type of CA.
 
-CellPyLib supports the creation of ECA through the `nks_rule` function. This function accepts as a parameter the rule
-number, using the convention introduced by Stephen Wolfram in his book `A New Kind of Science`. The rule number uniquely
-identifies an ECA. For example, Rule 30 is a famous ECA. Its behaviour is very complex, and it remains poorly
-understood. Questions regarding its evolution remain unanswered at the time of this writing, and there is even a
-`Rule 30 Prize <https://www.rule30prize.org/>`_, offered to those who can answer fundamental questions about this
-fascinating dynamical system.
+CellPyLib supports the creation of ECA through the :py:func:`~cellpylib.ca_functions.nks_rule` function. This function
+accepts as a parameter the rule number, using the convention introduced by Stephen Wolfram in his book `A New Kind of
+Science`. The rule number uniquely identifies an ECA. For example, Rule 30 is a famous ECA. Its behaviour is very
+complex, and it remains poorly understood. Questions regarding its evolution remain unanswered at the time of this
+writing, and there is even a `Rule 30 Prize <https://www.rule30prize.org/>`_, offered to those who can answer
+fundamental questions about this fascinating dynamical system.
 
 The following code snippet demonstrates creating and visualizing Rule 30 with CellPyLib:
 

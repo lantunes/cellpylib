@@ -17,20 +17,21 @@ with CellPyLib:
                                     apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 
-The initial conditions are instantiated using the function `init_simple`, which, in this example, creates a
-200-dimensional vector consisting of zeroes, except for the component in the center of the vector, which is initialized
-with a value of 1. Next, the system is subjected to evolution by calling the `evolve` function. The system evolves under
-the rule specified through the `apply_rule` parameter. Any function that accepts the three arguments `n`, `c` and `t`
-can be supplied as a rule, but in this case the built-in function `nks_rule` is invoked to provide Rule 30. The CA is
-evolved for 100 `timesteps`, or 100 applications of the rule to the initial and subsequent conditions.
+The initial conditions are instantiated using the function :py:func:`~cellpylib.ca_functions.init_simple`, which, in
+this example, creates a 200-dimensional vector consisting of zeroes, except for the component in the center of the
+vector, which is initialized with a value of 1. Next, the system is subjected to evolution by calling the
+:py:func:`~cellpylib.ca_functions.evolve` function. The system evolves under the rule specified through the
+``apply_rule`` parameter. Any function that accepts the three arguments ``n``, ``c`` and ``t`` can be supplied as a
+rule, but in this case the built-in function :py:func:`~cellpylib.ca_functions.nks_rule` is invoked to provide Rule 30.
+The CA is evolved for 100 ``timesteps``, or 100 applications of the rule to the initial and subsequent conditions.
 
-During each timestep, the function supplied to `apply_rule` is invoked for each cell. The `n` argument refers to the
+During each timestep, the function supplied to ``apply_rule`` is invoked for each cell. The ``n`` argument refers to the
 neighbourhood of the current cell, and consists of an array (in the 1-dimensional CA case) of the activities (i.e.
 states) of the cells comprising the current cell's neighbourhood (an array with length 3, in the case of a 1-dimensional
-CA with radius of 1). The `c` argument refers to index of the cell under consideration. It serves as a label identifying
-the current cell. The `t` argument is an integer specifying the current timestep.
+CA with radius of 1). The ``c`` argument refers to index of the cell under consideration. It serves as a label
+identifying the current cell. The ``t`` argument is an integer specifying the current timestep.
 
-Finally, to visualize the results, the `plot` function can be utilized:
+Finally, to visualize the results, the :py:func:`~cellpylib.ca_functions.plot` function can be utilized:
 
 .. code-block::
 
@@ -61,8 +62,9 @@ Initializing CA
 
 A CA is initialized by simply instantiating an array of an array (for 1-dimensional CA), or an array of an array of an
 array (for 2-dimensional CA). This will represent the initial conditions of the system, which can be submitted to the
-`evolve` function. For convenience, there are several built-in functions for common CA initializations. For example, the
-`init_simple` function can be used to create a 1D binary initialization with a 1 in the center:
+:py:func:`~cellpylib.ca_functions.evolve` function. For convenience, there are several built-in functions for common CA
+initializations. For example, the :py:func:`~cellpylib.ca_functions.init_simple` function can be used to create a 1D
+binary initialization with a 1 in the center:
 
 .. code-block::
 
@@ -71,41 +73,46 @@ array (for 2-dimensional CA). This will represent the initial conditions of the 
     print(cellular_automaton)
     # [[0 0 0 0 0 1 0 0 0 0]]
 
-An analogous function, `init_simple2d`, exists for 2-dimensional CA.
+An analogous function, :py:func:`~cellpylib.ca_functions2d.init_simple2d`, exists for 2-dimensional CA.
 
-There are built-in functions for initializing CA randomly as well, in the `init_random` and `init_random2d` functions.
+There are built-in functions for initializing CA randomly as well, in the :py:func:`~cellpylib.ca_functions.init_random`
+and :py:func:`~cellpylib.ca_functions2d.init_random2d` functions.
 
 Evolving CA
 ~~~~~~~~~~~~~
 
-CA are evolved with the `evolve` function (for 1-dimensional CA) and the `evolve2d` function (for 2-dimensional CA). The
-`evolve` function requires 4 parameters: `cellular_automaton`, `timesteps`, `apply_rule` and `r`.
+CA are evolved with the :py:func:`~cellpylib.ca_functions.evolve` function (for 1-dimensional CA) and the
+:py:func:`~cellpylib.ca_functions2d.evolve2d` function (for 2-dimensional CA). The
+:py:func:`~cellpylib.ca_functions.evolve` function requires 4 parameters: ``cellular_automaton``, ``timesteps``,
+``apply_rule`` and ``r``.
 
-The `cellular_automaton` parameter represents the CA consisting of initial conditions. For example, for a 1D CA, a valid
-argument could be `[[0,0,0,0,1,0,0,0,0]]`.
+The ``cellular_automaton`` parameter represents the CA consisting of initial conditions. For example, for a 1D CA, a
+valid argument could be `[[0,0,0,0,1,0,0,0,0]]`.
 
-The `timesteps` parameter is simply an integer representing the number of timesteps the CA should undergo evolution, or
+The ``timesteps`` parameter is simply an integer representing the number of timesteps the CA should undergo evolution, or
 application of the supplied rule. Note that the initial conditions of the CA are considered the 1st timestep, so, for
-example, if `timesteps` is set to `3`, then the rule will be applied two times.
+example, if ``timesteps`` is set to `3`, then the rule will be applied two times.
 
-The `apply_rule` parameter expects a callable that represents the rule that will be applied to each cell of the CA at
-each timestep. Any kind of callable is valid, but the callable must accept 3 arguments: `n`, `c` and `t`. Furthermore,
-the callable must return the state of the current cell at the next timestep. The `n` argument is the neighbourhood,
-which is a NumPy array of length `2r + 1` representing the state of the neighbourhood of the cell (for 1D CA), where `r`
-is the neighbourhood radius. The state of the current cell will always be located at the "center" of the neighbourhood.
-The `c` argument is the cell identity, which is a scalar representing the index of the cell in the cellular automaton
-array. Finally, the `t` argument is an integer representing the time step in the evolution.
+The ``apply_rule`` parameter expects a callable that represents the rule that will be applied to each cell of the CA at
+each timestep. Any kind of callable is valid, but the callable must accept 3 arguments: ``n``, ``c`` and ``t``.
+Furthermore, the callable must return the state of the current cell at the next timestep. The `n` argument is the
+neighbourhood, which is a NumPy array of length `2r + 1` representing the state of the neighbourhood of the cell (for
+1D CA), where ``r`` is the neighbourhood radius. The state of the current cell will always be located at the "center" of
+the neighbourhood. The ``c`` argument is the cell identity, which is a scalar representing the index of the cell in the
+cellular automaton array. Finally, the ``t`` argument is an integer representing the time step in the evolution.
 
-The `r` parameter is simply an integer that represents the radius of the neighbourhood of the CA. For 1D CA, a radius of
-1 implies a neighbourhood is of size 3, a radius of 2 implies a neighbourhood of size 5, and so on. For 2D CA, the same
-idea applies, but the neighbourhood will have the dimensions `2r+1 x 2r+1` (with a slight adjustment for von Neumann
-neighbourhoods).
+The ``r`` parameter is simply an integer that represents the radius of the neighbourhood of the CA. For 1D CA, a radius
+of 1 implies a neighbourhood is of size 3, a radius of 2 implies a neighbourhood of size 5, and so on. For 2D CA, the
+same idea applies, but the neighbourhood will have the dimensions `2r+1 x 2r+1` (with a slight adjustment for von
+Neumann neighbourhoods).
 
 Visualizing CA
 ~~~~~~~~~~~~~~
 
-There are a number of built-in functions to help visualize CA. The simplest is perhaps the `plot` function, which plots
-the evolution of a 1D CA. There is also the `plot_multiple` function, which will create plots for multiple CA in the
-same invocation. For 2D CA, there is the `plot2d` function. This function accepts an additional argument, `timestep`,
-which represents the particular timestep to be plotted. If none is given, then the state at the last timestep will be
-plotted. Finally, the evolution of 2D CA can be animated, with the `plot2d_animate` function.
+There are a number of built-in functions to help visualize CA. The simplest is perhaps the
+:py:func:`~cellpylib.ca_functions.plot` function, which plots the evolution of a 1D CA. There is also the
+:py:func:`~cellpylib.ca_functions.plot_multiple` function, which will create plots for multiple CA in the same
+invocation. For 2D CA, there is the :py:func:`~cellpylib.ca_functions2d.plot2d` function. This function accepts an
+additional argument, ``timestep``, which represents the particular timestep to be plotted. If none is given, then the
+state at the last timestep will be plotted. Finally, the evolution of 2D CA can be animated, with the
+:py:func:`~cellpylib.ca_functions2d.plot2d_animate` function.
