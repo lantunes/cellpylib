@@ -10,3 +10,4 @@ from .apen import apen
 from .hopfield_net import HopfieldNet
 from .ctrbl_rule import CTRBLRule
 from .langtons_loop import LangtonsLoop
+from .sandpile import Sandpile

@@ -111,7 +111,7 @@ a value of `1` (all cells begin with a state of `0`):
     cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=50,
                                       neighbourhood='Moore', apply_rule=apply_rule)
 
-    cpl.plot2d_animate(cellular_automaton, interval=200)
+    cpl.plot2d_animate(cellular_automaton, interval=200, autoscale=True)
 
 .. image:: _static/async_random.gif
     :width: 350

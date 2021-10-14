@@ -14,4 +14,4 @@ apply_rule = cpl.AsynchronousRule(apply_rule=lambda n, c, t: 1, num_cells=(50, 5
 cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=50,
                                   neighbourhood='Moore', apply_rule=apply_rule)
 
-cpl.plot2d_animate(cellular_automaton, interval=200)
+cpl.plot2d_animate(cellular_automaton, interval=200, autoscale=True)

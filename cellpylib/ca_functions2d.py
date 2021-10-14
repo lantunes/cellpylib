@@ -106,7 +106,7 @@ def plot2d_spacetime(ca, alpha=None, title=''):
 
 
 def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
-                   interval=50, save=False):
+                   interval=50, save=False, autoscale=False):
     """
     Animate the given 2D cellular automaton.
 
@@ -127,6 +127,9 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
     :param interval: the delay between frames in milliseconds (default is 50)
 
     :param save: whether to save the animation to a local file (default is False)
+
+    :param autoscale: whether to autoscale the images in the animation; this should be set to True if the first
+                      frame has a uniform value (e.g. all zeroes) (default is False)
     """
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
@@ -158,7 +161,8 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
         if i['index'] == len(ca):
             i['index'] = 0
         im.set_array(ca[i['index']])
-        im.autoscale()
+        if autoscale:
+            im.autoscale()
         return im, grid
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
     if save:

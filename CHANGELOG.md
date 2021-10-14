@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added docs and tests for `bits_to_int` and `int_to_bits` functions
 - Added more documentation to functions in `entropy.py` and `bien.py`, and to `plot2d_slice` and `plot2d_spacetime`
 - Added the `BaseRule` class, which provides a base for custom callable rules
+- Added built-in `Sandpile` implementation
 
 ### Changed
 

@@ -63,3 +63,10 @@ cellpylib.rule_tables
 .. automodule:: cellpylib.rule_tables
    :members:
    :undoc-members:
+
+cellpylib.sandpile
+-----------------------
+
+.. automodule:: cellpylib.sandpile
+   :members:
+   :undoc-members:

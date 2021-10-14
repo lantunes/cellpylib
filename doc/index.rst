@@ -39,6 +39,7 @@ the Shannon entropy and mutual information, are provided.
   fredkin
   hopfield
   langtons_loop
+  sandpile
 
 .. toctree::
   :caption: API Docs and License

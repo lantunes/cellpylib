@@ -212,6 +212,22 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
+    def test_sandpile(self):
+        expected = self._convert_to_numpy_matrix("sandpile.ca")
+
+        n_rows = 10
+        n_cols = 10
+        sandpile = cpl.Sandpile(n_rows, n_cols)
+
+        np.random.seed(0)
+        ca = np.random.randint(5, size=n_rows * n_cols).reshape((1, n_rows, n_cols))
+        # we're using a closed boundary, so make the boundary cells 0
+        ca[0, 0, :], ca[0, n_rows - 1, :], ca[0, :, 0], ca[0, :, n_cols - 1] = 0, 0, 0, 0
+
+        ca = cpl.evolve2d(ca, timesteps=10, apply_rule=sandpile, neighbourhood="von Neumann")
+
+        np.testing.assert_equal(expected, ca.tolist())
+
     def test_evolve_unknown_neighbourhood_type(self):
         cellular_automaton = np.array([ [[1,1,1], [1,1,1], [1,1,1]] ])
         with pytest.raises(Exception) as e:
