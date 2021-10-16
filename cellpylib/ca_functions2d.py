@@ -11,6 +11,11 @@ def plot2d(ca, timestep=None, title='', *, colormap='Greys', show_grid=False, sh
     Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
     timestep is plotted.
 
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
+
     :param ca: the 2D cellular automaton to plot
 
     :param timestep: the timestep of interest
@@ -83,6 +88,11 @@ def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show_grid=False,
          [10, 11, 12],
          [19, 20, 21]]
 
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
+
     :param ca: the 2D cellular automaton to plot
 
     :param slice: an int representing the index of the row to plot; by default, the "center" row is used
@@ -154,6 +164,14 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
                    interval=50, save=False, autoscale=False, show=True, **imshow_kwargs):
     """
     Animate the given 2D cellular automaton.
+
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
+
+    The `dpi` argument represents the dots per inch of the animation when it is saved. There will be no visible effect
+    of the `dpi` argument if the animation is not saved (i.e. when `save` is `False`).
 
     :param ca:  the 2D cellular automaton to animate
 
