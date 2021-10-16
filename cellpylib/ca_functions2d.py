@@ -5,7 +5,8 @@ import matplotlib.collections as mcoll
 import numpy as np
 
 
-def plot2d(ca, timestep=None, title='', *, colormap='Greys', show=True, **imshow_kwargs):
+def plot2d(ca, timestep=None, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6,
+           show=True, **imshow_kwargs):
     """
     Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
     timestep is plotted.
@@ -18,22 +19,38 @@ def plot2d(ca, timestep=None, title='', *, colormap='Greys', show=True, **imshow
 
     :param colormap: the color map to use (default is "Greys")
 
+    :param show_grid: whether to display a grid (default is False)
+
+    :param show_margin: whether to display the margin (default is True)
+
+    :param scale: the scale of the figure (default is 0.6)
+
     :param show: show the plot (default is True)
 
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
+    fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     if timestep is not None:
         data = ca[timestep]
     else:
         data = ca[-1]
-    plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+
+    _add_grid_lines(ca, ax, show_grid)
+
+    im = plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
     if show:
         plt.show()
 
 
-def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show=True, **imshow_kwargs):
+def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6,
+                 show=True, **imshow_kwargs):
     """
     Plots a slice through the evolved states of a 2D cellular automaton. For example, consider the following `ca`,
     which may represent the evolution of a 3x3 2D cellular automaton over 3 timesteps:
@@ -74,17 +91,32 @@ def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show=True, **ims
 
     :param colormap: the color map to use (default is "Greys")
 
+    :param show_grid: whether to display a grid (default is False)
+
+    :param show_margin: whether to display the margin (default is True)
+
+    :param scale: the scale of the figure (default is 0.6)
+
     :param show: show the plot (default is True)
 
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
+    fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     if slice is not None:
         data = ca[:, slice]
     else:
         data = ca[:, len(ca[0])//2]
-    plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+
+    _add_grid_lines(ca, ax, show_grid)
+
+    im = plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
     if show:
         plt.show()
 
@@ -154,18 +186,7 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
     if not show_margin:
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
 
-    grid_linewidth = 0.0
-    if show_grid:
-        plt.xticks(np.arange(-.5, len(ca[0][0]), 1), "")
-        plt.yticks(np.arange(-.5, len(ca[0]), 1), "")
-        plt.tick_params(axis='both', which='both', length=0)
-        grid_linewidth = 0.5
-    vertical = np.arange(-.5, len(ca[0][0]), 1)
-    horizontal = np.arange(-.5, len(ca[0]), 1)
-    lines = ([[(x, y) for y in (-.5, horizontal[-1])] for x in vertical] +
-             [[(x, y) for x in (-.5, vertical[-1])] for y in horizontal])
-    grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
-    ax.add_collection(grid)
+    grid = _add_grid_lines(ca, ax, show_grid)
 
     im = plt.imshow(ca[0], animated=True, cmap=cmap, **imshow_kwargs)
     if not show_margin:
@@ -186,6 +207,34 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     if show:
         plt.show()
+
+
+def _add_grid_lines(ca, ax, show_grid):
+    """
+    Adds grid lines to the plot.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param ax: the Matplotlib axis object
+
+    :param show_grid: whether to display the grid lines
+
+    :return: the grid object
+    """
+    grid_linewidth = 0.0
+    if show_grid:
+        plt.xticks(np.arange(-.5, len(ca[0][0]), 1), "")
+        plt.yticks(np.arange(-.5, len(ca[0]), 1), "")
+        plt.tick_params(axis='both', which='both', length=0)
+        grid_linewidth = 0.5
+    vertical = np.arange(-.5, len(ca[0][0]), 1)
+    horizontal = np.arange(-.5, len(ca[0]), 1)
+    lines = ([[(x, y) for y in (-.5, horizontal[-1])] for x in vertical] +
+             [[(x, y) for x in (-.5, vertical[-1])] for y in horizontal])
+    grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
+    ax.add_collection(grid)
+
+    return grid
 
 
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):

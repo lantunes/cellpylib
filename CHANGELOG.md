@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more documentation to functions in `entropy.py` and `bien.py`, and to `plot2d_slice` and `plot2d_spacetime`
 - Added the `BaseRule` class, which provides a base for custom callable rules
 - Added built-in `Sandpile` implementation
+- Added `show=True` argument to plotting function signatures
+- Added `show_grid`, `show_margin` and `scale` arguments to `plot2d` and `plot2d_slice` functions
 
 ### Changed
 
@@ -22,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced copyright notice in `README.md` with link to Apache License 2.0
 - Importing modules explicitly in `__init__.py` to avoid polluting namespace
 - Changed `AsynchronousRule`, `ReversibleRule`, and `CTRBLRule` so that they extend `BaseRule` and implement `__call__`
-- Changed plotting function signatures so that they accept `imshow` keyword args
+- Changed plotting function signatures so that they accept `imshow` keyword args 
 
 ## [1.1.0] - 2021-08-02
 
