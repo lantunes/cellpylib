@@ -5,7 +5,7 @@ import matplotlib.collections as mcoll
 import numpy as np
 
 
-def plot2d(ca, timestep=None, title='', *, colormap='Greys', **imshow_kwargs):
+def plot2d(ca, timestep=None, title='', *, colormap='Greys', show=True, **imshow_kwargs):
     """
     Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
     timestep is plotted.
@@ -18,6 +18,8 @@ def plot2d(ca, timestep=None, title='', *, colormap='Greys', **imshow_kwargs):
 
     :param colormap: the color map to use (default is "Greys")
 
+    :param show: show the plot (default is True)
+
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
@@ -27,10 +29,11 @@ def plot2d(ca, timestep=None, title='', *, colormap='Greys', **imshow_kwargs):
     else:
         data = ca[-1]
     plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', **imshow_kwargs):
+def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show=True, **imshow_kwargs):
     """
     Plots a slice through the evolved states of a 2D cellular automaton. For example, consider the following `ca`,
     which may represent the evolution of a 3x3 2D cellular automaton over 3 timesteps:
@@ -71,6 +74,8 @@ def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', **imshow_kwargs)
 
     :param colormap: the color map to use (default is "Greys")
 
+    :param show: show the plot (default is True)
+
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
@@ -80,10 +85,11 @@ def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', **imshow_kwargs)
     else:
         data = ca[:, len(ca[0])//2]
     plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot2d_spacetime(ca, alpha=None, title=''):
+def plot2d_spacetime(ca, alpha=None, title='', show=True):
     """
     Plots the evolution of the given 2D cellular automaton as a 3D space-time plot.
 
@@ -92,6 +98,8 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     :param alpha: the alpha blending value; a real number between 0 (transparent) and 1 (opaque)
 
     :param title: the title to place on the plot
+
+    :param show: show the plot (default is True)
     """
     fig = plt.figure(figsize=(10, 7))
     plt.title(title)
@@ -106,11 +114,12 @@ def plot2d_spacetime(ca, alpha=None, title=''):
                ys.ravel(),
                zs.ravel(),
                c=masked_data.ravel(), cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
-    plt.show()
+    if show:
+        plt.show()
 
 
 def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
-                   interval=50, save=False, autoscale=False, **imshow_kwargs):
+                   interval=50, save=False, autoscale=False, show=True, **imshow_kwargs):
     """
     Animate the given 2D cellular automaton.
 
@@ -134,6 +143,8 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
 
     :param autoscale: whether to autoscale the images in the animation; this should be set to True if the first
                       frame has a uniform value (e.g. all zeroes) (default is False)
+
+    :param show: show the plot (default is True)
 
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
@@ -173,7 +184,8 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
-    plt.show()
+    if show:
+        plt.show()
 
 
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):

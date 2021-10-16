@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', **imshow_kwargs):
+def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', show=True, **imshow_kwargs):
     """
     Plots the given cellular automaton.
 
@@ -16,6 +16,8 @@ def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', **imshow_k
 
     :param ylabel: the label of the y-axis (default 'time')
 
+    :param show: show the plot (default is True)
+
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
@@ -23,10 +25,11 @@ def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', **imshow_k
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.imshow(ca, interpolation='none', cmap=cmap, **imshow_kwargs)
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time', **imshow_kwargs):
+def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time', show=True, **imshow_kwargs):
     """
     Plots multiple cellular automata separately.
 
@@ -40,6 +43,8 @@ def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time'
 
     :param ylabel: the label of the y-axis (default 'time')
 
+    :param show: show the plot (default is True)
+
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
@@ -49,7 +54,8 @@ def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time'
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.imshow(ca_list[i], interpolation='none', cmap=cmap, **imshow_kwargs)
-    plt.show()
+    if show:
+        plt.show()
 
 
 def evolve(cellular_automaton, timesteps, apply_rule, r=1):
