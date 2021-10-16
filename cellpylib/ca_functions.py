@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot(ca, title='', xlabel='', ylabel='time'):
+def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', **imshow_kwargs):
     """
     Plots the given cellular automaton.
 
@@ -10,19 +10,23 @@ def plot(ca, title='', xlabel='', ylabel='time'):
 
     :param title: the title to place on the plot (default is empty)
 
+    :param colormap: the colormap to use (default is 'Greys')
+
     :param xlabel: the label of the x-axis (default is empty)
 
     :param ylabel: the label of the y-axis (default 'time')
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.imshow(ca, interpolation='none', cmap=cmap)
+    plt.imshow(ca, interpolation='none', cmap=cmap, **imshow_kwargs)
     plt.show()
 
 
-def plot_multiple(ca_list, titles, xlabel='', ylabel='time'):
+def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time', **imshow_kwargs):
     """
     Plots multiple cellular automata separately.
 
@@ -30,17 +34,21 @@ def plot_multiple(ca_list, titles, xlabel='', ylabel='time'):
 
     :param titles: the titles to give the plots; there must be one title for each CA
 
+    :param colormap: the colormap to use for the plots (default is 'Greys')
+
     :param xlabel: the label of the x-axis (default is empty)
 
     :param ylabel: the label of the y-axis (default 'time')
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     for i in range(0, len(ca_list)):
         plt.figure(i)
         plt.title(titles[i])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        plt.imshow(ca_list[i], interpolation='none', cmap=cmap)
+        plt.imshow(ca_list[i], interpolation='none', cmap=cmap, **imshow_kwargs)
     plt.show()
 
 

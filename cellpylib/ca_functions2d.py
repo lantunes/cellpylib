@@ -5,7 +5,7 @@ import matplotlib.collections as mcoll
 import numpy as np
 
 
-def plot2d(ca, timestep=None, title='', colormap='Greys'):
+def plot2d(ca, timestep=None, title='', *, colormap='Greys', **imshow_kwargs):
     """
     Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
     timestep is plotted.
@@ -17,6 +17,8 @@ def plot2d(ca, timestep=None, title='', colormap='Greys'):
     :param title: the title to place on the plot
 
     :param colormap: the color map to use (default is "Greys")
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
     plt.title(title)
@@ -24,11 +26,11 @@ def plot2d(ca, timestep=None, title='', colormap='Greys'):
         data = ca[timestep]
     else:
         data = ca[-1]
-    plt.imshow(data, interpolation='none', cmap=cmap)
+    plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
     plt.show()
 
 
-def plot2d_slice(ca, slice=None, title='', colormap='Greys'):
+def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', **imshow_kwargs):
     """
     Plots a slice through the evolved states of a 2D cellular automaton. For example, consider the following `ca`,
     which may represent the evolution of a 3x3 2D cellular automaton over 3 timesteps:
@@ -68,6 +70,8 @@ def plot2d_slice(ca, slice=None, title='', colormap='Greys'):
     :param title: the title to place on the plot
 
     :param colormap: the color map to use (default is "Greys")
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
     plt.title(title)
@@ -75,7 +79,7 @@ def plot2d_slice(ca, slice=None, title='', colormap='Greys'):
         data = ca[:, slice]
     else:
         data = ca[:, len(ca[0])//2]
-    plt.imshow(data, interpolation='none', cmap=cmap)
+    plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
     plt.show()
 
 
@@ -105,8 +109,8 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     plt.show()
 
 
-def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
-                   interval=50, save=False, autoscale=False):
+def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
+                   interval=50, save=False, autoscale=False, **imshow_kwargs):
     """
     Animate the given 2D cellular automaton.
 
@@ -130,6 +134,8 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
 
     :param autoscale: whether to autoscale the images in the animation; this should be set to True if the first
                       frame has a uniform value (e.g. all zeroes) (default is False)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
@@ -150,7 +156,7 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
     grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
     ax.add_collection(grid)
 
-    im = plt.imshow(ca[0], animated=True, cmap=cmap)
+    im = plt.imshow(ca[0], animated=True, cmap=cmap, **imshow_kwargs)
     if not show_margin:
         baseheight, basewidth = im.get_size()
         fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
