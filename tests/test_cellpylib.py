@@ -7,10 +7,11 @@ import pytest
 import matplotlib
 
 import cellpylib as cpl
-import warnings
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 matplotlib.use("Agg")
+
+PLOT_WARNING_MATCH = "Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure."
 
 
 class TestCellularAutomataFunctions(unittest.TestCase):
@@ -483,14 +484,12 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
     def test_plot(self):
         # this test ensures that the following code can run successfully without issue
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", UserWarning)
+        with pytest.warns(UserWarning, match=PLOT_WARNING_MATCH):
             cpl.plot([[1, 0, 1], [1, 1, 1]], title="some test")
 
     def test_plot_multiple(self):
         # this test ensures that the following code can run successfully without issue
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", UserWarning)
+        with pytest.warns(UserWarning, match=PLOT_WARNING_MATCH):
             cpl.plot_multiple([
                 [[1, 0, 1], [1, 1, 1]],
                 [[0, 1, 1], [1, 1, 1]]
