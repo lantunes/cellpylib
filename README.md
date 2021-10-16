@@ -2,7 +2,9 @@ CellPyLib
 =========
 
 CellPyLib is a library for working with Cellular Automata, for Python. Currently, only 1- and 2-dimensional _k_-color 
-cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The 
+cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. While
+cellular automata constitute a very broad class of models, this library focuses on those that are constrained to a 
+regular array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods. The 
 cellular automata produced by this library match the corresponding cellular automata available 
 at [atlas.wolfram.com](http://atlas.wolfram.com).
 

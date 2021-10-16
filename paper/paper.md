@@ -103,4 +103,10 @@ cpl.plot(cellular_automaton)
 
 The result is rendered, as depicted in \autoref{fig:rule30}.
 
+# Scope
+
+While `CellPyLib` is a general-purpose library that allows for the implementation of a wide variety of CA, it is 
+important to note that CA constitute a very broad class of models. `CellPyLib` focuses on those that are constrained to 
+a regular array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods.
+
 # References
