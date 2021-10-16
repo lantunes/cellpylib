@@ -11,7 +11,7 @@ import cellpylib as cpl
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 matplotlib.use("Agg")
 
-PLOT_WARNING_MATCH = "Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure."
+PLOT_WARNING = "Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure."
 
 
 class TestCellularAutomataFunctions(unittest.TestCase):
@@ -482,18 +482,18 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    @pytest.mark.filterwarnings("ignore:{}".format(PLOT_WARNING))
     def test_plot(self):
         # this test ensures that the following code can run successfully without issue
-        with pytest.warns(UserWarning, match=PLOT_WARNING_MATCH):
-            cpl.plot([[1, 0, 1], [1, 1, 1]], title="some test")
+        cpl.plot([[1, 0, 1], [1, 1, 1]], title="some test")
 
+    @pytest.mark.filterwarnings("ignore:{}".format(PLOT_WARNING))
     def test_plot_multiple(self):
         # this test ensures that the following code can run successfully without issue
-        with pytest.warns(UserWarning, match=PLOT_WARNING_MATCH):
-            cpl.plot_multiple([
-                [[1, 0, 1], [1, 1, 1]],
-                [[0, 1, 1], [1, 1, 1]]
-            ], titles=["test 1", "test 2"])
+        cpl.plot_multiple([
+            [[1, 0, 1], [1, 1, 1]],
+            [[0, 1, 1], [1, 1, 1]]
+        ], titles=["test 1", "test 2"])
 
     def test_bits_to_int(self):
         self.assertEqual(9, cpl.bits_to_int([1, 0, 0, 1]))
