@@ -293,26 +293,71 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
         if mask_size != 0:
             von_neumann_mask[i][-mask_size:] = 1
 
-    def get_neighbourhood(cell_layer, row, col):
-        row_indices = range(row - r, row + r + 1)
-        row_indices = [i - cell_layer.shape[0] if i > (cell_layer.shape[0] - 1) else i for i in row_indices]
-        col_indices = range(col - r, col + r + 1)
-        col_indices = [i - cell_layer.shape[1] if i > (cell_layer.shape[1] - 1) else i for i in col_indices]
-        n = cell_layer[np.ix_(row_indices, col_indices)]
-        if neighbourhood == 'Moore':
-            return n
-        elif neighbourhood == 'von Neumann':
-            return np.ma.masked_array(n, von_neumann_mask)
-        else:
-            raise Exception("unknown neighbourhood type: %s" % neighbourhood)
+    neighbourhood_indices = _get_neighbourhood_indices(rows, cols, r)
 
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
         for row, cell_row in enumerate(cell_layer):
             for col, cell in enumerate(cell_row):
-                n = get_neighbourhood(cell_layer, row, col)
+                n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
                 array[t][row][col] = apply_rule(n, (row, col), t)
     return array
+
+
+def _get_neighbourhood_indices(rows, cols, r):
+    """
+    Returns a dictionary mapping the coordinates of a cell in a 2D CA to its neighbourhood indices.
+
+    :param rows: the number of rows in the 2D CA
+
+    :param cols: the number of columns in the 2D CA
+
+    :param r: the radius of the neighbourhood
+
+    :return: a dictionary, where the key is a 2-tuple, (row, col),
+             and the value is a 2-tuple, (row_indices, col_indices)
+    """
+    indices = {}
+    for row in range(rows):
+        for col in range(cols):
+            row_indices = range(row - r, row + r + 1)
+            row_indices = [i - rows if i > (rows - 1) else i for i in row_indices]
+            col_indices = range(col - r, col + r + 1)
+            col_indices = [i - cols if i > (cols - 1) else i for i in col_indices]
+            indices[(row, col)] = (row_indices, col_indices)
+    return indices
+
+
+def _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask):
+    """
+    Returns the cell neighbourhood for the cell given by the row and column index. If the neighbourhood is
+    `von Neumann`, then an appropriately masked array is returned.
+
+    :param cell_layer: an array with dimensions 2r+1 x 2r+1
+
+    :param neighbourhood_indices: a 2-tuple containing the row and column indices of the neighbours of the cell given
+                                  by the row and column index
+
+    :param row: the row index of the cell
+
+    :param col: the column index of the cell
+
+    :param neighbourhood: the neighbourhood type
+
+    :param von_neumann_mask: a boolean array with dimensions 2r+1 x 2r+1 representing which cells in the neighbourhood
+                             should be masked
+
+    :return: a 2r+1 x 2r+1 array representing the cell neighbourhood of the cell given by row and col, if the
+             neighbourhood type is `von Neumann`, then the array will be masked
+    """
+    row_indices, col_indices = neighbourhood_indices[(row, col)]
+    n = cell_layer[np.ix_(row_indices, col_indices)]
+    if neighbourhood == 'Moore':
+        return n
+    elif neighbourhood == 'von Neumann':
+        return np.ma.masked_array(n, von_neumann_mask)
+    else:
+        raise Exception('unknown neighbourhood type: %s' % neighbourhood)
 
 
 def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
