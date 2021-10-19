@@ -92,7 +92,7 @@ def average_mutual_information(cellular_automaton, temporal_distance=1):
     """
     num_cols = cellular_automaton.shape[1]
     if not (0 < temporal_distance < num_cols):
-        raise Exception("the temporal distance must be greater than 0 and less than the number of time steps")
+        raise ValueError("the temporal distance must be greater than 0 and less than the number of time steps")
     mutual_informations = []
     for i in range(0, num_cols):
         cell_states_over_time = ''.join([str(x) for x in cellular_automaton[:, i]])

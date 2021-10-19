@@ -30,7 +30,7 @@ def apen(sequence, m=1, r=0):
     elif type(sequence) is np.ndarray:
         U = sequence
     else:
-        raise Exception("unsupported sequence type: %s" % type(sequence))
+        raise TypeError("unsupported sequence type: %s" % type(sequence))
 
     N = len(U)
 

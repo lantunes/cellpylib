@@ -357,7 +357,7 @@ def _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhoo
     elif neighbourhood == 'von Neumann':
         return np.ma.masked_array(n, von_neumann_mask)
     else:
-        raise Exception('unknown neighbourhood type: %s' % neighbourhood)
+        raise ValueError('unknown neighbourhood type: %s' % neighbourhood)
 
 
 def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
@@ -381,7 +381,7 @@ def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
     x = np.zeros((rows, cols), dtype=dtype)
     if coords is not None:
         if not isinstance(coords, (tuple, list)) or len(coords) != 2:
-            raise Exception("coords must be a list or tuple of length 2")
+            raise TypeError("coords must be a list or tuple of length 2")
         x[coords[0]][coords[1]] = val
     else:
         x[x.shape[0]//2][x.shape[1]//2] = val

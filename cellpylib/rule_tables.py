@@ -17,7 +17,7 @@ def table_rule(neighbourhood, table):
     """
     state_repr = ''.join(str(x) for x in neighbourhood)
     if not state_repr in table:
-        raise Exception("could not find state '%s' in table" % state_repr)
+        raise ValueError("could not find state '%s' in table" % state_repr)
     return table[state_repr]
 
 
@@ -57,7 +57,7 @@ def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiesc
     if quiescent_state is None:
         quiescent_state = np.random.randint(k, dtype=np.int32)
     if not (0 <= quiescent_state <= k - 1):
-        raise Exception("quiescent state must be a number in {0,...,k - 1}")
+        raise ValueError("quiescent state must be a number in {0,...,k - 1}")
     other_states = [x for x in range(0, k) if x != quiescent_state]
     quiescent_state_count = 0
     for state in states:

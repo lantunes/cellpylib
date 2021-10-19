@@ -214,7 +214,7 @@ def totalistic_rule(neighbourhood, k, rule):
     n = neighbourhood.size
     rule_string = np.base_repr(rule, base=k).zfill(n*(k - 1) + 1)
     if len(rule_string) > n*(k - 1) + 1:
-        raise Exception("rule number out of range")
+        raise ValueError("rule number out of range")
     neighbourhood_sum = np.sum(neighbourhood)
     # the rightmost element of the rule is for the average color 0, in NKS convention
     return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
@@ -259,7 +259,7 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int32):
     if n_randomized is None:
         n_randomized = size
     if n_randomized > size or n_randomized < 0:
-        raise Exception("the number of randomized sites, if specified, must be >= 0 and <= size")
+        raise ValueError("the number of randomized sites, if specified, must be >= 0 and <= size")
     pad_left = (size - n_randomized) // 2
     pad_right = (size - n_randomized) - pad_left
     if np.issubdtype(dtype, np.integer):
@@ -356,7 +356,7 @@ class AsynchronousRule(BaseRule):
         :param randomize_each_cycle: whether to shuffle the update order list after each complete cycle
         """
         if update_order is None and num_cells is None:
-            raise Exception("either update_order or num_cells must be specified")
+            raise ValueError("either update_order or num_cells must be specified")
         self._apply_rule = apply_rule
         if update_order is not None:
             self._update_order = update_order
@@ -373,7 +373,7 @@ class AsynchronousRule(BaseRule):
         elif isinstance(num_cells, int):
             self._update_order = np.arange(num_cells)
         else:
-            raise Exception("num_cells must be either an int (1D CA) or a 2-tuple (2D CA)")
+            raise TypeError("num_cells must be either an int (1D CA) or a 2-tuple (2D CA)")
 
     def _shuffle_update_order(self):
         np.random.shuffle(self._update_order)
@@ -417,4 +417,4 @@ class AsynchronousRule(BaseRule):
         elif len(n.shape) == 2:
             return n[n.shape[0]//2][n.shape[1]//2]
         else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+            raise TypeError("unexpected neighbourhood dimensions: %s" % n.shape)

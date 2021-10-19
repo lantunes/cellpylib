@@ -39,7 +39,7 @@ class CTRBLRule(BaseRule):
         left = n[1][0]
         key = (current_activity, top, right, bottom, left)
         if key not in self._rule_table:
-            raise Exception("neighbourhood state (%s, %s, %s, %s, %s) not in rule table" % key)
+            raise ValueError("neighbourhood state (%s, %s, %s, %s, %s) not in rule table" % key)
         return self._rule_table[key]
 
     @property
