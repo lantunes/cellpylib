@@ -55,7 +55,9 @@ for example. Researchers may be dissuaded from incorporating CA into their resea
 unfamiliar languages and technologies, or are required to devote considerable effort to the implementation and testing 
 of non-trivial algorithms. The availability of a user-friendly Python library for CA will likely encourage more 
 researchers to consider these fascinating dynamical and computational systems. Moreover, having a standard 
-implementation of CA in the Python environment helps to ensure that scientific results are reproducible.
+implementation of CA in the Python environment helps to ensure that scientific results are reproducible. CellPyLib is a 
+Python library aimed to meet this need, which supports the creation and analysis of models that exist on a regular 
+array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods.
 
 # Example Usage
 
