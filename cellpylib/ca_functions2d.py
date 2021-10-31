@@ -145,7 +145,7 @@ def plot2d_spacetime(ca, alpha=None, title='', show=True):
     """
     fig = plt.figure(figsize=(10, 7))
     plt.title(title)
-    ax = fig.gca(projection='3d')
+    ax = Axes3D(fig)
     ca = ca[::-1]
     xs = np.arange(ca.shape[2])[None, None, :]
     ys = np.arange(ca.shape[1])[None, :, None]
