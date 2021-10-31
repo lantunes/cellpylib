@@ -68,8 +68,11 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
     :param cellular_automaton: the cellular automaton starting condition representing the first time step;
                                e.g. [[0,0,0,0,1,0,0,0,0]] 
 
-    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
-                      time steps in this cellular automaton evolution, which includes the initial condition  
+    :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
+                      (in terms of the history of its evolution) and the current timestep number, and is expected to
+                      return a boolean indicating whether the evolution should continue; note that if a number is given,
+                      this value refers to the total number of time steps in this cellular automaton evolution, which
+                      includes the initial condition
 
     :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
                        will be given three arguments, in the following order: the neighbourhood, which is a numpy array
@@ -82,23 +85,101 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
+    if callable(timesteps):
+        return _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r)
+    else:
+        return _evolve_fixed(cellular_automaton, timesteps, apply_rule, r)
+
+
+def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
+    """
+    Evolves the given cellular automaton for the given number of fixed timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
+                      this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a
+                       scalar representing the time step in the evolution
+
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
+             specified
+    """
     _, cols = cellular_automaton.shape
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = cellular_automaton
 
-    def index_strides(arr, window_size):
-        # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
-        arr = np.concatenate((arr[-window_size//2+1:], arr, arr[:window_size//2]))
-        shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
-        strides = arr.strides + (arr.strides[-1],)
-        return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
-
     for t in range(1, timesteps):
         cells = array[t - 1]
-        strides = index_strides(np.arange(len(cells)), 2*r + 1)
+        strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
         array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
     return array
+
+
+def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
+    """
+    Evolves the given cellular automaton for a dynamic number of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
+                      current timestep number, and is expected to return a boolean indicating whether the evolution
+                      should continue
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a
+                       scalar representing the time step in the evolution
+
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
+             specified
+    """
+    _, cols = cellular_automaton.shape
+    array = [cellular_automaton[0]]
+
+    t = 1
+    while timesteps(np.array(array), t):
+        cells = array[-1]
+        strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
+        neighbourhoods = cells[strides]
+        array.append(np.array(
+            [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)],
+            dtype=cellular_automaton.dtype
+        ))
+        t += 1
+    return np.array(array)
+
+
+def _index_strides(arr, window_size):
+    """
+    Returns an array with dimensions len(cells) x window_size, representing the cell indices of the neighbourhood
+    of each cell.
+
+    :param arr: an array containing the cell indices; e.g. if there are 5 cells, then the argument
+                will be [0, 1, 2, 3, 4]
+
+    :param window_size: the size of the neighbourhood
+
+    :return: an array with dimensions len(cells) x window_size, representing the cell indices of the neighbourhood
+             of each cell
+    """
+    # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
+    arr = np.concatenate((arr[-window_size // 2 + 1:], arr, arr[:window_size // 2]))
+    shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
+    strides = arr.strides + (arr.strides[-1],)
+    return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
 
 
 def bits_to_int(bits):

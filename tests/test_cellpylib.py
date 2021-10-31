@@ -391,6 +391,22 @@ class TestCellularAutomataFunctions(unittest.TestCase):
                                         apply_rule=r)
         np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
 
+    def test_dynamic_timesteps(self):
+        initial = np.array([[17]], dtype=np.int)
+
+        def activity_rule(n, c, t):
+            n = n[1]
+            if n % 2 == 0:
+                # number is even
+                return n / 2
+            else:
+                return 3 * n + 1
+
+        ca = cpl.evolve(initial, apply_rule=activity_rule,
+                        timesteps=lambda ca, t: True if ca[-1][0] != 1 else False)
+
+        self.assertEqual([17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], [i[0] for i in ca])
+
     def test_init_random_dtype(self):
         arr = cpl.init_random(3, dtype=np.float32)
         self.assertEqual(len(arr), 1)

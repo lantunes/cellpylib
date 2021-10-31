@@ -234,6 +234,38 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
             cpl.evolve2d(cellular_automaton, timesteps=2, neighbourhood='foo', apply_rule=cpl.game_of_life_rule)
         self.assertTrue("unknown neighbourhood type: foo" in str(e.value))
 
+    def test_evolve_dynamic_timesteps(self):
+        np.random.seed(0)
+
+        n_rows = 10
+        n_cols = 10
+        sandpile = cpl.Sandpile(n_rows, n_cols)
+
+        initial = np.random.randint(5, size=n_rows * n_cols).reshape((1, n_rows, n_cols))
+        # we're using a closed boundary, so make the boundary cells 0
+        initial[0, 0, :], initial[0, n_rows - 1, :], initial[0, :, 0], initial[0, :, n_cols - 1] = 0, 0, 0, 0
+
+        ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+                          apply_rule=sandpile, neighbourhood="von Neumann")
+
+        self.assertEqual(6, len(ca))
+
+    def test_sandpile_add_grain(self):
+        expected = self._convert_to_numpy_matrix("sandpile_add_grain.ca")
+
+        n_rows = 10
+        n_cols = 10
+        sandpile = cpl.Sandpile(n_rows, n_cols)
+        sandpile.add_grain(cell_index=(3, 3), timestep=1)
+
+        initial = np.loadtxt(os.path.join(THIS_DIR, 'resources', 'sandpile_add_grain.txt'), dtype=int)
+        initial = np.array([initial])
+
+        ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+                          apply_rule=sandpile, neighbourhood="von Neumann")
+
+        np.testing.assert_equal(expected, ca.tolist())
+
     def test_plot2d(self):
         # this test ensures that the following code can run successfully without issue
         with warnings.catch_warnings():

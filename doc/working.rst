@@ -91,7 +91,12 @@ valid argument could be `[[0,0,0,0,1,0,0,0,0]]`.
 
 The ``timesteps`` parameter is simply an integer representing the number of timesteps the CA should undergo evolution, or
 application of the supplied rule. Note that the initial conditions of the CA are considered the 1st timestep, so, for
-example, if ``timesteps`` is set to `3`, then the rule will be applied two times.
+example, if ``timesteps`` is set to `3`, then the rule will be applied two times. This assumes that the number of
+timesteps is known in advance. However, in some cases, the number of timesteps may not be known in advance, and the CA
+is meant to be evolved until a certain condition is met. For such scenarios, the ``timesteps`` parameter may alternatively
+be a callable that accepts the states of the CA over the course of its evolution and the current timestep number, and is
+expected to return a boolean indicating whether evolution should continue. If the callable returns `False`, then
+evolution is halted.
 
 The ``apply_rule`` parameter expects a callable that represents the rule that will be applied to each cell of the CA at
 each timestep. Any kind of callable is valid, but the callable must accept 3 arguments: ``n``, ``c`` and ``t``.

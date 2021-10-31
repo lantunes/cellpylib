@@ -264,8 +264,11 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
 
     :param cellular_automaton: the cellular automaton starting condition representing the first time step
 
-    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
-                      time steps in this cellular automaton evolution, which includes the initial condition
+    :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
+                      (in terms of the history of its evolution) and the current timestep number, and is expected to
+                      return a boolean indicating whether the evolution should continue; note that if a number is given,
+                      this value refers to the total number of time steps in this cellular automaton evolution, which
+                      includes the initial condition
 
     :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
                        will be given three arguments, in the following order: the neighbourhood, which is a numpy
@@ -282,10 +285,6 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
-    _, rows, cols = cellular_automaton.shape
-    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
-    array[0] = cellular_automaton
-
     von_neumann_mask = np.zeros((2*r + 1, 2*r + 1), dtype=bool)
     for i in range(len(von_neumann_mask)):
         mask_size = np.absolute(r - i)
@@ -293,7 +292,52 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
         if mask_size != 0:
             von_neumann_mask[i][-mask_size:] = 1
 
+    _, rows, cols = cellular_automaton.shape
     neighbourhood_indices = _get_neighbourhood_indices(rows, cols, r)
+
+    if callable(timesteps):
+        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+    else:
+        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+
+
+def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask):
+    """
+    Evolves the given cellular automaton for a fixed of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
+                      this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param rows: the number of rows in the CA
+
+    :param cols: the number of columns in the CA
+
+    :param neighbourhood_indices: the indices of cells, by neighbourhood
+
+    :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
+    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
+    array[0] = cellular_automaton
 
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
@@ -302,6 +346,55 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
                 n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
                 array[t][row][col] = apply_rule(n, (row, col), t)
     return array
+
+
+def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask):
+    """
+    Evolves the given cellular automaton for a dynamic number of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
+                      current timestep number, and is expected to return a boolean indicating whether the evolution
+                      should continue
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param rows: the number of rows in the CA
+
+    :param cols: the number of columns in the CA
+
+    :param neighbourhood_indices: the indices of cells, by neighbourhood
+
+    :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
+    array = [cellular_automaton[0]]
+
+    t = 1
+    while timesteps(np.array(array), t):
+        prev_layer = array[-1]
+        next_layer = np.zeros((rows, cols), dtype=cellular_automaton.dtype)
+        for row, cell_row in enumerate(prev_layer):
+            for col, cell in enumerate(cell_row):
+                n = _get_neighbourhood(prev_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
+                next_layer[row][col] = apply_rule(n, (row, col), t)
+        array.append(next_layer)
+        t += 1
+    return np.array(array)
 
 
 def _get_neighbourhood_indices(rows, cols, r):

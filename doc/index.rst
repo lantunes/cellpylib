@@ -33,6 +33,7 @@ the Shannon entropy and mutual information, are provided.
   colors
   complexity
   continuous
+  collatz
   twodim
   gol
   wireworld

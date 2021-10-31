@@ -24,7 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced copyright notice in `README.md` with link to Apache License 2.0
 - Importing modules explicitly in `__init__.py` to avoid polluting namespace
 - Changed `AsynchronousRule`, `ReversibleRule`, and `CTRBLRule` so that they extend `BaseRule` and implement `__call__`
-- Changed plotting function signatures so that they accept `imshow` keyword args 
+- Changed plotting function signatures so that they accept `imshow` keyword args
+- Changed the `evolve` and `evolve2d` functions so that the `timesteps` parameter can alternatively be a callable,
+  so that models where the number of timesteps is not known in advance are supported
 
 ## [1.1.0] - 2021-08-02
 

@@ -21,6 +21,18 @@ class Sandpile(BaseRule):
         self._rows = rows
         self._cols = cols
         self._is_closed_boundary = is_closed_boundary
+        self._grain_additions = []
+
+    def add_grain(self, cell_index, timestep):
+        """
+        Drop a grain of sand at the given cell in the given timestep.
+
+        :param cell_index: a 2-tuple representing the row index and column index of the cell that will have
+                           a grain of sand added
+
+        :param timestep: the timestep at which the grain addition will occur
+        """
+        self._grain_additions.append(_GrainAddition(cell_index, timestep))
 
     def _is_in_boundary(self, c):
         """
@@ -31,6 +43,22 @@ class Sandpile(BaseRule):
         :return: True if the given cell is a boundary cell, False otherwise
         """
         return c[0] == 0 or c[0] == self._rows - 1 or c[1] == 0 or c[1] == self._cols - 1
+
+    @staticmethod
+    def until_fixed_point():
+        """
+        Returns a callable to be used as the `timesteps` argument to the `evolve2d` function, that will
+        result in the evolution being halted when there have been no changes to the state of the CA in the
+        last timestep. That is, if the last state of the CA is the same as the second-to-last state, the
+        callable will return `False`, and evolution will be halted.
+
+        :return: a callable to be used as the `timesteps` argument to the `evolve2d` function
+        """
+        def _timesteps(ca, t):
+            if len(ca) > 1:
+                return False if (ca[-2] == ca[-1]).all() else True
+            return True
+        return _timesteps
 
     def __call__(self, n, c, t):
         """
@@ -46,6 +74,10 @@ class Sandpile(BaseRule):
         """
         if self._is_closed_boundary and self._is_in_boundary(c):
             return 0  # closed boundary conditions
+
+        for grain_addition in self._grain_additions:
+            if t == grain_addition.timestep and c == grain_addition.cell_index:
+                return n[1][1] + 1
 
         # this cell's activity is the value of the center of the von Neumann neighbourhood
         current_activity = n[1][1]
@@ -63,3 +95,19 @@ class Sandpile(BaseRule):
             new_activity -= self._K
 
         return new_activity
+
+
+class _GrainAddition:
+    """
+    A representation of the addition of a grain of sand to the sandpile.
+    """
+    def __init__(self, cell_index, timestep):
+        """
+        Create an instance of a `_GrainAddition`.
+
+        :param cell_index: the index of the cell that will have a grain of sand added
+
+        :param timestep: the timestep at which the grain addition occurs
+        """
+        self.cell_index = cell_index
+        self.timestep = timestep
