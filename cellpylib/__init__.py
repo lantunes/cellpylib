@@ -10,7 +10,7 @@ For complete documentation, see: https://cellpylib.org
 __version__ = "2.0.0"
 
 from .ca_functions import BaseRule, AsynchronousRule, ReversibleRule, binary_rule, init_simple, nks_rule, \
-    totalistic_rule, plot_multiple, bits_to_int, int_to_bits, init_random, plot, evolve
+    totalistic_rule, plot_multiple, bits_to_int, int_to_bits, init_random, plot, evolve, until_fixed_point
 
 from .rule_tables import random_rule_table, table_walk_through, table_rule
 

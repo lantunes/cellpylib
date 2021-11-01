@@ -245,7 +245,7 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         # we're using a closed boundary, so make the boundary cells 0
         initial[0, 0, :], initial[0, n_rows - 1, :], initial[0, :, 0], initial[0, :, n_cols - 1] = 0, 0, 0, 0
 
-        ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+        ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
                           apply_rule=sandpile, neighbourhood="von Neumann")
 
         self.assertEqual(6, len(ca))
@@ -261,7 +261,7 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         initial = np.loadtxt(os.path.join(THIS_DIR, 'resources', 'sandpile_add_grain.txt'), dtype=int)
         initial = np.array([initial])
 
-        ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+        ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
                           apply_rule=sandpile, neighbourhood="von Neumann")
 
         np.testing.assert_equal(expected, ca.tolist())

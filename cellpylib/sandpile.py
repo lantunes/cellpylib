@@ -44,22 +44,6 @@ class Sandpile(BaseRule):
         """
         return c[0] == 0 or c[0] == self._rows - 1 or c[1] == 0 or c[1] == self._cols - 1
 
-    @staticmethod
-    def until_fixed_point():
-        """
-        Returns a callable to be used as the `timesteps` argument to the `evolve2d` function, that will
-        result in the evolution being halted when there have been no changes to the state of the CA in the
-        last timestep. That is, if the last state of the CA is the same as the second-to-last state, the
-        callable will return `False`, and evolution will be halted.
-
-        :return: a callable to be used as the `timesteps` argument to the `evolve2d` function
-        """
-        def _timesteps(ca, t):
-            if len(ca) > 1:
-                return False if (ca[-2] == ca[-1]).all() else True
-            return True
-        return _timesteps
-
     def __call__(self, n, c, t):
         """
         The Sandpile rule to apply.

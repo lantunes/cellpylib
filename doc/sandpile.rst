@@ -30,11 +30,10 @@ the 2D CA can be either closed or open. If the boundary is closed, then all boun
 
 Note that in the example above, the number of timesteps is fixed at `50`. However, for any random initial conditions, it
 isn't obvious how many timesteps are necessary for the system to reach a stable state, or fixed point, in its evolution.
-The :py:class:`~cellpylib.sandpile.Sandpile` class provides a function,
-:py:func:`~cellpylib.sandpile.Sandpile.until_fixed_point`, that can be called to provide a callable for the
-``timesteps`` argument of the :py:func:`~cellpylib.ca_functions2d.evolve2d` function. By calling this function, instead
-of providing a fixed number, the sandpile will evolve until there is no further change in the state of the system. Below
-is an example demostrating this:
+The library provides a function, :py:func:`~cellpylib.ca_functions.until_fixed_point`, that can be called to provide a
+callable for the ``timesteps`` argument of the :py:func:`~cellpylib.ca_functions2d.evolve2d` function. By calling this
+function, instead of providing a fixed number, the sandpile will evolve until there is no further change in the state of
+the system. Below is an example demostrating this:
 
 .. code-block::
 
@@ -50,7 +49,7 @@ is an example demostrating this:
     # we're using a closed boundary, so make the boundary cells 0
     initial[0, 0, :], initial[0, n_rows-1, :], initial[0, :, 0], initial[0, :, n_cols-1] = 0, 0, 0, 0
 
-    ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+    ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
                       apply_rule=sandpile, neighbourhood="von Neumann")
 
     print("Number of timesteps to reach fixed point: %s" % len(ca))
@@ -82,7 +81,7 @@ located at row with index `23` and column with index `23` at timestep `1`.
     initial = np.loadtxt('sandpile_add_grain_demo.txt', dtype=int)
     initial = np.array([initial])
 
-    ca = cpl.evolve2d(initial, timesteps=sandpile.until_fixed_point(),
+    ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
                       apply_rule=sandpile, neighbourhood="von Neumann")
 
     print("Number of timesteps to reach fixed point: %s" % len(ca))

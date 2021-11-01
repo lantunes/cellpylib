@@ -350,6 +350,22 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int32):
     return np.array([np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)])
 
 
+def until_fixed_point():
+    """
+    Returns a callable to be used as the `timesteps` argument to the `evolve` and `evolve2d` functions, that will
+    result in the evolution being halted when there have been no changes to the state of the CA in the
+    last timestep. That is, if the last state of the CA is the same as the second-to-last state, the
+    callable will return `False`, and evolution will be halted.
+
+    :return: a callable to be used as the `timesteps` argument to the `evolve` and `evolve2d` functions
+    """
+    def _timesteps(ca, t):
+        if len(ca) > 1:
+            return False if (ca[-2] == ca[-1]).all() else True
+        return True
+    return _timesteps
+
+
 class BaseRule:
     """
     A base rule class for custom rules to extend. A rule is a callable that accepts three parameters:
