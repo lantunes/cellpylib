@@ -184,11 +184,11 @@ def _index_strides(arr, window_size):
 
 def bits_to_int(bits):
     """
-    Converts a binary array representing bits into the corresponding int in base 10.
+    Converts a binary array representing a binary number into the corresponding int.
 
     :param bits: a list of 1s and 0s, representing a binary number
 
-    :return: and int representing the corresponding number in base 10
+    :return: and int representing the corresponding number
     """
     total = 0
     for shift, j in enumerate(bits[::-1]):
