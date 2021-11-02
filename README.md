@@ -29,6 +29,13 @@ cpl.plot(cellular_automaton)
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/rule30.png" width="50%"/>
 
+You should use CellPyLib if:
+* you are an instructor or student wishing to learn more about Elementary Cellular Automata and 2D Cellular Automata on 
+a uniform grid (such as the Game of Life, the Abelian sandpile, Langton's Loops, etc.)
+* you are a researcher who wishes to work with Elementary Cellular Automata and/or 2D Cellular Automata on a uniform 
+grid, and would like to use a flexible, correct and tested library that provides access to such models as part of your 
+research
+
 ### Getting Started
 
 CellPyLib can be installed via pip:

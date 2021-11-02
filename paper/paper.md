@@ -59,6 +59,19 @@ implementation of CA in the Python environment helps to ensure that scientific r
 Python library aimed to meet this need, which supports the creation and analysis of models that exist on a regular 
 array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods.
 
+Researchers and students alike should find CellPyLib useful. Students and instructors can use CellPyLib in an 
+educational context if they would like to learn about elementary CA and 2D CA on a uniform grid. Researchers in both the 
+computer and physical sciences can use CellPyLib to answer serious questions about the computational and natural worlds. 
+For example, the Abelian sandpile model included in the library can be used as part of a university course on complex 
+systems to demonstrate the phenomenon of self-organized criticality. The same model may be used by professional 
+physicists wishing to explore self-organized criticality more deeply. 
+
+While CellPyLib is expected to be of interest to students, educators, and researchers, there are certain scenarios in 
+which alternate tools would be more appropriate. For example, if a researcher would like to evolve CA with a very large
+number of cells, or for very many iterations, in a timely fashion, then an implementation that is optimized for the 
+specific model in question would be more appropriate. Also, if the model is not constrained to a uniform grid, then
+other solutions should be sought.
+
 # Example Usage
 
 `CellPyLib` can be readily installed using `pip`:
