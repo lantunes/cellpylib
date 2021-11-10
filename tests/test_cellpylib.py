@@ -2,10 +2,16 @@ import unittest
 
 import numpy as np
 import os
+import ast
+import pytest
+import matplotlib
 
 import cellpylib as cpl
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+matplotlib.use("Agg")
+
+PLOT_WARNING = "Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure."
 
 
 class TestCellularAutomataFunctions(unittest.TestCase):
@@ -145,6 +151,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(table['122'], table['221'])
         self.assertEqual(table['102'], table['201'])
 
+    def test_random_rule_table_illegal_quiescent_state(self):
+        with pytest.raises(Exception) as e:
+            table, _, _ = cpl.random_rule_table(k=3, r=1, isotropic=True, quiescent_state=4)
+        self.assertTrue("quiescent state must be a number in {0,...,k - 1}" in str(e.value))
+
     def test_table_walk_through_increasing(self):
         table, actual_lambda, quiescent_state = cpl.random_rule_table(k=3, r=1, lambda_val=0.0)
         table, new_lambda = cpl.table_walk_through(table, lambda_val=1.0, k=3, r=1, quiescent_state=quiescent_state)
@@ -178,6 +189,20 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         table, new_lambda = cpl.table_walk_through(table, lambda_val=0.0, k=3, r=1, quiescent_state=quiescent_state,
                                                    isotropic=True)
         self.assertEqual(new_lambda, 0.0)
+
+    def test_table_walk_through_lambda_is_actual_lambda(self):
+        table = {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
+        table, new_lambda = cpl.table_walk_through(table, lambda_val=0.8148148148148148, k=3, r=1, quiescent_state=0,
+                                                   isotropic=True)
+        self.assertEqual(new_lambda, 0.8148148148148148)
+
+    def test_table_rule(self):
+        r = cpl.table_rule([1, 1, 0], {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1})
+        self.assertEqual(r, 1)
+
+        with pytest.raises(Exception) as e:
+            cpl.table_rule([0, 0, 1], {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0})
+        self.assertTrue("could not find state '001' in table" in str(e))
 
     def test_init_simple_1(self):
         arr = cpl.init_simple(1)
@@ -260,6 +285,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertEqual(len(arr), 1)
         self.assertEqual(arr[0], 9)
 
+    def test_init_random_illegal_number_of_sites(self):
+        with pytest.raises(Exception) as e:
+            cpl.init_random(5, n_randomized=6)
+        self.assertTrue("the number of randomized sites, if specified, must be >= 0 and <= size" in str(e.value))
+
     def test_shannon_entropy(self):
         entropy = cpl.shannon_entropy('1111111')
         self.assertEqual(entropy, 0)
@@ -275,7 +305,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def test_average_cell_entropy(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
         avg_cell_entropy = cpl.average_cell_entropy(cellular_automaton)
-        np.testing.assert_almost_equal(avg_cell_entropy, 1.7208, decimal=4)
+        np.testing.assert_almost_equal(avg_cell_entropy, 0.9946, decimal=4)
 
     def test_joint_shannon_entropy(self):
         joint_entropy = cpl.joint_shannon_entropy('0010101', '3232223')
@@ -294,11 +324,17 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def test_average_mutual_information(self):
         cellular_automaton = self._convert_to_numpy_matrix("rule30_random_init.ca")
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton)
-        np.testing.assert_almost_equal(avg_mutual_information, 0.7225, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0047, decimal=4)
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=2)
-        np.testing.assert_almost_equal(avg_mutual_information, 1.1214, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0050, decimal=4)
         avg_mutual_information = cpl.average_mutual_information(cellular_automaton, temporal_distance=3)
-        np.testing.assert_almost_equal(avg_mutual_information, 1.1225, decimal=4)
+        np.testing.assert_almost_equal(avg_mutual_information, 0.0051, decimal=4)
+
+    def test_average_mutual_information_illegal_temporal_distance(self):
+        cellular_automaton = np.array([[1, 0, 1], [0, 1, 1]])
+        with pytest.raises(Exception) as e:
+            cpl.average_mutual_information(cellular_automaton, temporal_distance=4)
+        self.assertTrue("the temporal distance must be greater than 0 and less than the number of time steps" in str(e.value))
 
     def test_evolve_apply_rule_1_step(self):
         cellular_automaton = np.array([[1, 2, 3, 4, 5]])
@@ -343,7 +379,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         cellular_automaton = cpl.init_simple(21)
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 60), update_order=range(1, 20))
         cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
-                                        apply_rule=r.apply_rule)
+                                        apply_rule=r)
         np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
 
     def test_sequential_random(self):
@@ -352,8 +388,24 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         update_order = [19, 11, 4, 9, 6, 16, 10, 2, 17, 1, 12, 15, 5, 3, 8, 18, 7, 13, 14]
         r = cpl.AsynchronousRule(apply_rule=lambda n, c, t: cpl.nks_rule(n, 90), update_order=update_order)
         cellular_automaton = cpl.evolve(cellular_automaton, timesteps=19*20,
-                                        apply_rule=r.apply_rule)
+                                        apply_rule=r)
         np.testing.assert_equal(expected.tolist(), cellular_automaton[::19].tolist())
+
+    def test_dynamic_timesteps(self):
+        initial = np.array([[17]], dtype=np.int)
+
+        def activity_rule(n, c, t):
+            n = n[1]
+            if n % 2 == 0:
+                # number is even
+                return n / 2
+            else:
+                return 3 * n + 1
+
+        ca = cpl.evolve(initial, apply_rule=activity_rule,
+                        timesteps=lambda ca, t: True if ca[-1][0] != 1 else False)
+
+        self.assertEqual([17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], [i[0] for i in ca])
 
     def test_init_random_dtype(self):
         arr = cpl.init_random(3, dtype=np.float32)
@@ -366,28 +418,24 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
-        content = content.replace('{{', '')
-        content = content.replace('}}', '')
-        content = content.replace('{', '')
-        content = content.replace('},', ';')
-        return np.matrix(content, dtype=np.int)
+        return np.array(ast.literal_eval(content.replace("{", "[").replace("}", "]")), dtype=np.int32)
 
     def _create_ca(self, expected, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: cpl.nks_rule(n, rule))
 
     def _create_totalistic_ca(self, expected, k, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows,
                           apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule))
 
     def _create_reversible_ca(self, expected, rule):
         rows, _ = expected.shape
-        cellular_automaton = expected[0]
+        cellular_automaton = expected[0].reshape(1, -1)
         r = cpl.ReversibleRule(cellular_automaton.tolist()[0], rule)
-        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r.apply_rule)
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=r)
 
     def test_binary_rule(self):
         rule_number = 6667021275756174439087127638698866559
@@ -450,6 +498,24 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    @pytest.mark.filterwarnings("ignore:{}".format(PLOT_WARNING))
+    def test_plot(self):
+        # this test ensures that the following code can run successfully without issue
+        cpl.plot([[1, 0, 1], [1, 1, 1]], title="some test")
 
-if __name__ == '__main__':
+    @pytest.mark.filterwarnings("ignore:{}".format(PLOT_WARNING))
+    def test_plot_multiple(self):
+        # this test ensures that the following code can run successfully without issue
+        cpl.plot_multiple([
+            [[1, 0, 1], [1, 1, 1]],
+            [[0, 1, 1], [1, 1, 1]]
+        ], titles=["test 1", "test 2"])
+
+    def test_bits_to_int(self):
+        self.assertEqual(9, cpl.bits_to_int([1, 0, 0, 1]))
+
+    def test_int_to_bits(self):
+        np.testing.assert_equal([1, 0, 0, 1], cpl.int_to_bits(9, 4))
+
+if __name__ == "__main__":
     unittest.main()

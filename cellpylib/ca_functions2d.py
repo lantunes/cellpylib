@@ -5,41 +5,147 @@ import matplotlib.collections as mcoll
 import numpy as np
 
 
-def plot2d(ca, timestep=None, title=''):
+def plot2d(ca, timestep=None, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6,
+           show=True, **imshow_kwargs):
     """
-    Plots the state of the given 2D cellular automaton at the given timestep.
+    Plots the state of the given 2D cellular automaton at the given timestep. If no timestep is provided, then the last
+    timestep is plotted.
+
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
 
     :param ca: the 2D cellular automaton to plot
 
     :param timestep: the timestep of interest
 
     :param title: the title to place on the plot
+
+    :param colormap: the color map to use (default is "Greys")
+
+    :param show_grid: whether to display a grid (default is False)
+
+    :param show_margin: whether to display the margin (default is True)
+
+    :param scale: the scale of the figure (default is 0.6)
+
+    :param show: show the plot (default is True)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
+    fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     if timestep is not None:
         data = ca[timestep]
     else:
         data = ca[-1]
-    plt.imshow(data, interpolation='none', cmap=cmap)
-    plt.show()
+
+    _add_grid_lines(ca, ax, show_grid)
+
+    im = plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
+    if show:
+        plt.show()
 
 
-def plot2d_slice(ca, slice=None, title=''):
-    cmap = plt.get_cmap('Greys')
+def plot2d_slice(ca, slice=None, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6,
+                 show=True, **imshow_kwargs):
+    """
+    Plots a slice through the evolved states of a 2D cellular automaton. For example, consider the following `ca`,
+    which may represent the evolution of a 3x3 2D cellular automaton over 3 timesteps:
+
+    .. code-block:: text
+
+        [[[ 1,  2,  3],
+          [ 4,  5,  6],
+          [ 7,  8,  9]],
+         [[10, 11, 12],
+          [13, 14, 15],
+          [16, 17, 18]],
+         [[19, 20, 21],
+          [22, 23, 24],
+          [25, 26, 27]]]
+
+    By default, the following would be plotted:
+
+    .. code-block:: text
+
+        [[ 4,  5,  6],
+         [13, 14, 15],
+         [22, 23, 24]]
+
+    If `0` is provided as the `slice` argument, then the following would be plotted:
+
+    .. code-block:: text
+
+        [[ 1,  2,  3],
+         [10, 11, 12],
+         [19, 20, 21]]
+
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param slice: an int representing the index of the row to plot; by default, the "center" row is used
+
+    :param title: the title to place on the plot
+
+    :param colormap: the color map to use (default is "Greys")
+
+    :param show_grid: whether to display a grid (default is False)
+
+    :param show_margin: whether to display the margin (default is True)
+
+    :param scale: the scale of the figure (default is 0.6)
+
+    :param show: show the plot (default is True)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
+    """
+    cmap = plt.get_cmap(colormap)
+    fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     if slice is not None:
         data = ca[:, slice]
     else:
         data = ca[:, len(ca[0])//2]
-    plt.imshow(data, interpolation='none', cmap=cmap)
-    plt.show()
+
+    _add_grid_lines(ca, ax, show_grid)
+
+    im = plt.imshow(data, interpolation='none', cmap=cmap, **imshow_kwargs)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
+    if show:
+        plt.show()
 
 
-def plot2d_spacetime(ca, alpha=None, title=''):
+def plot2d_spacetime(ca, alpha=None, title='', show=True):
+    """
+    Plots the evolution of the given 2D cellular automaton as a 3D space-time plot.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param alpha: the alpha blending value; a real number between 0 (transparent) and 1 (opaque)
+
+    :param title: the title to place on the plot
+
+    :param show: show the plot (default is True)
+    """
     fig = plt.figure(figsize=(10, 7))
     plt.title(title)
-    ax = fig.gca(projection='3d')
+    ax = Axes3D(fig)
     ca = ca[::-1]
     xs = np.arange(ca.shape[2])[None, None, :]
     ys = np.arange(ca.shape[1])[None, :, None]
@@ -49,14 +155,23 @@ def plot2d_spacetime(ca, alpha=None, title=''):
     ax.scatter(xs.ravel(),
                ys.ravel(),
                zs.ravel(),
-               c=masked_data, cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
-    plt.show()
+               c=masked_data.ravel(), cmap='cool', marker='s', depthshade=False, alpha=alpha, edgecolors='#0F0F0F')
+    if show:
+        plt.show()
 
 
-def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
-                   interval=50, save=False):
+def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_margin=True, scale=0.6, dpi=80,
+                   interval=50, save=False, autoscale=False, show=True, **imshow_kwargs):
     """
     Animate the given 2D cellular automaton.
+
+    The `show_margin` argument controls whether or not a margin is displayed in the resulting plot. When `show_margin`
+    is set to `False`, then the plot takes up the entirety of the window. The `scale` argument is only used when the
+    `show_margins` argument is `False`. It controls the resulting scale (i.e. relative size) of the image when there
+    are no margins.
+
+    The `dpi` argument represents the dots per inch of the animation when it is saved. There will be no visible effect
+    of the `dpi` argument if the animation is not saved (i.e. when `save` is `False`).
 
     :param ca:  the 2D cellular automaton to animate
 
@@ -75,6 +190,13 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
     :param interval: the delay between frames in milliseconds (default is 50)
 
     :param save: whether to save the animation to a local file (default is False)
+
+    :param autoscale: whether to autoscale the images in the animation; this should be set to True if the first
+                      frame has a uniform value (e.g. all zeroes) (default is False)
+
+    :param show: show the plot (default is True)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
@@ -82,6 +204,41 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
     if not show_margin:
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
 
+    grid = _add_grid_lines(ca, ax, show_grid)
+
+    im = plt.imshow(ca[0], animated=True, cmap=cmap, **imshow_kwargs)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
+
+    i = {'index': 0}
+    def updatefig(*args):
+        i['index'] += 1
+        if i['index'] == len(ca):
+            i['index'] = 0
+        im.set_array(ca[i['index']])
+        if autoscale:
+            im.autoscale()
+        return im, grid
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
+    if show:
+        plt.show()
+
+
+def _add_grid_lines(ca, ax, show_grid):
+    """
+    Adds grid lines to the plot.
+
+    :param ca: the 2D cellular automaton to plot
+
+    :param ax: the Matplotlib axis object
+
+    :param show_grid: whether to display the grid lines
+
+    :return: the grid object
+    """
     grid_linewidth = 0.0
     if show_grid:
         plt.xticks(np.arange(-.5, len(ca[0][0]), 1), "")
@@ -95,22 +252,7 @@ def plot2d_animate(ca, title='', colormap='Greys', show_grid=False, show_margin=
     grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
     ax.add_collection(grid)
 
-    im = plt.imshow(ca[0], animated=True, cmap=cmap)
-    if not show_margin:
-        baseheight, basewidth = im.get_size()
-        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
-
-    i = {'index': 0}
-    def updatefig(*args):
-        i['index'] += 1
-        if i['index'] == len(ca):
-            i['index'] = 0
-        im.set_array(ca[i['index']])
-        return im, grid
-    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(ca))
-    if save:
-        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
-    plt.show()
+    return grid
 
 
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):
@@ -122,8 +264,11 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
 
     :param cellular_automaton: the cellular automaton starting condition representing the first time step
 
-    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
-                      time steps in this cellular automaton evolution, which includes the initial condition
+    :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
+                      (in terms of the history of its evolution) and the current timestep number, and is expected to
+                      return a boolean indicating whether the evolution should continue; note that if a number is given,
+                      this value refers to the total number of time steps in this cellular automaton evolution, which
+                      includes the initial condition
 
     :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
                        will be given three arguments, in the following order: the neighbourhood, which is a numpy
@@ -140,10 +285,6 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
-    _, rows, cols = cellular_automaton.shape
-    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
-    array[0] = cellular_automaton
-
     von_neumann_mask = np.zeros((2*r + 1, 2*r + 1), dtype=bool)
     for i in range(len(von_neumann_mask)):
         mask_size = np.absolute(r - i)
@@ -151,29 +292,168 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
         if mask_size != 0:
             von_neumann_mask[i][-mask_size:] = 1
 
-    def get_neighbourhood(cell_layer, row, col):
-        row_indices = range(row - r, row + r + 1)
-        row_indices = [i - cell_layer.shape[0] if i > (cell_layer.shape[0] - 1) else i for i in row_indices]
-        col_indices = range(col - r, col + r + 1)
-        col_indices = [i - cell_layer.shape[1] if i > (cell_layer.shape[1] - 1) else i for i in col_indices]
-        n = cell_layer[np.ix_(row_indices, col_indices)]
-        if neighbourhood == 'Moore':
-            return n
-        elif neighbourhood == 'von Neumann':
-            return np.ma.masked_array(n, von_neumann_mask)
-        else:
-            raise Exception("unknown neighbourhood type: %s" % neighbourhood)
+    _, rows, cols = cellular_automaton.shape
+    neighbourhood_indices = _get_neighbourhood_indices(rows, cols, r)
+
+    if callable(timesteps):
+        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+    else:
+        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+
+
+def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask):
+    """
+    Evolves the given cellular automaton for a fixed of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
+                      this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param rows: the number of rows in the CA
+
+    :param cols: the number of columns in the CA
+
+    :param neighbourhood_indices: the indices of cells, by neighbourhood
+
+    :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
+    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
+    array[0] = cellular_automaton
 
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
         for row, cell_row in enumerate(cell_layer):
             for col, cell in enumerate(cell_row):
-                n = get_neighbourhood(cell_layer, row, col)
+                n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
                 array[t][row][col] = apply_rule(n, (row, col), t)
     return array
 
 
-def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
+def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask):
+    """
+    Evolves the given cellular automaton for a dynamic number of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
+                      current timestep number, and is expected to return a boolean indicating whether the evolution
+                      should continue
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param rows: the number of rows in the CA
+
+    :param cols: the number of columns in the CA
+
+    :param neighbourhood_indices: the indices of cells, by neighbourhood
+
+    :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
+    array = [cellular_automaton[0]]
+
+    t = 1
+    while timesteps(np.array(array), t):
+        prev_layer = array[-1]
+        next_layer = np.zeros((rows, cols), dtype=cellular_automaton.dtype)
+        for row, cell_row in enumerate(prev_layer):
+            for col, cell in enumerate(cell_row):
+                n = _get_neighbourhood(prev_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
+                next_layer[row][col] = apply_rule(n, (row, col), t)
+        array.append(next_layer)
+        t += 1
+    return np.array(array)
+
+
+def _get_neighbourhood_indices(rows, cols, r):
+    """
+    Returns a dictionary mapping the coordinates of a cell in a 2D CA to its neighbourhood indices.
+
+    :param rows: the number of rows in the 2D CA
+
+    :param cols: the number of columns in the 2D CA
+
+    :param r: the radius of the neighbourhood
+
+    :return: a dictionary, where the key is a 2-tuple, (row, col),
+             and the value is a 2-tuple, (row_indices, col_indices)
+    """
+    indices = {}
+    for row in range(rows):
+        for col in range(cols):
+            row_indices = range(row - r, row + r + 1)
+            row_indices = [i - rows if i > (rows - 1) else i for i in row_indices]
+            col_indices = range(col - r, col + r + 1)
+            col_indices = [i - cols if i > (cols - 1) else i for i in col_indices]
+            indices[(row, col)] = (row_indices, col_indices)
+    return indices
+
+
+def _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask):
+    """
+    Returns the cell neighbourhood for the cell given by the row and column index. If the neighbourhood is
+    `von Neumann`, then an appropriately masked array is returned.
+
+    :param cell_layer: an array with dimensions 2r+1 x 2r+1
+
+    :param neighbourhood_indices: a 2-tuple containing the row and column indices of the neighbours of the cell given
+                                  by the row and column index
+
+    :param row: the row index of the cell
+
+    :param col: the column index of the cell
+
+    :param neighbourhood: the neighbourhood type
+
+    :param von_neumann_mask: a boolean array with dimensions 2r+1 x 2r+1 representing which cells in the neighbourhood
+                             should be masked
+
+    :return: a 2r+1 x 2r+1 array representing the cell neighbourhood of the cell given by row and col, if the
+             neighbourhood type is `von Neumann`, then the array will be masked
+    """
+    row_indices, col_indices = neighbourhood_indices[(row, col)]
+    n = cell_layer[np.ix_(row_indices, col_indices)]
+    if neighbourhood == 'Moore':
+        return n
+    elif neighbourhood == 'von Neumann':
+        return np.ma.masked_array(n, von_neumann_mask)
+    else:
+        raise ValueError('unknown neighbourhood type: %s' % neighbourhood)
+
+
+def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
     If the `coords` argument is specified, then the specified cell at the given coordinates will have its value
@@ -185,7 +465,7 @@ def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
 
     :param val: the value to be used in the center of the matrix (1, by default)
 
-    :param dtype: the data type (np.int by default)
+    :param dtype: the data type (np.int32 by default)
 
     :param coords: a 2-tuple specifying the row and column of the cell to be initialized (None by default)
 
@@ -194,14 +474,14 @@ def init_simple2d(rows, cols, val=1, dtype=np.int, coords=None):
     x = np.zeros((rows, cols), dtype=dtype)
     if coords is not None:
         if not isinstance(coords, (tuple, list)) or len(coords) != 2:
-            raise Exception("coords must be a list or tuple of length 2")
+            raise TypeError("coords must be a list or tuple of length 2")
         x[coords[0]][coords[1]] = val
     else:
         x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array([x])
 
 
-def init_random2d(rows, cols, k=2, dtype=np.int):
+def init_random2d(rows, cols, k=2, dtype=np.int32):
     """
     Returns a randomly initialized matrix with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).

@@ -1,14 +1,14 @@
 Varying the Neighbourhood Size
 ------------------------------
 
-The size of the cell neighbourhood can be varied by setting the parameter `r` when calling the `evolve` function. The
-value of `r` represents the number of cells to the left and to the right of the cell under consideration. Thus, to get a
-neighbourhood size of 3, `r` should be 1, and to get a neighbourhood size of 7, `r` should be 3. As an example, consider
-the work of M. Mitchell et al. involving the creation (discovery) of a cellular automaton that solves the density
-classification problem: if the initial random binary vector contains more than 50% of 1s, then a cellular automaton that
-solves this problem will give rise to a vector that contains only 1s after a fixed number of time steps, and likewise
-for the case of 0s. A very effective cellular automaton that solves this problem most of the time was found using a
-Genetic Algorithm.
+The size of the cell neighbourhood can be varied by setting the parameter ``r`` when calling the
+:py:func:`~cellpylib.ca_functions.evolve` function. The value of ``r`` represents the number of cells to the left and
+to the right of the cell under consideration. Thus, to get a neighbourhood size of 3, ``r`` should be 1, and to get a
+neighbourhood size of 7, ``r`` should be 3. As an example, consider the work of M. Mitchell et al. involving the
+creation (discovery) of a cellular automaton that solves the density classification problem: if the initial random
+binary vector contains more than 50% of 1s, then a cellular automaton that solves this problem will give rise to a
+vector that contains only 1s after a fixed number of time steps, and likewise for the case of 0s. A very effective
+cellular automaton that solves this problem most of the time was found using a Genetic Algorithm.
 
 .. code-block::
 

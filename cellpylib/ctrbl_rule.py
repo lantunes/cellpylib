@@ -1,6 +1,7 @@
+from .ca_functions import BaseRule
 
 
-class CTRBLRule:
+class CTRBLRule(BaseRule):
     """
     A rule that operates on von Neumann neighbourhoods, taking into account the states of a cell's
     neighbours at the top, right, bottom and left positions. Only supports 2D automata with periodic boundaries and a
@@ -19,7 +20,7 @@ class CTRBLRule:
         """
         self._rule_table = self._init_rule_table(rule_table, add_rotations)
 
-    def rule(self, n, c, t):
+    def __call__(self, n, c, t):
         """
         The CTRBL rule to apply.
 
@@ -38,7 +39,7 @@ class CTRBLRule:
         left = n[1][0]
         key = (current_activity, top, right, bottom, left)
         if key not in self._rule_table:
-            raise Exception("neighbourhood state (%s, %s, %s, %s, %s) not in rule table" % key)
+            raise ValueError("neighbourhood state (%s, %s, %s, %s, %s) not in rule table" % key)
         return self._rule_table[key]
 
     @property

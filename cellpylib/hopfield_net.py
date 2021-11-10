@@ -20,7 +20,7 @@ class HopfieldNet:
         :param num_cells: the number of cells in this Hopfield network; only an odd number of cells are supported in
                           this implementation
         """
-        self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells).apply_rule
+        self.apply_rule = AsynchronousRule(apply_rule=self._rule, num_cells=num_cells)
         self._r = num_cells // 2
 
     def train(self, P):
@@ -30,7 +30,7 @@ class HopfieldNet:
 
         :param P: the set of training patterns
         """
-        self._W = np.zeros((len(P[0]), len(P[0])), dtype=np.int)
+        self._W = np.zeros((len(P[0]), len(P[0])), dtype=np.int32)
         for p in P:
             for i in range(len(p)):
                 for j in range(len(p)):

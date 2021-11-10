@@ -9,6 +9,7 @@ dependencies:
   - numpy=1.15.4
   - sphinx=3.5.4
   - pytest
+  - pytest-cov
   - pip
   - pip:
       - sphinx-rtd-theme

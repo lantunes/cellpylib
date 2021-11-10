@@ -5,8 +5,9 @@ The Hopfield Network can be thought of as a cellular automaton where all cells a
 (or neurons) are binary units, and the activity rule is a simple threshold rule, where the weighted inputs to a cell are
 summed and compared to a threshold value. The weights are learned from the training data.
 
-CellPyLib includes a built-in implementation of a Hopfield Network, in the `HopfieldNet` class, based on the idea that
-the Hopfield Network can be viewed as a kind of cellular automaton.
+CellPyLib includes a built-in implementation of a Hopfield Network, in the
+:py:class:`~cellpylib.hopfield_net.HopfieldNet` class, based on the idea that the Hopfield Network can be viewed as a
+kind of cellular automaton.
 
 To use it, we must first train the network, by giving it a set of patterns:
 
@@ -50,13 +51,14 @@ To use it, we must first train the network, by giving it a set of patterns:
 
     hopfield_net.train(P)
 
-As shown above, we must instantiate an instance of a `HopfieldNet`, specifying the number of cells. Then, we must call
-`train`, providing a list of training examples. *NOTE: Only Hopfield Networks with an odd number of cells is currently
-supported due to limitations of the implementation.*
+As shown above, we must instantiate an instance of a :py:class:`~cellpylib.hopfield_net.HopfieldNet`, specifying the
+number of cells. Then, we must call :py:func:`~cellpylib.hopfield_net.HopfieldNet.train`, providing a list of training
+examples. *NOTE: Only Hopfield Networks with an odd number of cells is currently supported due to limitations of the
+implementation.*
 
-Using the `HopfieldNet` involves providing a potentially incomplete pattern, and evolving the network for a
-pre-specified number of timesteps. The network state should settle into a pattern that resembles those seen during
-training. It acts like a content-addressable (associative) memory.
+Using the :py:class:`~cellpylib.hopfield_net.HopfieldNet` involves providing a potentially incomplete pattern, and
+evolving the network for a pre-specified number of timesteps. The network state should settle into a pattern that
+resembles those seen during training. It acts like a content-addressable (associative) memory.
 
 .. code-block::
 

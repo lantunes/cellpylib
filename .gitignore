@@ -23,3 +23,6 @@ src/
 /site/
 /.cache/
 /.pytest_cache/
+/build/
+
+.coverage

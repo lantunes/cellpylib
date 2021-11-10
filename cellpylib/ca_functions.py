@@ -2,34 +2,60 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot(ca, title=''):
+def plot(ca, title='', *, colormap='Greys', xlabel='', ylabel='time', show=True, **imshow_kwargs):
     """
     Plots the given cellular automaton.
 
     :param ca: the cellular automaton to plot
 
-    :param title: the title to place on the plot
+    :param title: the title to place on the plot (default is empty)
+
+    :param colormap: the colormap to use (default is 'Greys')
+
+    :param xlabel: the label of the x-axis (default is empty)
+
+    :param ylabel: the label of the y-axis (default 'time')
+
+    :param show: show the plot (default is True)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     plt.title(title)
-    plt.imshow(ca, interpolation='none', cmap=cmap)
-    plt.show()
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.imshow(ca, interpolation='none', cmap=cmap, **imshow_kwargs)
+    if show:
+        plt.show()
 
 
-def plot_multiple(ca_list, titles):
+def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time', show=True, **imshow_kwargs):
     """
     Plots multiple cellular automata separately.
 
     :param ca_list: a list of cellular automata
 
-    :param titles: the titles to give the plots
+    :param titles: the titles to give the plots; there must be one title for each CA
+
+    :param colormap: the colormap to use for the plots (default is 'Greys')
+
+    :param xlabel: the label of the x-axis (default is empty)
+
+    :param ylabel: the label of the y-axis (default 'time')
+
+    :param show: show the plot (default is True)
+
+    :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
     """
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     for i in range(0, len(ca_list)):
         plt.figure(i)
         plt.title(titles[i])
-        plt.imshow(ca_list[i], interpolation='none', cmap=cmap)
-    plt.show()
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.imshow(ca_list[i], interpolation='none', cmap=cmap, **imshow_kwargs)
+    if show:
+        plt.show()
 
 
 def evolve(cellular_automaton, timesteps, apply_rule, r=1):
@@ -42,8 +68,11 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
     :param cellular_automaton: the cellular automaton starting condition representing the first time step;
                                e.g. [[0,0,0,0,1,0,0,0,0]] 
 
-    :param timesteps: the number of time steps in this evolution; note that this value refers to the total number of
-                      time steps in this cellular automaton evolution, which includes the initial condition  
+    :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
+                      (in terms of the history of its evolution) and the current timestep number, and is expected to
+                      return a boolean indicating whether the evolution should continue; note that if a number is given,
+                      this value refers to the total number of time steps in this cellular automaton evolution, which
+                      includes the initial condition
 
     :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
                        will be given three arguments, in the following order: the neighbourhood, which is a numpy array
@@ -56,26 +85,111 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
+    if callable(timesteps):
+        return _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r)
+    else:
+        return _evolve_fixed(cellular_automaton, timesteps, apply_rule, r)
+
+
+def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
+    """
+    Evolves the given cellular automaton for the given number of fixed timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
+                      this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a
+                       scalar representing the time step in the evolution
+
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
+             specified
+    """
     _, cols = cellular_automaton.shape
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = cellular_automaton
 
-    def index_strides(arr, window_size):
-        # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
-        arr = np.concatenate((arr[-window_size//2+1:], arr, arr[:window_size//2]))
-        shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
-        strides = arr.strides + (arr.strides[-1],)
-        return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
-
     for t in range(1, timesteps):
         cells = array[t - 1]
-        strides = index_strides(np.arange(len(cells)), 2*r + 1)
+        strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
         array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
     return array
 
 
+def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
+    """
+    Evolves the given cellular automaton for a dynamic number of timesteps.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
+                      current timestep number, and is expected to return a boolean indicating whether the evolution
+                      should continue
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a
+                       scalar representing the time step in the evolution
+
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
+             specified
+    """
+    _, cols = cellular_automaton.shape
+    array = [cellular_automaton[0]]
+
+    t = 1
+    while timesteps(np.array(array), t):
+        cells = array[-1]
+        strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
+        neighbourhoods = cells[strides]
+        array.append(np.array(
+            [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)],
+            dtype=cellular_automaton.dtype
+        ))
+        t += 1
+    return np.array(array)
+
+
+def _index_strides(arr, window_size):
+    """
+    Returns an array with dimensions len(cells) x window_size, representing the cell indices of the neighbourhood
+    of each cell.
+
+    :param arr: an array containing the cell indices; e.g. if there are 5 cells, then the argument
+                will be [0, 1, 2, 3, 4]
+
+    :param window_size: the size of the neighbourhood
+
+    :return: an array with dimensions len(cells) x window_size, representing the cell indices of the neighbourhood
+             of each cell
+    """
+    # this function is based on code in http://www.credid.io/cellular-automata-python-2.html
+    arr = np.concatenate((arr[-window_size // 2 + 1:], arr, arr[:window_size // 2]))
+    shape = arr.shape[:-1] + (arr.shape[-1] - window_size + 1, window_size)
+    strides = arr.strides + (arr.strides[-1],)
+    return np.lib.stride_tricks.as_strided(arr, shape=shape, strides=strides)
+
+
 def bits_to_int(bits):
+    """
+    Converts a binary array representing a binary number into the corresponding int.
+
+    :param bits: a list of 1s and 0s, representing a binary number
+
+    :return: and int representing the corresponding number
+    """
     total = 0
     for shift, j in enumerate(bits[::-1]):
         if j:
@@ -84,6 +198,16 @@ def bits_to_int(bits):
 
 
 def int_to_bits(num, num_digits):
+    """
+    Converts the given number, `num`, to the corresponding binary number in the form of a NumPy array of 1s and 0s
+    comprised of `num_digits` digits.
+
+    :param num: the number, in base 10, to convert into binary
+
+    :param num_digits: the number of digits the binary number should contain
+
+    :return: a NumPy array of 1s and 0s representing the corresponding binary number
+    """
     converted = list(map(int, bin(num)[2:]))
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
@@ -171,13 +295,13 @@ def totalistic_rule(neighbourhood, k, rule):
     n = neighbourhood.size
     rule_string = np.base_repr(rule, base=k).zfill(n*(k - 1) + 1)
     if len(rule_string) > n*(k - 1) + 1:
-        raise Exception("rule number out of range")
+        raise ValueError("rule number out of range")
     neighbourhood_sum = np.sum(neighbourhood)
     # the rightmost element of the rule is for the average color 0, in NKS convention
     return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
 
 
-def init_simple(size, val=1, dtype=np.int):
+def init_simple(size, val=1, dtype=np.int32):
     """
     Returns an array initialized with zeroes, with its center value set to the specified value, or 1 by default.
 
@@ -194,7 +318,7 @@ def init_simple(size, val=1, dtype=np.int):
     return np.array([x])
 
 
-def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
+def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int32):
     """
     Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).
@@ -216,7 +340,7 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     if n_randomized is None:
         n_randomized = size
     if n_randomized > size or n_randomized < 0:
-        raise Exception("the number of randomized sites, if specified, must be >= 0 and <= size")
+        raise ValueError("the number of randomized sites, if specified, must be >= 0 and <= size")
     pad_left = (size - n_randomized) // 2
     pad_right = (size - n_randomized) - pad_left
     if np.issubdtype(dtype, np.integer):
@@ -226,7 +350,44 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     return np.array([np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)])
 
 
-class ReversibleRule:
+def until_fixed_point():
+    """
+    Returns a callable to be used as the `timesteps` argument to the `evolve` and `evolve2d` functions, that will
+    result in the evolution being halted when there have been no changes to the state of the CA in the
+    last timestep. That is, if the last state of the CA is the same as the second-to-last state, the
+    callable will return `False`, and evolution will be halted.
+
+    :return: a callable to be used as the `timesteps` argument to the `evolve` and `evolve2d` functions
+    """
+    def _timesteps(ca, t):
+        if len(ca) > 1:
+            return False if (ca[-2] == ca[-1]).all() else True
+        return True
+    return _timesteps
+
+
+class BaseRule:
+    """
+    A base rule class for custom rules to extend. A rule is a callable that accepts three parameters:
+    1, the current cell's neighbourhood; 2, the index identifying the current cell; 3, an int identifying the
+    current timestep. The rule returns the activity of the current cell at the next timestep.
+    """
+    def __call__(self, n, c, t):
+        """
+        The rule to be implemented by subclasses.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
+        raise NotImplementedError
+
+
+class ReversibleRule(BaseRule):
     """
     An elementary cellular automaton rule explicitly set up to be reversible.
     """
@@ -242,18 +403,38 @@ class ReversibleRule:
         self._previous_state = init_state
         self._rule_number = rule_number
 
-    def apply_rule(self, n, c, t):
+    def __call__(self, n, c, t):
+        """
+        The reversible rule to apply.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
         regular_result = nks_rule(n, self._rule_number)
         new_result = regular_result ^ self._previous_state[c]
         self._previous_state[c] = n[len(n) // 2]
         return new_result
 
 
-class AsynchronousRule:
+class AsynchronousRule(BaseRule):
     """
     Creates an asynchronous cellular automaton rule with a cyclic update scheme. Also known as a sequential cellular
     automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous. This rule works for 
     both 1D and 2D cellular automata.
+
+    This rule requires the specification of an update order (if none is provided, then an order is constructed based
+    on the number of cells in the CA). An update order specifies which cell will be updated as the CA evolves. For
+    example, the update order [2, 3, 1] states that cell 2 will be updated in the next timestep, followed by cell 3 in
+    the subsequent timestep, and then cell 1 in the timestep after that. This update order is adhered to for the
+    entire evolution of the CA. Cells that are not being updated do not have the rule applied to them in that timestep.
+
+    An option is provided to randomize the update order at the end of each cycle (i.e. timestep). This is equivalent to
+    selecting a cell randomly at each timestep to update, leaving all others unchanged during that timestep.
     """
     def __init__(self, apply_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
         """
@@ -264,31 +445,48 @@ class AsynchronousRule:
         :param apply_rule: the rule that will be made asynchronous
 
         :param update_order: a list containing the indices of the cells in the CA, specifying the update order; if the
-                             CA is 2D, then the indices will refer to the cells in the matrix as if the matrix were an
-                             array (e.g. for a 2x3 2D CA, the mapping from cell coordinate to cell index is: 
-                             (0,0)->0, (0,1)->1, (0,2)->2, (1,0)->3, (1,1)->4, (1,2)->5)
+                             CA is 2D, then instead of indices, cell coordinates are expected (e.g. ((0,1), (2,3),...))
 
-        :param num_cells: the total number of cells in the CA
+        :param num_cells: an int specifying the total number of cells in the CA if it is 1D, or a 2-tuple representing
+                          the height and width of the CA if it is 2D
 
         :param randomize_each_cycle: whether to shuffle the update order list after each complete cycle
         """
         if update_order is None and num_cells is None:
-            raise Exception("either update_order or num_cells must be specified")
+            raise ValueError("either update_order or num_cells must be specified")
         self._apply_rule = apply_rule
         if update_order is not None:
             self._update_order = update_order
         else:
-            self._shuffle_update_order(num_cells)
+            self._init_update_order(num_cells)
+            self._shuffle_update_order()
         self._curr = 0
         self._num_applied = 0
         self._randomize_each_cycle = randomize_each_cycle
 
-    def _shuffle_update_order(self, num_cells):
-        self._update_order = np.arange(num_cells)
-        np.random.shuffle(self._update_order)
-        self._update_order = self._update_order.tolist()
+    def _init_update_order(self, num_cells):
+        if isinstance(num_cells, tuple):
+            self._update_order = [(i, j) for i in range(num_cells[0]) for j in range(num_cells[1])]
+        elif isinstance(num_cells, int):
+            self._update_order = np.arange(num_cells)
+        else:
+            raise TypeError("num_cells must be either an int (1D CA) or a 2-tuple (2D CA)")
 
-    def apply_rule(self, n, c, t):
+    def _shuffle_update_order(self):
+        np.random.shuffle(self._update_order)
+
+    def __call__(self, n, c, t):
+        """
+        The asynchronous rule to apply.
+
+        :param n: the neighbourhood
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the activity of the current cell at the next timestep
+        """
         if self._in_update_order(c, n):
             self._num_applied += 1
         if not self._should_update(c, n):
@@ -298,29 +496,17 @@ class AsynchronousRule:
         return self._apply_rule(n, c, t)
 
     def _in_update_order(self, c, n):
-        if len(n.shape) == 1:
-            return c in self._update_order
-        elif len(n.shape) == 2:
-            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
-            return i in self._update_order
-        else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+        return c in self._update_order
 
     def _should_update(self, c, n):
-        if len(n.shape) == 1:
-            return c == self._update_order[self._curr]
-        elif len(n.shape) == 2:
-            i = c[0]*n.shape[1] + c[1]  # convert matrix coordinates to array index
-            return i == self._update_order[self._curr]
-        else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+        return c == self._update_order[self._curr]
 
     def _check_for_end_of_cycle(self):
         if self._num_applied == len(self._update_order):
             self._curr = (self._curr + 1) % len(self._update_order)
             self._num_applied = 0
             if self._randomize_each_cycle:
-                self._shuffle_update_order(len(self._update_order))
+                self._shuffle_update_order()
 
     def _current_cell_value(self, n):
         if len(n.shape) == 1:
@@ -328,4 +514,4 @@ class AsynchronousRule:
         elif len(n.shape) == 2:
             return n[n.shape[0]//2][n.shape[1]//2]
         else:
-            raise Exception("unexpected neighbourhood dimensions: %s" % n.shape)
+            raise TypeError("unexpected neighbourhood dimensions: %s" % n.shape)

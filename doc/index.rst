@@ -33,12 +33,14 @@ the Shannon entropy and mutual information, are provided.
   colors
   complexity
   continuous
+  collatz
   twodim
   gol
   wireworld
   fredkin
   hopfield
   langtons_loop
+  sandpile
 
 .. toctree::
   :caption: API Docs and License

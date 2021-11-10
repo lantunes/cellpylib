@@ -55,7 +55,22 @@ for example. Researchers may be dissuaded from incorporating CA into their resea
 unfamiliar languages and technologies, or are required to devote considerable effort to the implementation and testing 
 of non-trivial algorithms. The availability of a user-friendly Python library for CA will likely encourage more 
 researchers to consider these fascinating dynamical and computational systems. Moreover, having a standard 
-implementation of CA in the Python environment helps to ensure that scientific results are reproducible.
+implementation of CA in the Python environment helps to ensure that scientific results are reproducible. CellPyLib is a 
+Python library aimed to meet this need, which supports the creation and analysis of models that exist on a regular 
+array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods.
+
+Researchers and students alike should find CellPyLib useful. Students and instructors can use CellPyLib in an 
+educational context if they would like to learn about elementary CA and 2D CA on a uniform grid. Researchers in both the 
+computer and physical sciences can use CellPyLib to answer serious questions about the computational and natural worlds. 
+For example, the Abelian sandpile model included in the library can be used as part of a university course on complex 
+systems to demonstrate the phenomenon of self-organized criticality. The same model may be used by professional 
+physicists wishing to explore self-organized criticality more deeply. 
+
+While CellPyLib is expected to be of interest to students, educators, and researchers, there are certain scenarios in 
+which alternate tools would be more appropriate. For example, if a researcher would like to evolve CA with a very large
+number of cells, or for very many iterations, in a timely fashion, then an implementation that is optimized for the 
+specific model in question would be more appropriate. Also, if the model is not constrained to a uniform grid, then
+other solutions should be sought.
 
 # Example Usage
 
@@ -76,8 +91,10 @@ import cellpylib as cpl
 
 cellular_automaton = cpl.init_simple(200)
 
+rule = lambda n, c, t: cpl.nks_rule(n, 30)
+
 cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
-                                apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
+                                apply_rule=rule)
 ```
 
 First, the initial conditions are instantiated using the function `init_simple`, which, in this example, creates a 
@@ -102,5 +119,11 @@ cpl.plot(cellular_automaton)
 ![Rule 30, as rendered with CellPyLib.\label{fig:rule30}](rule30.png){ width=60% }
 
 The result is rendered, as depicted in \autoref{fig:rule30}.
+
+# Scope
+
+While `CellPyLib` is a general-purpose library that allows for the implementation of a wide variety of CA, it is 
+important to note that CA constitute a very broad class of models. `CellPyLib` focuses on those that are constrained to 
+a regular array or uniform grid, such as elementary CA, and 2D CA with Moore or von Neumann neighbourhoods.
 
 # References

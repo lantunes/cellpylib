@@ -5,9 +5,10 @@ In 1984, Christopher Langton described a type of 2-dimensional cellular automato
 dynamic loop structure. A branch of Artificial Life research developed from this work, resulting in better insight into
 self-replicating processes, which has obvious relevance to Biology and living systems.
 
-Below is an example of Langton's loop. This example makes use of the `LangtonsLoop` class, which is an extension of the
-`CTRBLRule` class, which can be used for constructing any kind of rule based on a von Neumann neighbourhood which
-considers the Center, Top, Right, Bottom and Left cells explicitly.
+Below is an example of Langton's loop. This example makes use of the :py:class:`~cellpylib.langtons_loop.LangtonsLoop`
+class, which is an extension of the :py:class:`~cellpylib.ctrbl_rule.CTRBLRule` class, which can be used for
+constructing any kind of rule based on a von Neumann neighbourhood which considers the Center, Top, Right, Bottom and
+Left cells explicitly.
 
 .. code-block::
 
@@ -19,7 +20,7 @@ considers the Center, Top, Right, Bottom and Left cells explicitly.
     cellular_automaton = langtons_loop.init_loops(1, (75, 75), [40], [25])
 
     cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=500,
-                                      apply_rule=langtons_loop.rule)
+                                      apply_rule=langtons_loop)
 
     cpl.plot2d_animate(cellular_automaton)
 

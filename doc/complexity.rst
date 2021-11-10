@@ -3,14 +3,15 @@ Measures of Complexity
 
 CellPyLib provides various built-in functions which can act as measures of complexity in the cellular automata being
 examined. These are the information-theoretic properties known as the Shannon entropy and mutual information,
-implemented in the `average_cell_entropy` and `average_mutual_information` functions.
+implemented in the :py:func:`~cellpylib.entropy.average_cell_entropy` and
+:py:func:`~cellpylib.entropy.average_mutual_information` functions.
 
 Average Cell Entropy
 ~~~~~~~~~~~~~~~~~~~~
 
 Average cell entropy can reveal something about the presence of information within cellular automata dynamics. The
-built-in function `average_cell_entropy` provides the average Shannon entropy per single cell in a given cellular
-automaton. The following snippet demonstrates the calculation of the average cell entropy:
+built-in function :py:func:`~cellpylib.entropy.average_cell_entropy` provides the average Shannon entropy per single
+cell in a given cellular automaton. The following snippet demonstrates the calculation of the average cell entropy:
 
 .. code-block::
 
@@ -34,9 +35,9 @@ Average Mutual Information
 
 The degree to which a cell state is correlated to its state in the next time step can be described using mutual
 information. Ideal levels of correlation are required for effective processing of information. The built-in function
-`average_mutual_information` provides the average mutual information between a cell and itself in the next time step
-(the temporal distance can be adjusted). The following snippet demonstrates the calculation of the average mutual
-information:
+:py:func:`~cellpylib.entropy.average_mutual_information` provides the average mutual information between a cell and
+itself in the next time step (the temporal distance can be adjusted). The following snippet demonstrates the calculation
+of the average mutual information:
 
 .. code-block::
 

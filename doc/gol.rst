@@ -4,7 +4,8 @@ Conway's Game of Life
 Conway's Game of Life is a very famous 2D Cellular Automaton. It uses a simple rule to give rise to a complex system
 that is capable of universal computation, in addition to its ability to entertain and fascinate.
 
-CellPyLib has a built-in function, `game_of_life_rule`, that can be used to produce the Game of Life 2D CA:
+CellPyLib has a built-in function, :py:func:`~cellpylib.ca_functions2d.game_of_life_rule`, that can be used to produce
+the Game of Life 2D CA:
 
 .. code-block::
 

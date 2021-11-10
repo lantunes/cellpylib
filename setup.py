@@ -1,7 +1,18 @@
 from setuptools import setup
+import re
+
+INIT_FILE = "cellpylib/__init__.py"
+
+with open(INIT_FILE) as fid:
+    file_contents = fid.read()
+    match = re.search(r"^__version__\s?=\s?['\"]([^'\"]*)['\"]", file_contents, re.M)
+    if match:
+        version = match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string in %s" % INIT_FILE)
 
 setup(name="cellpylib",
-      version="1.1.0",
+      version=version,
       description="CellPyLib, A library for working with Cellular Automata, for Python.",
       long_description="CellPyLib is a library for working with Cellular Automata, for Python. "
                        "Currently, only 1- and 2-dimensional k-color cellular automata with "
