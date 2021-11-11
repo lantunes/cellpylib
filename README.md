@@ -10,6 +10,7 @@ at [atlas.wolfram.com](http://atlas.wolfram.com).
 
 [![testing status](https://github.com/lantunes/cellpylib/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/lantunes/cellpylib/actions)
 [![latest version](https://img.shields.io/pypi/v/cellpylib?style=flat-square&logo=PyPi&logoColor=white&color=blue)](https://pypi.org/project/cellpylib/)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.03608/status.svg)](https://doi.org/10.21105/joss.03608)
 
 Example usage:
 ```python
@@ -307,26 +308,28 @@ contributions.
 
 ### Citation Info
 
-This project has been published on [Zenodo](https://zenodo.org/record/3893115#.XuUIDJ5KhZI),
-which provides a DOI, as well as an easy way to generate citations in a number of formats.
-For example, this project may be cited as:
+This project has been published in the 
+[Journal of Open Source Software](https://joss.theoj.org/papers/10.21105/joss.03608).
+This project may be cited as:
 
 
-> Antunes, Luis M. (2019, March 10). CellPyLib: A Python Library for working with Cellular
-Automata. Zenodo. http://doi.org/10.5281/zenodo.3893115
+> Antunes, L. M. (2021). CellPyLib: A Python Library for working with Cellular Automata. 
+Journal of Open Source Software, 6(67), 3608.
 
 
 BibTeX:
 ```
-@software{antunes_luis_m_2019_3893115,
-  author       = {Antunes, Luis M.},
-  title        = {{CellPyLib: A Python Library for working with
-                   Cellular Automata}},
-  month        = mar,
-  year         = 2019,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3893115},
-  url          = {https://doi.org/10.5281/zenodo.3893115}
+@article{Antunes2021,
+  doi = {10.21105/joss.03608},
+  url = {https://doi.org/10.21105/joss.03608},
+  year = {2021},
+  publisher = {The Open Journal},
+  volume = {6},
+  number = {67},
+  pages = {3608},
+  author = {Luis M. Antunes},
+  title = {CellPyLib: A Python Library for working with Cellular Automata},
+  journal = {Journal of Open Source Software}
 }
 ```
 
