@@ -23,6 +23,7 @@ the Shannon entropy and mutual information, are provided.
   installation
   working
   additional
+  citing
 
 .. toctree::
   :caption: Tutorials
