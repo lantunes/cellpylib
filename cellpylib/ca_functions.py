@@ -65,8 +65,10 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
     an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton. The final
     result is a matrix, where the number of rows equal the number of time steps specified.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
-                               e.g. [[0,0,0,0,1,0,0,0,0]] 
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step,
+                               e.g. [[0,0,0,0,1,0,0,0,0]], or a history of previous states, with the last item in the
+                               given array being the starting condition for the evolution,
+                               e.g. [[0,0,0,0,0,0,0,0,0], [0,0,0,0,1,0,0,0,0]]
 
     :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
                       (in terms of the history of its evolution) and the current timestep number, and is expected to
@@ -95,8 +97,10 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
     """
     Evolves the given cellular automaton for the given number of fixed timesteps.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
-                               e.g. [[0,0,0,0,1,0,0,0,0]]
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step,
+                               e.g. [[0,0,0,0,1,0,0,0,0]], or a history of previous states, with the last item in the
+                               given array being the starting condition for the evolution,
+                               e.g. [[0,0,0,0,0,0,0,0,0], [0,0,0,0,1,0,0,0,0]]
 
     :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
                       this cellular automaton evolution, which includes the initial condition
@@ -112,24 +116,28 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
+    initial_conditions = cellular_automaton[-1]
     _, cols = cellular_automaton.shape
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
-    array[0] = cellular_automaton
+    array[0] = initial_conditions
 
     for t in range(1, timesteps):
         cells = array[t - 1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
         array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
-    return array
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
 def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
     """
     Evolves the given cellular automaton for a dynamic number of timesteps.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step;
-                               e.g. [[0,0,0,0,1,0,0,0,0]]
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step,
+                               e.g. [[0,0,0,0,1,0,0,0,0]], or a history of previous states, with the last item in the
+                               given array being the starting condition for the evolution,
+                               e.g. [[0,0,0,0,0,0,0,0,0], [0,0,0,0,1,0,0,0,0]]
 
     :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
                       current timestep number, and is expected to return a boolean indicating whether the evolution
@@ -146,8 +154,9 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
+    initial_conditions = cellular_automaton[-1]
     _, cols = cellular_automaton.shape
-    array = [cellular_automaton[0]]
+    array = [initial_conditions]
 
     t = 1
     while timesteps(np.array(array), t):
@@ -159,7 +168,8 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
             dtype=cellular_automaton.dtype
         ))
         t += 1
-    return np.array(array)
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
 def _index_strides(arr, window_size):

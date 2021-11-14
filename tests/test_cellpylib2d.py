@@ -266,6 +266,19 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         np.testing.assert_equal(expected, ca.tolist())
 
+    def test_sandpile_prior_history(self):
+        expected = self._convert_to_numpy_matrix("sandpile_prior_history.ca")
+
+        n = 10
+        sandpile = cpl.Sandpile(n, n)
+        ca = cpl.init_simple2d(n, n, val=5)
+
+        for i in range(3):
+            ca[-1, n // 2, n // 2] += 1
+            ca = cpl.evolve2d(ca, apply_rule=sandpile, timesteps=2, neighbourhood='Moore')
+
+        np.testing.assert_equal(expected, ca.tolist())
+
     def test_plot2d(self):
         # this test ensures that the following code can run successfully without issue
         with warnings.catch_warnings():
