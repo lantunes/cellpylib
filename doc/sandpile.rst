@@ -33,7 +33,7 @@ isn't obvious how many timesteps are necessary for the system to reach a stable 
 The library provides a function, :py:func:`~cellpylib.ca_functions.until_fixed_point`, that can be called to provide a
 callable for the ``timesteps`` argument of the :py:func:`~cellpylib.ca_functions2d.evolve2d` function. By calling this
 function, instead of providing a fixed number, the sandpile will evolve until there is no further change in the state of
-the system. Below is an example demostrating this:
+the system. Below is an example demonstrating this:
 
 .. code-block::
 
@@ -90,6 +90,30 @@ located at row with index `23` and column with index `23` at timestep `1`.
 
 .. image:: _static/sandpile_add_grain.gif
     :width: 500
+
+Imagine dropping a single grain of sand repeatedly on the same cell in the center of a grid, allowing the sandpile to
+attain a stable state (i.e. fixed point) before dropping the next grain. This can be demonstrated with the following
+code snippet:
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    n = 50
+    sandpile = cpl.Sandpile(n, n)
+    ca = cpl.init_simple2d(n, n, val=5)
+
+    for i in range(300):
+        ca[-1, n//2, n//2] += 1
+        ca = cpl.evolve2d(ca, apply_rule=sandpile,
+                          timesteps=cpl.until_fixed_point(), neighbourhood='Moore')
+
+    cpl.plot2d_animate(ca)
+
+.. image:: _static/sandpile_growing.gif
+
+Above, we take advantage of the fact that the `ca` argument to :py:func:`~cellpylib.ca_functions2d.evolve2d` can
+contain a history of prior states, and that the evolution continues from the last state.
 
 **References:**
 

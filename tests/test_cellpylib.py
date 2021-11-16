@@ -407,6 +407,16 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         self.assertEqual([17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], [i[0] for i in ca])
 
+    def test_prior_history(self):
+        initial = np.array([[17], [18], [19]], dtype=np.int)
+
+        def activity_rule(n, c, t):
+            return n[1] + 1
+
+        ca = cpl.evolve(initial, apply_rule=activity_rule, timesteps=2)
+
+        self.assertEqual([[17], [18], [19], [20]], ca.tolist())
+
     def test_init_random_dtype(self):
         arr = cpl.init_random(3, dtype=np.float32)
         self.assertEqual(len(arr), 1)

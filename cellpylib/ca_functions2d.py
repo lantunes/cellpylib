@@ -262,7 +262,9 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton. The final
     result is a matrix, where the number of rows equal the number of time steps specified.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step, or a history
+                               of previous states, with the last item in the given array being the starting condition
+                               for the evolution
 
     :param timesteps: the number of time steps in this evolution, or a callable that accepts the cellular automaton
                       (in terms of the history of its evolution) and the current timestep number, and is expected to
@@ -308,7 +310,9 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
     """
     Evolves the given cellular automaton for a fixed of timesteps.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step, or a history
+                               of previous states, with the last item in the given array being the starting condition
+                               for the evolution
 
     :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps in
                       this cellular automaton evolution, which includes the initial condition
@@ -336,8 +340,9 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
+    initial_conditions = cellular_automaton[-1]
     array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
-    array[0] = cellular_automaton
+    array[0] = initial_conditions
 
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
@@ -345,7 +350,8 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
             for col, cell in enumerate(cell_row):
                 n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
                 array[t][row][col] = apply_rule(n, (row, col), t)
-    return array
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
 def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
@@ -353,7 +359,9 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
     """
     Evolves the given cellular automaton for a dynamic number of timesteps.
 
-    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step, or a history
+                               of previous states, with the last item in the given array being the starting condition
+                               for the evolution
 
     :param timesteps: a callable that accepts the cellular automaton (in terms of the history of its evolution) and the
                       current timestep number, and is expected to return a boolean indicating whether the evolution
@@ -382,7 +390,8 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
-    array = [cellular_automaton[0]]
+    initial_conditions = cellular_automaton[-1]
+    array = [initial_conditions]
 
     t = 1
     while timesteps(np.array(array), t):
@@ -394,7 +403,8 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
                 next_layer[row][col] = apply_rule(n, (row, col), t)
         array.append(next_layer)
         t += 1
-    return np.array(array)
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
 def _get_neighbourhood_indices(rows, cols, r):

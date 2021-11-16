@@ -87,7 +87,11 @@ CA are evolved with the :py:func:`~cellpylib.ca_functions.evolve` function (for 
 ``apply_rule`` and ``r``.
 
 The ``cellular_automaton`` parameter represents the CA consisting of initial conditions. For example, for a 1D CA, a
-valid argument could be `[[0,0,0,0,1,0,0,0,0]]`.
+valid argument could be `[[0,0,0,0,1,0,0,0,0]]`. The initial conditions can include a history of previous states. Thus,
+if the length of the array is greater than 1, then the last item in the array will be used as the initial conditions for
+the current evolution, and the final CA will include the history supplied. For example, for a 1D CA, a valid argument
+that includes a history of previous states could be `[[0,0,0,0,0,0,0,0,0], [0,0,0,0,1,0,0,0,0]]`, and
+`[0,0,0,0,1,0,0,0,0]` would be used as the initial state for the evolution.
 
 The ``timesteps`` parameter is simply an integer representing the number of timesteps the CA should undergo evolution, or
 application of the supplied rule. Note that the initial conditions of the CA are considered the 1st timestep, so, for
