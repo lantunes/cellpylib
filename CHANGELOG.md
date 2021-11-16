@@ -10,11 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.0] - 2021-11-16
 
-## Added
+### Added
 
 - Added more Sandpile demos and more content to the Sandpile tutorial in the docs
 
-## Changed
+### Changed
 
 - Changed interpretation of the `cellular_automaton` argument in `evolve` and `evolve2d` such that a history of states can be provided
 
