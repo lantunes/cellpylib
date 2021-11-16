@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [2.1.0] - 2021-11-16
+
 ## Added
 
 - Added more Sandpile demos and more content to the Sandpile tutorial in the docs
