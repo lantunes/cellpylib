@@ -241,7 +241,8 @@ class LangtonsLoop(CTRBLRule):
             (7, 0, 2, 7, 2): 0
         }, add_rotations=True)
 
-    def init_loops(self, n, dim, row, col):
+    @staticmethod
+    def init_loops(n, dim, row, col):
         """
         Create the initial conditions by specifying the number of loops and their starting positions (as given by the
         coordinates of the first cell of the first row of the loop).

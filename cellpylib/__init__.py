@@ -7,7 +7,7 @@ CellPyLib is a library for working with Cellular Automata.
 For complete documentation, see: https://cellpylib.org
 """
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 from .ca_functions import BaseRule, AsynchronousRule, ReversibleRule, binary_rule, init_simple, nks_rule, \
     totalistic_rule, plot_multiple, bits_to_int, int_to_bits, init_random, plot, evolve, until_fixed_point
@@ -29,5 +29,9 @@ from .hopfield_net import HopfieldNet
 from .ctrbl_rule import CTRBLRule
 
 from .langtons_loop import LangtonsLoop
+
+from .sdsr_loop import SDSRLoop
+
+from .evoloop import Evoloop
 
 from .sandpile import Sandpile
