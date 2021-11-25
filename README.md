@@ -262,6 +262,26 @@ For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
 
+### Increasing Execution Speed with Memoization
+
+Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking 
+the rule. Only stateless rules that depend only on the cell neighbourhood are supported. Consider the following
+example of rule 30, where memoization is enabled:
+
+```python
+import cellpylib as cpl
+import time
+
+start = time.time()
+cpl.evolve(cpl.init_simple(1000), timesteps=500,
+           apply_rule=lambda n, c, t: cpl.nks_rule(n, 30), memoize=True)
+
+print(f"Elapsed: {time.time() - start:.2f} seconds")
+```
+
+The program above prints `Elapsed: 0.33 seconds` (actual execution time may vary, depending on the device used). 
+Without memoization, the program requires approximately 23 seconds to complete. 
+
 --------------------
 
 ### Development

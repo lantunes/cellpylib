@@ -58,7 +58,7 @@ def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time'
         plt.show()
 
 
-def evolve(cellular_automaton, timesteps, apply_rule, r=1):
+def evolve(cellular_automaton, timesteps, apply_rule, r=1, memoize=False):
     """
     Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during
     the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function expects
@@ -82,18 +82,24 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1):
                        representing the index of the cell in the cellular automaton array; the time step, which is a 
                        scalar representing the time step in the evolution
 
-    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
+    :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1 (default is 1)
+
+    :param memoize: if True, then the result of applying the rule on a given neighbourhood will be cached, and used on
+                    subsequent invocations of the rule; this can result in a significant improvement to execution speed
+                    if the rule is expensive to invoke; NOTE: this should only be set to True for rules which do not
+                    store any state upon invocation, and for rules which do not depend in the cell index or timestep
+                    number (default is False)
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
     if callable(timesteps):
-        return _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r)
+        return _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize)
     else:
-        return _evolve_fixed(cellular_automaton, timesteps, apply_rule, r)
+        return _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize)
 
 
-def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
+def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
     """
     Evolves the given cellular automaton for the given number of fixed timesteps.
 
@@ -113,6 +119,8 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
+    :param memoize: whether to use memoization
+
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
@@ -121,16 +129,21 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r):
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = initial_conditions
 
+    memo_table = {}
+
     for t in range(1, timesteps):
         cells = array[t - 1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
+        if memoize:
+            array[t] = np.array([_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)])
+        else:
+            array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
-def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
+def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
     """
     Evolves the given cellular automaton for a dynamic number of timesteps.
 
@@ -151,6 +164,8 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
+    :param memoize: whether to use memoization
+
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
     """
@@ -158,18 +173,52 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r):
     _, cols = cellular_automaton.shape
     array = [initial_conditions]
 
+    memo_table = {}
+
     t = 1
     while timesteps(np.array(array), t):
         cells = array[-1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        array.append(np.array(
-            [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)],
-            dtype=cellular_automaton.dtype
-        ))
+        if memoize:
+            result = [_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)]
+        else:
+            result = [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)]
+        array.append(np.array(result, dtype=cellular_automaton.dtype))
         t += 1
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
+def _get_memoized(n, c, t, apply_rule, memoization_table):
+    """
+    Checks if the result of `apply_rule` is in the memoization table according to the neighbourhood, `n`,
+    and returns the associated value if it is. Otherwise, `apply_rule` is invoked and the result is stored in
+    the memoization table, and then returned.
+
+    :param n: a numpy array representing the neighbourhood
+
+    :param c: an int representing the current cell's index
+
+    :param t: an int, representing the current timestep
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy array
+                       of length 2r + 1 representing the neighbourhood of the cell; the cell identity, which is a scalar
+                       representing the index of the cell in the cellular automaton array; the time step, which is a
+                       scalar representing the time step in the evolution
+
+    :param memoization_table: a dictionary mapping a neighbourhood to the rule result for such a neighbourhood
+
+    :return: the result of invoking the given rule with the given n, c, and t arguments
+    """
+    key = n.tobytes()
+    if key in memoization_table:
+        return memoization_table[key]
+    else:
+        result = apply_rule(n, c, t)
+        memoization_table[key] = result
+        return result
 
 
 def _index_strides(arr, window_size):
