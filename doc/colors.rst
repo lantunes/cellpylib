@@ -23,6 +23,13 @@ base 10 but is interpreted as the rule in base `k` (thus rule 777 corresponds to
 .. image:: _static/tot3_rule777.png
     :width: 400
 
+Alternatively, the :py:class:`~cellpylib.ca_functions.TotalisticRule` class can be used:
+
+.. code-block::
+
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
+                                    apply_rule=cpl.TotalisticRule(k=3, rule=777))
+
 **References:**
 
 *Wolfram, S. (2002). A New Kind of Science. Champaign, IL: Wolfram Media.*

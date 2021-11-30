@@ -22,12 +22,19 @@ The following code snippet demonstrates creating and visualizing Rule 30 with Ce
 
     cellular_automaton = cpl.init_simple(200)
 
-    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, memoize=True,
                                     apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
     cpl.plot(cellular_automaton)
 
 .. image:: _static/rule30.png
     :width: 400
+
+Alternatively, the :py:class:`~cellpylib.ca_functions.NKSRule` class can be used:
+
+.. code-block::
+
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, memoize=True,
+                                    apply_rule=cpl.NKSRule(30))
 
 **References:**
 

@@ -446,6 +446,119 @@ class BaseRule:
         raise NotImplementedError
 
 
+class NKSRule(BaseRule):
+    """
+    An Elementary Cellular Automaton rule, indexed according the scheme in NKS.
+    """
+    def __init__(self, nks_rule_number):
+        """
+        Creates an instance of an NKS rule.
+
+        :param nks_rule_number: an int indicating the cellular automaton rule number
+        """
+        self._nks_rule_number = nks_rule_number
+
+    def __call__(self, n, c, t):
+        """
+        The NKS rule to apply.
+
+        :param n: a binary array of length 2r + 1
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, 0 or 1, of applying the given rule on the given state
+        """
+        return nks_rule(n, self._nks_rule_number)
+
+
+class BinaryRule(BaseRule):
+    """
+    A binary representation of the given rule number, which is used to determine the value to return.
+    The process is approximately described as:
+
+    .. code-block:: text
+
+        1. convert state to int, so [1,0,1] -> 5, call this state_int
+
+        2. convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
+
+        3. new value is rule_bin_array[7 - state_int]
+           we subtract 7 from state_int to be consistent with the numbering scheme used in NKS
+           in NKS, rule 254 for a 1D binary cellular automaton is described as:
+
+          [1,1,1]  [1,1,0]  [1,0,1]  [1,0,0]  [0,1,1]  [0,1,0]  [0,0,1]  [0,0,0]
+             1        1        1        1        1        1        1        0
+
+    If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of
+    the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the
+    neighbourhoods.
+    """
+    def __init__(self, rule, scheme=None, powers_of_two=None):
+        """
+        Creates an instance of a binary rule.
+
+        :param rule: an int or a binary array indicating the cellular automaton rule number
+
+        :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
+
+        :param powers_of_two: a pre-computed array containing the powers of two, e.g. [4,2,1]; can be None (default) or
+                              an array of length len(neighbourhood); if an array is given, it will used to speed up the
+                              calculation of state_int
+        """
+        self._rule = rule
+        self._scheme = scheme
+        self._powers_of_two = powers_of_two
+
+    def __call__(self, n, c, t):
+        """
+        The binary rule to apply.
+
+        :param n: a binary array of length 2r + 1
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, 0 or 1, of applying the given rule on the given state
+        """
+        return binary_rule(n, self._rule, self._scheme, self._powers_of_two)
+
+
+class TotalisticRule(BaseRule):
+    """
+    The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
+    The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
+    3k - 2 possible average colors in the 3-cell neighbourhood. There are n(k - 1) + 1 possible average colors for a
+    k-color cellular automaton with an n-cell neighbourhood.
+    """
+    def __init__(self, k, rule):
+        """
+        Creates an instance of a totalistic rule.
+
+        :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
+
+        :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
+        """
+        self._k = k
+        self._rule = rule
+
+    def __call__(self, n, c, t):
+        """
+        The totalistic rule to apply.
+
+        :param n: a k-color array of any size
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
+        """
+        return totalistic_rule(n, self._k, self._rule)
+
+
 class ReversibleRule(BaseRule):
     """
     An elementary cellular automaton rule explicitly set up to be reversible.

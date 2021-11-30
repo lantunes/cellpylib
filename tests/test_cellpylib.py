@@ -116,6 +116,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 255, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule255_random_init_callable(self):
+        expected = self._convert_to_numpy_matrix("rule255_random_init.ca")
+        actual = self._create_ca_callable(expected, 255)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_totalistic_3color_rule777_simple_init(self):
         expected = self._convert_to_numpy_matrix("tot3_rule777_simple_init.ca")
         actual = self._create_totalistic_ca(expected, 3, 777)
@@ -154,6 +159,11 @@ class TestCellularAutomataFunctions(unittest.TestCase):
     def test_totalistic_4color_rule107396_random_init_memoized(self):
         expected = self._convert_to_numpy_matrix("tot4_rule107396_random_init.ca")
         actual = self._create_totalistic_ca(expected, 4, 107396, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_4color_rule107396_random_init_callable(self):
+        expected = self._convert_to_numpy_matrix("tot4_rule107396_random_init.ca")
+        actual = self._create_totalistic_ca_callable(expected, 4, 107396)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_random_rule_table(self):
@@ -522,11 +532,21 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         return cpl.evolve(cellular_automaton, timesteps=rows,
                           apply_rule=lambda n, c, t: cpl.nks_rule(n, rule), memoize=memoize)
 
+    def _create_ca_callable(self, expected, rule):
+        rows, _ = expected.shape
+        cellular_automaton = expected[0].reshape(1, -1)
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=cpl.NKSRule(rule))
+
     def _create_totalistic_ca(self, expected, k, rule, memoize=False):
         rows, _ = expected.shape
         cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows,
                           apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule), memoize=memoize)
+
+    def _create_totalistic_ca_callable(self, expected, k, rule):
+        rows, _ = expected.shape
+        cellular_automaton = expected[0].reshape(1, -1)
+        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=cpl.TotalisticRule(k, rule))
 
     def _create_reversible_ca(self, expected, rule):
         rows, _ = expected.shape
@@ -566,6 +586,29 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = cpl.evolve(init, timesteps=timesteps,
                             apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number),
                             r=radius, memoize=True)
+
+        expected = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
+                             [1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+                             [1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_binary_rule_callable(self):
+        rule_number = 6667021275756174439087127638698866559
+        radius = 3
+        timesteps = 12
+        init = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1]])
+
+        actual = cpl.evolve(init, timesteps=timesteps,
+                            apply_rule=cpl.BinaryRule(rule_number), r=radius)
 
         expected = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
                              [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
