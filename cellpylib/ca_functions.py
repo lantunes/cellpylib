@@ -84,11 +84,16 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1, memoize=False):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1 (default is 1)
 
-    :param memoize: if True, then the result of applying the rule on a given neighbourhood will be cached, and used on
-                    subsequent invocations of the rule; this can result in a significant improvement to execution speed
-                    if the rule is expensive to invoke; NOTE: this should only be set to True for rules which do not
-                    store any state upon invocation, and for rules which do not depend in the cell index or timestep
-                    number (default is False)
+    :param memoize: allowed values are True, False, and "recursive"; if True, then the result of applying the rule on a
+                    given neighbourhood will be cached, and used on subsequent invocations of the rule; if "recursive",
+                    then a recursive memoized algorithm will be used, in which recursively wider neighbourhoods are
+                    cached, along with the result of applying the rule on the cells in the widened neighbourhood; the
+                    True and "recursive" options can result in a significant improvement to execution speed if the rule
+                    is expensive to invoke; the "recursive" option works best when there are strongly repetitive
+                    patterns in the CA, and when the state consists of 2^k cells; if False, then no caching will be
+                    used; NOTE: this should only be set to True or "recursive" for rules which do not store any state
+                    upon invocation, and for rules which do not depend in the cell index or timestep number (default is
+                    False)
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -119,7 +124,7 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
-    :param memoize: whether to use memoization
+    :param memoize: the memoization flag; one of True, False, or "recursive"
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -128,6 +133,7 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
     _, cols = cellular_automaton.shape
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = initial_conditions
+    cell_indices = list(range(len(initial_conditions)))
 
     memo_table = {}
 
@@ -135,10 +141,16 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
         cells = array[t - 1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        if memoize:
+        if memoize is "recursive":
+            next_state = np.zeros(len(cells), dtype=cellular_automaton.dtype)
+            _step(cell_indices, cells, next_state, memo_table, apply_rule, r, t)
+            array[t] = next_state
+        elif memoize is True:
             array[t] = np.array([_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)])
-        else:
+        elif memoize is False:
             array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
+        else:
+            raise Exception("unsupported memoization option: %s" % memoize)
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
@@ -164,7 +176,7 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
-    :param memoize: whether to use memoization
+    :param memoize: the memoization flag; one of True, False, or "recursive"
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -172,6 +184,7 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
     initial_conditions = cellular_automaton[-1]
     _, cols = cellular_automaton.shape
     array = [initial_conditions]
+    cell_indices = list(range(len(initial_conditions)))
 
     memo_table = {}
 
@@ -180,14 +193,87 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
         cells = array[-1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        if memoize:
+        if memoize is "recursive":
+            result = np.zeros(len(cells), dtype=cellular_automaton.dtype)
+            _step(cell_indices, cells, result, memo_table, apply_rule, r, t)
+        elif memoize is True:
             result = [_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)]
-        else:
+        elif memoize is False:
             result = [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)]
+        else:
+            raise Exception("unsupported memoization option: %s" % memoize)
         array.append(np.array(result, dtype=cellular_automaton.dtype))
         t += 1
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
+def _step(indices, curr_state, next_state, cache, apply_rule, r, t):
+    """
+    Perform an update on the given next state using the current state and memoization cache, based on
+    an even split of the cell indices.
+
+    :param indices: a list of the cell indices of the cells to update
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a dictionary that maps state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param r: the neighbourhood radius
+
+    :param t: the current timestep
+    """
+    mid = len(indices) // 2
+    left_indices = indices[:mid]
+    right_indices = indices[mid:]
+    if len(left_indices) > 0:
+        _update_state(left_indices, curr_state, next_state, cache, apply_rule, r, t)
+    if len(right_indices) > 0:
+        _update_state(right_indices, curr_state, next_state, cache, apply_rule, r, t)
+
+
+def _update_state(indices, curr_state, next_state, cache, apply_rule, r, t):
+    """
+     Perform an update on the given next state using the current state and memoization cache.
+
+    :param indices: a list of the cell indices of the cells to update
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a dictionary that maps state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param r: the neighbourhood radius
+
+    :param t: the current timestep
+    """
+    # get the state string for the state given by the indices
+    start = indices[0]
+    end = indices[-1]
+    neighbourhood_indices = range(start - r, end + 1 + r)
+    neighbourhood = curr_state.take(neighbourhood_indices, mode='wrap')
+    state_string = neighbourhood.tobytes()
+
+    if state_string in cache:
+        # update next_state with next vals from cache
+        next_state[indices] = cache[state_string]
+    else:
+        if len(indices) > 1:
+            _step(indices, curr_state, next_state, cache, apply_rule, r, t)
+        else:
+            # invoke rule and update next_state for cell
+            val = apply_rule(neighbourhood, start, t)
+            next_state[start] = val
+        # get the result from the next_state for the left_indices and place in cache
+        vals_to_cache = next_state[indices]
+        cache[state_string] = vals_to_cache
 
 
 def _get_memoized(n, c, t, apply_rule, memoization_table):
