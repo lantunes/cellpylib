@@ -250,6 +250,54 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
+    def test_sdsr_loop(self):
+        expected = self._convert_to_numpy_matrix("sdsr_loop.ca")
+
+        sdsr_loop = cpl.SDSRLoop()
+
+        cellular_automaton = sdsr_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=sdsr_loop)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_sdsr_loop_memoized(self):
+        expected = self._convert_to_numpy_matrix("sdsr_loop.ca")
+
+        sdsr_loop = cpl.SDSRLoop()
+
+        cellular_automaton = sdsr_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=sdsr_loop, memoize=True)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_evoloop(self):
+        expected = self._convert_to_numpy_matrix("evoloop.ca")
+
+        evoloop = cpl.Evoloop()
+
+        cellular_automaton = evoloop.init_species13_loop((75, 75), 40, 15)
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=evoloop)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_evoloop_memoized(self):
+        expected = self._convert_to_numpy_matrix("evoloop.ca")
+
+        evoloop = cpl.Evoloop()
+
+        cellular_automaton = evoloop.init_species13_loop((75, 75), 40, 15)
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=evoloop, memoize=True)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
     def test_sandpile(self):
         expected = self._convert_to_numpy_matrix("sandpile.ca")
 

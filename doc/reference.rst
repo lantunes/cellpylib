@@ -57,6 +57,20 @@ cellpylib.langtons_loop
    :members:
    :undoc-members:
 
+cellpylib.sdsr_loop
+-----------------------
+
+.. automodule:: cellpylib.sdsr_loop
+   :members:
+   :undoc-members:
+
+cellpylib.evoloop
+-----------------------
+
+.. automodule:: cellpylib.evoloop
+   :members:
+   :undoc-members:
+
 cellpylib.rule_tables
 ---------------------
 
