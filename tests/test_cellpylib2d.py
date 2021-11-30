@@ -147,9 +147,19 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         actual = self._create_ca(expected, 126, 'Moore')
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_tot_rule126_2d_n9_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot_rule126_2d_n9_simple_init.ca")
+        actual = self._create_ca(expected, 126, 'Moore', memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_tot_rule26_2d_n5_simple_init(self):
         expected = self._convert_to_numpy_matrix("tot_rule26_2d_n5_simple_init.ca")
         actual = self._create_ca(expected, 26, 'von Neumann')
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_tot_rule26_2d_n5_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot_rule26_2d_n5_simple_init.ca")
+        actual = self._create_ca(expected, 26, 'von Neumann', memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_sequential_rule_2d_update_order(self):
@@ -200,6 +210,22 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
+    def test_game_of_life_rule_memoized(self):
+        expected = self._convert_to_numpy_matrix("game_of_life.ca").reshape(60, 60, 60)
+
+        # Glider
+        cellular_automaton = cpl.init_simple2d(60, 60)
+        cellular_automaton[:, [28, 29, 30, 30], [30, 31, 29, 31]] = 1
+        # Blinker
+        cellular_automaton[:, [40, 40, 40], [15, 16, 17]] = 1
+        # Light Weight Space Ship (LWSS)
+        cellular_automaton[:, [18, 18, 19, 20, 21, 21, 21, 21, 20], [45, 48, 44, 44, 44, 45, 46, 47, 48]] = 1
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
+                                          apply_rule=cpl.game_of_life_rule, memoize=True)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
     def test_langtons_loop(self):
         expected = self._convert_to_numpy_matrix("langtons_loop.ca")
 
@@ -209,6 +235,66 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
                                           apply_rule=langtons_loop)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_langtons_loop_memoized(self):
+        expected = self._convert_to_numpy_matrix("langtons_loop.ca")
+
+        langtons_loop = cpl.LangtonsLoop()
+
+        cellular_automaton = langtons_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=langtons_loop, memoize=True)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_sdsr_loop(self):
+        expected = self._convert_to_numpy_matrix("sdsr_loop.ca")
+
+        sdsr_loop = cpl.SDSRLoop()
+
+        cellular_automaton = sdsr_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=sdsr_loop)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_sdsr_loop_memoized(self):
+        expected = self._convert_to_numpy_matrix("sdsr_loop.ca")
+
+        sdsr_loop = cpl.SDSRLoop()
+
+        cellular_automaton = sdsr_loop.init_loops(1, (75, 75), [40], [25])
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=sdsr_loop, memoize=True)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_evoloop(self):
+        expected = self._convert_to_numpy_matrix("evoloop.ca")
+
+        evoloop = cpl.Evoloop()
+
+        cellular_automaton = evoloop.init_species13_loop((75, 75), 40, 15)
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=evoloop)
+
+        np.testing.assert_equal(expected, cellular_automaton.tolist())
+
+    def test_evoloop_memoized(self):
+        expected = self._convert_to_numpy_matrix("evoloop.ca")
+
+        evoloop = cpl.Evoloop()
+
+        cellular_automaton = evoloop.init_species13_loop((75, 75), 40, 15)
+
+        cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=10,
+                                          apply_rule=evoloop, memoize=True)
 
         np.testing.assert_equal(expected, cellular_automaton.tolist())
 
@@ -225,6 +311,22 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         ca[0, 0, :], ca[0, n_rows - 1, :], ca[0, :, 0], ca[0, :, n_cols - 1] = 0, 0, 0, 0
 
         ca = cpl.evolve2d(ca, timesteps=10, apply_rule=sandpile, neighbourhood="von Neumann")
+
+        np.testing.assert_equal(expected, ca.tolist())
+
+    def test_sandpile_memoized(self):
+        expected = self._convert_to_numpy_matrix("sandpile.ca")
+
+        n_rows = 10
+        n_cols = 10
+        sandpile = cpl.Sandpile(n_rows, n_cols)
+
+        np.random.seed(0)
+        ca = np.random.randint(5, size=n_rows * n_cols).reshape((1, n_rows, n_cols))
+        # we're using a closed boundary, so make the boundary cells 0
+        ca[0, 0, :], ca[0, n_rows - 1, :], ca[0, :, 0], ca[0, :, n_cols - 1] = 0, 0, 0, 0
+
+        ca = cpl.evolve2d(ca, timesteps=10, apply_rule=sandpile, neighbourhood="von Neumann", memoize=True)
 
         np.testing.assert_equal(expected, ca.tolist())
 
@@ -247,6 +349,22 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
 
         ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
                           apply_rule=sandpile, neighbourhood="von Neumann")
+
+        self.assertEqual(6, len(ca))
+
+    def test_evolve_dynamic_timesteps_memoized(self):
+        np.random.seed(0)
+
+        n_rows = 10
+        n_cols = 10
+        sandpile = cpl.Sandpile(n_rows, n_cols)
+
+        initial = np.random.randint(5, size=n_rows * n_cols).reshape((1, n_rows, n_cols))
+        # we're using a closed boundary, so make the boundary cells 0
+        initial[0, 0, :], initial[0, n_rows - 1, :], initial[0, :, 0], initial[0, :, n_cols - 1] = 0, 0, 0, 0
+
+        ca = cpl.evolve2d(initial, timesteps=cpl.until_fixed_point(),
+                          apply_rule=sandpile, neighbourhood="von Neumann", memoize=True)
 
         self.assertEqual(6, len(ca))
 
@@ -345,8 +463,9 @@ class TestCellularAutomataFunctions2D(unittest.TestCase):
         content = [[[int(i) for i in h] for h in x] for x in content]
         return np.array(content, dtype=np.int32)
 
-    def _create_ca(self, expected, rule, neighbourhood):
+    def _create_ca(self, expected, rule, neighbourhood, memoize=False):
         steps, _, _ = expected.shape
         cellular_automaton = np.array([expected[0]])
         return cpl.evolve2d(cellular_automaton, timesteps=steps, r=1, neighbourhood=neighbourhood,
-                            apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=rule))
+                            apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k=2, rule=rule),
+                            memoize=memoize)

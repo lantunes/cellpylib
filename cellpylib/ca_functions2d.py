@@ -255,7 +255,7 @@ def _add_grid_lines(ca, ax, show_grid):
     return grid
 
 
-def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore'):
+def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore', memoize=False):
     """
     Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during
     the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function expects
@@ -280,9 +280,15 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
                        matrix, as (row, col); the time step, which is a scalar representing the time step in the
                        evolution
 
-    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1 (default is 1)
 
-    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+    :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann' (default is 'Moore')
+
+    :param memoize: if True, then the result of applying the rule on a given neighbourhood will be cached, and used on
+                    subsequent invocations of the rule; this can result in a significant improvement to execution speed
+                    if the rule is expensive to invoke; NOTE: this should only be set to True for rules which do not
+                    store any state upon invocation, and for rules which do not depend in the cell index or timestep
+                    number (default is False)
 
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
@@ -298,15 +304,15 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     neighbourhood_indices = _get_neighbourhood_indices(rows, cols, r)
 
     if callable(timesteps):
-        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
-                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask, memoize)
     else:
-        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
-                                 rows, cols, neighbourhood_indices, von_neumann_mask)
+        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood,
+                                 rows, cols, neighbourhood_indices, von_neumann_mask, memoize)
 
 
-def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
-                    neighbourhood_indices, von_neumann_mask):
+def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask, memoize):
     """
     Evolves the given cellular automaton for a fixed of timesteps.
 
@@ -325,8 +331,6 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
                        matrix, as (row, col); the time step, which is a scalar representing the time step in the
                        evolution
 
-    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
-
     :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
 
     :param rows: the number of rows in the CA
@@ -337,6 +341,8 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
 
     :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
 
+    :param memoize: whether to use memoization
+
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
@@ -344,18 +350,23 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, r, neighbourhood,
     array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
     array[0] = initial_conditions
 
+    memo_table = {}
+
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
         for row, cell_row in enumerate(cell_layer):
             for col, cell in enumerate(cell_row):
                 n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
-                array[t][row][col] = apply_rule(n, (row, col), t)
+                if memoize:
+                    array[t][row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
+                else:
+                    array[t][row][col] = apply_rule(n, (row, col), t)
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
-def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhood, rows, cols,
-                    neighbourhood_indices, von_neumann_mask):
+def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
+                    neighbourhood_indices, von_neumann_mask, memoize):
     """
     Evolves the given cellular automaton for a dynamic number of timesteps.
 
@@ -375,8 +386,6 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
                        matrix, as (row, col); the time step, which is a scalar representing the time step in the
                        evolution
 
-    :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
-
     :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
 
     :param rows: the number of rows in the CA
@@ -387,11 +396,15 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
 
     :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
 
+    :param memoize: whether to use memoization
+
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
     initial_conditions = cellular_automaton[-1]
     array = [initial_conditions]
+
+    memo_table = {}
 
     t = 1
     while timesteps(np.array(array), t):
@@ -400,7 +413,10 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, r, neighbourhoo
         for row, cell_row in enumerate(prev_layer):
             for col, cell in enumerate(cell_row):
                 n = _get_neighbourhood(prev_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
-                next_layer[row][col] = apply_rule(n, (row, col), t)
+                if memoize:
+                    next_layer[row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
+                else:
+                    next_layer[row][col] = apply_rule(n, (row, col), t)
         array.append(next_layer)
         t += 1
 
@@ -461,6 +477,39 @@ def _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhoo
         return np.ma.masked_array(n, von_neumann_mask)
     else:
         raise ValueError('unknown neighbourhood type: %s' % neighbourhood)
+
+
+def _get_memoized(n, c, t, apply_rule, memoization_table):
+    """
+    Checks if the result of `apply_rule` is in the memoization table according to the neighbourhood, `n`,
+    and returns the associated value if it is. Otherwise, `apply_rule` is invoked and the result is stored in
+    the memoization table, and then returned.
+
+    :param n: a numpy array representing the neighbourhood
+
+    :param c: an int representing the current cell's index
+
+    :param t: an int, representing the current timestep
+
+    :param apply_rule: a function representing the rule to be applied to each cell during the evolution; this function
+                       will be given three arguments, in the following order: the neighbourhood, which is a numpy
+                       2D array of dimensions 2r+1 x 2r+1, representing the neighbourhood of the cell (if the
+                       'von Neumann' neighbourhood is specified, the array will be a masked array); the cell identity,
+                       which is a tuple representing the row and column indices of the cell in the cellular automaton
+                       matrix, as (row, col); the time step, which is a scalar representing the time step in the
+                       evolution
+
+    :param memoization_table: a dictionary mapping a neighbourhood to the rule result for such a neighbourhood
+
+    :return: the result of invoking the given rule with the given n, c, and t arguments
+    """
+    key = n.tobytes()
+    if key in memoization_table:
+        return memoization_table[key]
+    else:
+        result = apply_rule(n, c, t)
+        memoization_table[key] = result
+        return result
 
 
 def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):

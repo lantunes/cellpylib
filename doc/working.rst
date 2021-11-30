@@ -125,3 +125,43 @@ invocation. For 2D CA, there is the :py:func:`~cellpylib.ca_functions2d.plot2d` 
 additional argument, ``timestep``, which represents the particular timestep to be plotted. If none is given, then the
 state at the last timestep will be plotted. Finally, the evolution of 2D CA can be animated, with the
 :py:func:`~cellpylib.ca_functions2d.plot2d_animate` function.
+
+Increasing Execution Speed with Memoization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Memoization is a means by which computer programs can be made to execute faster. It involves caching the result of a
+function for a given input. CellPyLib supports the memoization of rules supplied to the
+:py:func:`~cellpylib.ca_functions.evolve` and :py:func:`~cellpylib.ca_functions2d.evolve2d` functions. By default,
+memoization is not enabled, since only rules that do not depend on the cell index value, the timestep number, or that
+do not store any state as a result of invoking the rule, are supported for memoization. Only the cell neighbourhood is
+used to index the output of the rule. Memoization must be explicitly enabled by passing along the ``memoize`` parameter
+with a value of `True` when invoking the :py:func:`~cellpylib.ca_functions.evolve` and
+:py:func:`~cellpylib.ca_functions2d.evolve2d` functions.
+
+Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking
+the rule. Again, only stateless rules that depend only on the cell neighbourhood are supported. Consider the following
+example of rule 30, where memoization is enabled in one case:
+
+.. code-block::
+
+    import cellpylib as cpl
+    import time
+
+    start = time.time()
+    cpl.evolve(cpl.init_simple(600), timesteps=300,
+               apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
+    print(f"Without memoization: {time.time() - start:.2f} seconds elapsed")
+
+    start = time.time()
+    cpl.evolve(cpl.init_simple(600), timesteps=300,
+               apply_rule=lambda n, c, t: cpl.nks_rule(n, 30), memoize=True)
+    print(f"With memoization: {time.time() - start:.2f} seconds elapsed")
+
+The program above prints:
+
+.. code-block::
+
+    Without memoization: 8.23 seconds elapsed
+    With memoization: 0.12 seconds elapsed
+
+*(results may differ, depending on the device used)*

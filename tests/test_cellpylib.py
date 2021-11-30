@@ -21,9 +21,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 0)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule0_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule0_simple_init.ca")
+        actual = self._create_ca(expected, 0, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_rule0_random_init(self):
         expected = self._convert_to_numpy_matrix("rule0_random_init.ca")
         actual = self._create_ca(expected, 0)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_rule0_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule0_random_init.ca")
+        actual = self._create_ca(expected, 0, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule30_simple_init(self):
@@ -31,9 +41,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 30)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule30_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule30_simple_init.ca")
+        actual = self._create_ca(expected, 30, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_rule30_random_init(self):
         expected = self._convert_to_numpy_matrix("rule30_random_init.ca")
         actual = self._create_ca(expected, 30)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_rule30_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule30_random_init.ca")
+        actual = self._create_ca(expected, 30, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule126_simple_init(self):
@@ -41,9 +61,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 126)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule126_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule126_simple_init.ca")
+        actual = self._create_ca(expected, 126, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_rule126_random_init(self):
         expected = self._convert_to_numpy_matrix("rule126_random_init.ca")
         actual = self._create_ca(expected, 126)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_rule126_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule126_random_init.ca")
+        actual = self._create_ca(expected, 126, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule225_simple_init(self):
@@ -51,9 +81,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 225)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule225_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule225_simple_init.ca")
+        actual = self._create_ca(expected, 225, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_rule225_random_init(self):
         expected = self._convert_to_numpy_matrix("rule225_random_init.ca")
         actual = self._create_ca(expected, 225)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_rule225_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule225_random_init.ca")
+        actual = self._create_ca(expected, 225, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_rule255_simple_init(self):
@@ -61,9 +101,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_ca(expected, 255)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_rule255_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule255_simple_init.ca")
+        actual = self._create_ca(expected, 255, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_rule255_random_init(self):
         expected = self._convert_to_numpy_matrix("rule255_random_init.ca")
         actual = self._create_ca(expected, 255)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_rule255_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("rule255_random_init.ca")
+        actual = self._create_ca(expected, 255, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_3color_rule777_simple_init(self):
@@ -71,9 +121,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_totalistic_ca(expected, 3, 777)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_totalistic_3color_rule777_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot3_rule777_simple_init.ca")
+        actual = self._create_totalistic_ca(expected, 3, 777, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_totalistic_3color_rule777_random_init(self):
         expected = self._convert_to_numpy_matrix("tot3_rule777_random_init.ca")
         actual = self._create_totalistic_ca(expected, 3, 777)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_3color_rule777_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot3_rule777_random_init.ca")
+        actual = self._create_totalistic_ca(expected, 3, 777, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_totalistic_4color_rule107396_simple_init(self):
@@ -81,9 +141,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = self._create_totalistic_ca(expected, 4, 107396)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_totalistic_4color_rule107396_simple_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot4_rule107396_simple_init.ca")
+        actual = self._create_totalistic_ca(expected, 4, 107396, memoize=True)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_totalistic_4color_rule107396_random_init(self):
         expected = self._convert_to_numpy_matrix("tot4_rule107396_random_init.ca")
         actual = self._create_totalistic_ca(expected, 4, 107396)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_totalistic_4color_rule107396_random_init_memoized(self):
+        expected = self._convert_to_numpy_matrix("tot4_rule107396_random_init.ca")
+        actual = self._create_totalistic_ca(expected, 4, 107396, memoize=True)
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
     def test_random_rule_table(self):
@@ -407,6 +477,22 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         self.assertEqual([17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], [i[0] for i in ca])
 
+    def test_dynamic_timesteps_memoized(self):
+        initial = np.array([[17]], dtype=np.int)
+
+        def activity_rule(n, c, t):
+            n = n[1]
+            if n % 2 == 0:
+                # number is even
+                return n / 2
+            else:
+                return 3 * n + 1
+
+        ca = cpl.evolve(initial, apply_rule=activity_rule,
+                        timesteps=lambda ca, t: True if ca[-1][0] != 1 else False, memoize=True)
+
+        self.assertEqual([17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1], [i[0] for i in ca])
+
     def test_prior_history(self):
         initial = np.array([[17], [18], [19]], dtype=np.int)
 
@@ -430,16 +516,17 @@ class TestCellularAutomataFunctions(unittest.TestCase):
             content = content_file.read()
         return np.array(ast.literal_eval(content.replace("{", "[").replace("}", "]")), dtype=np.int32)
 
-    def _create_ca(self, expected, rule):
-        rows, _ = expected.shape
-        cellular_automaton = expected[0].reshape(1, -1)
-        return cpl.evolve(cellular_automaton, timesteps=rows, apply_rule=lambda n, c, t: cpl.nks_rule(n, rule))
-
-    def _create_totalistic_ca(self, expected, k, rule):
+    def _create_ca(self, expected, rule, memoize=False):
         rows, _ = expected.shape
         cellular_automaton = expected[0].reshape(1, -1)
         return cpl.evolve(cellular_automaton, timesteps=rows,
-                          apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule))
+                          apply_rule=lambda n, c, t: cpl.nks_rule(n, rule), memoize=memoize)
+
+    def _create_totalistic_ca(self, expected, k, rule, memoize=False):
+        rows, _ = expected.shape
+        cellular_automaton = expected[0].reshape(1, -1)
+        return cpl.evolve(cellular_automaton, timesteps=rows,
+                          apply_rule=lambda n, c, t: cpl.totalistic_rule(n, k, rule), memoize=memoize)
 
     def _create_reversible_ca(self, expected, rule):
         rows, _ = expected.shape
@@ -455,6 +542,30 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         actual = cpl.evolve(init, timesteps=timesteps,
                             apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number), r=radius)
+
+        expected = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
+                             [1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+                             [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
+                             [0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+                             [1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_binary_rule_memoized(self):
+        rule_number = 6667021275756174439087127638698866559
+        radius = 3
+        timesteps = 12
+        init = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1]])
+
+        actual = cpl.evolve(init, timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number),
+                            r=radius, memoize=True)
 
         expected = np.array([[1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
                              [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
@@ -489,6 +600,26 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
+    def test_binary_rule_powers_of_two_nks_memoized(self):
+        rule_number = 30
+        radius = 1
+        size = 149
+        timesteps = 149
+
+        expected = cpl.evolve(cpl.init_simple(size=size), timesteps=timesteps,
+                              apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number, scheme="nks"),
+                              r=radius, memoize=True)
+
+        powers_of_two = 2 ** np.arange(radius * 2 + 1)[::-1]
+        rule = list(map(int, bin(rule_number)[2:]))
+        rule_bin_array = np.pad(rule, ((2 ** (radius * 2 + 1)) - len(rule), 0), 'constant').tolist()
+        actual = cpl.evolve(cpl.init_simple(size=size), timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_bin_array, scheme="nks",
+                                                                       powers_of_two=powers_of_two),
+                            r=radius, memoize=True)
+
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def test_binary_rule_powers_of_two_default(self):
         rule_number = 6667021275756174439087127638698866559
         radius = 3
@@ -505,6 +636,26 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         actual = cpl.evolve(init, timesteps=timesteps,
                             apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_bin_array, powers_of_two=powers_of_two),
                             r=radius)
+
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
+    def test_binary_rule_powers_of_two_default_memoized(self):
+        rule_number = 6667021275756174439087127638698866559
+        radius = 3
+        timesteps = 49
+        init = np.array([[1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                          1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1]])
+
+        expected = cpl.evolve(init, timesteps=timesteps,
+                              apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_number),
+                              r=radius, memoize=True)
+
+        powers_of_two = 2 ** np.arange(radius * 2 + 1)[::-1]
+        rule = list(map(int, bin(rule_number)[2:]))
+        rule_bin_array = np.pad(rule, ((2 ** (radius * 2 + 1)) - len(rule), 0), 'constant')
+        actual = cpl.evolve(init, timesteps=timesteps,
+                            apply_rule=lambda n, c, t: cpl.binary_rule(n, rule_bin_array, powers_of_two=powers_of_two),
+                            r=radius, memoize=True)
 
         np.testing.assert_equal(expected.tolist(), actual.tolist())
 
@@ -526,6 +677,7 @@ class TestCellularAutomataFunctions(unittest.TestCase):
 
     def test_int_to_bits(self):
         np.testing.assert_equal([1, 0, 0, 1], cpl.int_to_bits(9, 4))
+
 
 if __name__ == "__main__":
     unittest.main()

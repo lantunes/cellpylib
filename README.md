@@ -20,7 +20,7 @@ import cellpylib as cpl
 cellular_automaton = cpl.init_simple(200)
 
 # evolve the CA for 100 time steps, using Rule 30 as defined in NKS
-cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, 
+cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, memoize=True, 
                                 apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 # plot the resulting CA evolution
@@ -261,6 +261,26 @@ cpl.plot2d_animate(cellular_automaton)
 For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
+
+### Increasing Execution Speed with Memoization
+
+Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking 
+the rule. Only stateless rules that depend only on the cell neighbourhood are supported. Consider the following
+example of rule 30, where memoization is enabled:
+
+```python
+import cellpylib as cpl
+import time
+
+start = time.time()
+cpl.evolve(cpl.init_simple(1000), timesteps=500,
+           apply_rule=lambda n, c, t: cpl.nks_rule(n, 30), memoize=True)
+
+print(f"Elapsed: {time.time() - start:.2f} seconds")
+```
+
+The program above prints `Elapsed: 0.33 seconds` (actual execution time may vary, depending on the device used). 
+Without memoization, the program requires approximately 23 seconds to complete. 
 
 --------------------
 
