@@ -238,7 +238,7 @@ def _step(indices, curr_state, next_state, cache, apply_rule, r, t):
 
 def _update_state(indices, curr_state, next_state, cache, apply_rule, r, t):
     """
-     Perform an update on the given next state using the current state and memoization cache.
+    Perform an update on the given next state using the current state and memoization cache.
 
     :param indices: a list of the cell indices of the cells to update
 

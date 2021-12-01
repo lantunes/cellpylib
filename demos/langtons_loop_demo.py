@@ -6,6 +6,6 @@ langtons_loop = cpl.LangtonsLoop()
 cellular_automaton = langtons_loop.init_loops(1, (75, 75), [40], [25])
 
 cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=500,
-                                  apply_rule=langtons_loop, memoize=True)
+                                  apply_rule=langtons_loop, memoize="recursive")
 
 cpl.plot2d_animate(cellular_automaton)
