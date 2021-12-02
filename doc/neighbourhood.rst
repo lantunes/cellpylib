@@ -29,6 +29,13 @@ cellular automaton that solves this problem most of the time was found using a G
 .. image:: _static/density_classification.png
     :width: 400
 
+Alternatively, the :py:class:`~cellpylib.ca_functions.BinaryRule` class can be used:
+
+.. code-block::
+
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=149,
+                                    apply_rule=cpl.BinaryRule(rule_number), r=3)
+
 **References:**
 
 *Melanie Mitchell, James P. Crutchfield, and Rajarshi Das, "Evolving Cellular Automata with Genetic Algorithms:

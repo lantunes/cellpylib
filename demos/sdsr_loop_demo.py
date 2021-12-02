@@ -6,6 +6,6 @@ sdsr_loop = cpl.SDSRLoop()
 cellular_automaton = sdsr_loop.init_loops(1, (100, 100), [40], [40])
 
 cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=700,
-                                  apply_rule=sdsr_loop, memoize=True)
+                                  apply_rule=sdsr_loop, memoize="recursive")
 
 cpl.plot2d_animate(cellular_automaton)

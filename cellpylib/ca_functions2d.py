@@ -284,11 +284,16 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
 
     :param neighbourhood: the neighbourhood type; valid values are 'Moore' or 'von Neumann' (default is 'Moore')
 
-    :param memoize: if True, then the result of applying the rule on a given neighbourhood will be cached, and used on
-                    subsequent invocations of the rule; this can result in a significant improvement to execution speed
-                    if the rule is expensive to invoke; NOTE: this should only be set to True for rules which do not
-                    store any state upon invocation, and for rules which do not depend in the cell index or timestep
-                    number (default is False)
+    :param memoize: allowed values are True, False, and "recursive"; if True, then the result of applying the rule on a
+                    given neighbourhood will be cached, and used on subsequent invocations of the rule; if "recursive",
+                    then a recursive memoized algorithm will be used, in which recursively wider neighbourhoods are
+                    cached, along with the result of applying the rule on the cells in the widened neighbourhood; the
+                    True and "recursive" options can result in a significant improvement to execution speed if the rule
+                    is expensive to invoke; the "recursive" option works best when there are strongly repetitive
+                    patterns in the CA, and when the state consists of 2^k x 2^k cells; if False, then no caching will
+                    be used; NOTE: this should only be set to True or "recursive" for rules which do not store any state
+                    upon invocation, and for rules which do not depend in the cell index or timestep number (default is
+                    False)
 
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
@@ -303,16 +308,19 @@ def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moor
     _, rows, cols = cellular_automaton.shape
     neighbourhood_indices = _get_neighbourhood_indices(rows, cols, r)
 
+    cell_indices = _get_cell_indices((rows, cols))
+    cell_idx_to_neigh_idx = _get_cell_indices_to_neighbourhood_indices(cell_indices, rows, cols, r)
+
     if callable(timesteps):
-        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood,
-                                 rows, cols, neighbourhood_indices, von_neumann_mask, memoize)
+        return _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
+                                 neighbourhood_indices, von_neumann_mask, memoize, cell_indices, cell_idx_to_neigh_idx)
     else:
-        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood,
-                                 rows, cols, neighbourhood_indices, von_neumann_mask, memoize)
+        return _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
+                               neighbourhood_indices, von_neumann_mask, memoize, cell_indices, cell_idx_to_neigh_idx)
 
 
 def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
-                    neighbourhood_indices, von_neumann_mask, memoize):
+                    neighbourhood_indices, von_neumann_mask, memoize, cell_indices, cell_idx_to_neigh_idx):
     """
     Evolves the given cellular automaton for a fixed of timesteps.
 
@@ -343,6 +351,10 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood, ro
 
     :param memoize: whether to use memoization
 
+    :param cell_indices: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+
+    :param cell_idx_to_neigh_idx: a dictionary mapping groups of cell indices to a group's neighbourhood indices
+
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
@@ -351,22 +363,32 @@ def _evolve2d_fixed(cellular_automaton, timesteps, apply_rule, neighbourhood, ro
     array[0] = initial_conditions
 
     memo_table = {}
+    recursive_cache = _MemoizationCache()
 
     for t in range(1, timesteps):
         cell_layer = array[t - 1]
-        for row, cell_row in enumerate(cell_layer):
-            for col, cell in enumerate(cell_row):
-                n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
-                if memoize:
-                    array[t][row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
-                else:
-                    array[t][row][col] = apply_rule(n, (row, col), t)
+
+        if memoize is "recursive":
+            next_state = np.zeros(cell_layer.shape, dtype=cell_layer.dtype)
+            _step(cell_indices, cell_idx_to_neigh_idx, cell_layer, next_state, recursive_cache, apply_rule,
+                  neighbourhood, von_neumann_mask, t)
+            array[t] = next_state
+        else:
+            for row, cell_row in enumerate(cell_layer):
+                for col, cell in enumerate(cell_row):
+                    n = _get_neighbourhood(cell_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
+                    if memoize is True:
+                        array[t][row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
+                    elif memoize is False:
+                        array[t][row][col] = apply_rule(n, (row, col), t)
+                    else:
+                        raise Exception("unsupported memoization option: %s" % memoize)
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
 
 def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood, rows, cols,
-                    neighbourhood_indices, von_neumann_mask, memoize):
+                    neighbourhood_indices, von_neumann_mask, memoize, cell_indices, cell_idx_to_neigh_idx):
     """
     Evolves the given cellular automaton for a dynamic number of timesteps.
 
@@ -398,6 +420,10 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood, 
 
     :param memoize: whether to use memoization
 
+    :param cell_indices: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+
+    :param cell_idx_to_neigh_idx: a dictionary mapping groups of cell indices to a group's neighbourhood indices
+
     :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
              of time steps specified
     """
@@ -405,18 +431,27 @@ def _evolve2d_dynamic(cellular_automaton, timesteps, apply_rule, neighbourhood, 
     array = [initial_conditions]
 
     memo_table = {}
+    recursive_cache = _MemoizationCache()
 
     t = 1
     while timesteps(np.array(array), t):
         prev_layer = array[-1]
         next_layer = np.zeros((rows, cols), dtype=cellular_automaton.dtype)
-        for row, cell_row in enumerate(prev_layer):
-            for col, cell in enumerate(cell_row):
-                n = _get_neighbourhood(prev_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
-                if memoize:
-                    next_layer[row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
-                else:
-                    next_layer[row][col] = apply_rule(n, (row, col), t)
+
+        if memoize is "recursive":
+            _step(cell_indices, cell_idx_to_neigh_idx, prev_layer, next_layer, recursive_cache, apply_rule,
+                  neighbourhood, von_neumann_mask, t)
+        else:
+            for row, cell_row in enumerate(prev_layer):
+                for col, cell in enumerate(cell_row):
+                    n = _get_neighbourhood(prev_layer, neighbourhood_indices, row, col, neighbourhood, von_neumann_mask)
+                    if memoize is True:
+                        next_layer[row][col] = _get_memoized(n, (row, col), t, apply_rule, memo_table)
+                    elif memoize is False:
+                        next_layer[row][col] = apply_rule(n, (row, col), t)
+                    else:
+                        raise Exception("unsupported memoization option: %s" % memoize)
+
         array.append(next_layer)
         t += 1
 
@@ -512,6 +547,176 @@ def _get_memoized(n, c, t, apply_rule, memoization_table):
         return result
 
 
+def _get_cell_indices(shape):
+    """
+    Returns a 2D array containing 2-tuples representing the row and column coordinates of each cell.
+
+    :param shape: a 2-tuple of ints representing the number of rows and columns
+
+    :return: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+    """
+    indices = []
+    rows, cols = shape[0], shape[1]
+    for r in range(rows):
+        row = []
+        for c in range(cols):
+            row.append((r, c))
+        indices.append(row)
+    return np.array(indices, dtype="i, i")
+
+
+def _get_cell_indices_to_neighbourhood_indices(cell_indices, n_rows, n_cols, r):
+    """
+    Returns a dictionary which maps groups of cell indices (i.e. 2-tuples of ints representing the row and colummn
+    coordinates of cells) to a group's neighbourhood indices. The groups of cells are obtained by recursively dividing
+    a 2D array of cell indices into quadrants.
+
+    :param cell_indices: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+
+    :param n_rows: an int representing the number of rows in the 2D CA
+
+    :param n_cols: an int representing the number of columns in the 2D CA
+
+    :param r: an int representing the neighbourhood radius of the 2D CA
+
+    :return: a dictionary mapping groups of cell indices to a group's neighbourhood indices
+    """
+    cell_indices_to_neighbourhood_indices = {}
+
+    if cell_indices.size == 0:
+        return cell_indices_to_neighbourhood_indices
+
+    row_start = cell_indices[0][0][0]
+    row_end = cell_indices[-1][0][0]
+    col_start = cell_indices[0][0][1]
+    col_end = cell_indices[0][-1][1]
+    row_indices = range(row_start - r, row_end + r + 1)
+    row_indices = [i - n_rows if i > (n_rows - 1) else i for i in row_indices]
+    col_indices = range(col_start - r, col_end + r + 1)
+    col_indices = [i - n_cols if i > (n_cols - 1) else i for i in col_indices]
+
+    cell_indices_to_neighbourhood_indices[cell_indices.tobytes()] = (row_indices, col_indices)
+
+    if cell_indices.shape[0] > 1 or cell_indices.shape[1] > 1:
+        nw_indices, sw_indices, ne_indices, se_indices = _get_sub_matrices(cell_indices)
+        cell_indices_to_neighbourhood_indices.update(_get_cell_indices_to_neighbourhood_indices(nw_indices, n_rows, n_cols, r))
+        cell_indices_to_neighbourhood_indices.update(_get_cell_indices_to_neighbourhood_indices(ne_indices, n_rows, n_cols, r))
+        cell_indices_to_neighbourhood_indices.update(_get_cell_indices_to_neighbourhood_indices(sw_indices, n_rows, n_cols, r))
+        cell_indices_to_neighbourhood_indices.update(_get_cell_indices_to_neighbourhood_indices(se_indices, n_rows, n_cols, r))
+
+    return cell_indices_to_neighbourhood_indices
+
+
+def _get_sub_matrices(arr):
+    """
+    Takes the given 2D array of 2-tuples representing cell coordinates, and partitions it as evenly as possible into
+    4 quadrants, returning the northwest, southwest, northeast, and southeast quadrants as separate 2D arrays, in that
+    order.
+
+    :param arr: a 2D array of 2-tuples representing cell coordinates
+
+    :return: the quadrants of the given array as separate 2D arrays, in the order northwest, southwest, northeast,
+             and southeast
+    """
+    indices = []
+    indices.extend([x.tolist() for x in np.array_split(np.array_split(arr, 2, axis=1)[0], 2, axis=0)])
+    indices.extend([x.tolist() for x in np.array_split(np.array_split(arr, 2, axis=1)[1], 2, axis=0)])
+    return np.array(indices[0], dtype="i, i"), np.array(indices[1], dtype="i, i"), \
+           np.array(indices[2], dtype="i, i"), np.array(indices[3], dtype="i, i")
+
+
+def _update_state(cell_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t):
+    """
+    Perform an update on the given next state using the current state and memoization cache.
+
+    :param cell_indices: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+
+    :param cell_idx_to_neigh_idx: a dictionary mapping groups of cell indices to a group's neighbourhood indices
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a mapping from state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param neighbourhood_type: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param von_neumann_mask: :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :param t: the current timestep
+    """
+    if cell_indices.size == 0:
+        return
+
+    neigh_row_indices, neigh_col_indices = cell_idx_to_neigh_idx[cell_indices.tobytes()]
+    state = curr_state[np.ix_(neigh_row_indices, neigh_col_indices)]
+
+    if state in cache:
+        # update next_state with next vals from cache
+        state_row_indices = neigh_row_indices[1:-1]
+        state_col_indices = neigh_col_indices[1:-1]
+        next_state[np.ix_(state_row_indices, state_col_indices)] = cache[state]
+    else:
+        if cell_indices.shape[0] > 1 or cell_indices.shape[1] > 1:
+            _step(cell_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t)
+        else:
+            # invoke rule and update next_state for cell
+            c = cell_indices[0][0]
+            neighbourhood = curr_state[np.ix_(neigh_row_indices, neigh_col_indices)]
+
+            if neighbourhood_type == 'von Neumann':
+                neighbourhood = np.ma.masked_array(neighbourhood, von_neumann_mask)
+            elif neighbourhood_type != 'Moore':
+                raise ValueError('unknown neighbourhood type: %s' % neighbourhood_type)
+
+            val = apply_rule(neighbourhood, c, t)
+            next_state[c[0]][c[1]] = val
+        # get the result from the next_state for the left_indices and place in cache
+        state_row_indices = neigh_row_indices[1:-1]
+        state_col_indices = neigh_col_indices[1:-1]
+        vals_to_cache = next_state[np.ix_(state_row_indices, state_col_indices)]
+        cache[state] = vals_to_cache
+
+
+def _step(cell_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t):
+    """
+    Perform an update on the given next state using the current state and memoization cache, based on
+    an even 4-way split of the cell indices.
+
+    :param cell_indices: a 2D array containing 2-tuples representing the row and column coordinates of each cell
+
+    :param cell_idx_to_neigh_idx: a dictionary mapping groups of cell indices to a group's neighbourhood indices
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a mapping from state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param neighbourhood_type: the neighbourhood type; valid values are 'Moore' or 'von Neumann'
+
+    :param von_neumann_mask: :param von_neumann_mask: a numpy mask for von Neumann neighbourhoods
+
+    :param t: the current timestep
+    """
+    nw_indices, sw_indices, ne_indices, se_indices = _get_sub_matrices(cell_indices)
+    _update_state(nw_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t)
+    _update_state(ne_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t)
+    _update_state(sw_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t)
+    _update_state(se_indices, cell_idx_to_neigh_idx, curr_state, next_state, cache, apply_rule, neighbourhood_type,
+                  von_neumann_mask, t)
+
+
 def init_simple2d(rows, cols, val=1, dtype=np.int32, coords=None):
     """
     Returns a matrix initialized with zeroes, with its center value set to the specified value, or 1 by default.
@@ -588,3 +793,59 @@ def game_of_life_rule(neighbourhood, c, t):
             return 1  # Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
         else:
             return 0
+
+
+class _MemoizationCache(object):
+    """
+    A cache that maps 2D numpy arrays to values. The challenge is to inexpensively compute a unique hash for a 2D
+    NumPy array, so that it can be used to quickly look up corresponding values. The NumPy array function `tobytes()`
+    provides a fast method of producing a unique key for each array, however, it is indifferent to array shape. Thus,
+    two arrays with the same contents, but different shapes, would produce the same key. Here, we use an underlying
+    dictionary to keep track of collisions (if any) that may occur when two arrays with the same contents but different
+    shapes are added to the cache. If a collision occurs, then all values are kept and associated with the originating
+    array's shape. At read time, the values for a given array/key are disambiguated using the array's shape.
+    """
+    def __init__(self):
+        self.hashmap = {}
+
+    def put(self, array, val):
+        hash = array.tobytes()
+        shape = array.shape
+        if hash not in self.hashmap:
+            self.hashmap[hash] = []
+        self.hashmap[hash].append((shape, val))
+
+    def get(self, array):
+        hash = array.tobytes()
+        shape = array.shape
+        collisions = self.hashmap[hash]
+        if len(collisions) == 1:
+            return collisions[0][1]
+        else:
+            for collision in collisions:
+                collision_shape = collision[0]
+                if collision_shape == shape:
+                    return collision[1]
+            raise Exception("could not find an entry with shape: %s" % shape)
+
+    def __contains__(self, item):
+        hash = item.tobytes()
+        if hash not in self.hashmap:
+            return False
+        for collision in self.hashmap[hash]:
+            if collision[0] == item.shape:
+                return True
+        return False
+
+    def __iter__(self):
+        for hash in self.hashmap:
+            yield hash
+
+    def __len__(self):
+        return len(self.hashmap)
+
+    def __setitem__(self, key, value):
+        self.put(key, value)
+
+    def __getitem__(self, key):
+        return self.get(key)

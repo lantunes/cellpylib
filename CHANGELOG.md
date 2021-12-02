@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `memoize='recursive'` option of `evolve` and `evolve2d` functions
+- Added `NKSRule`, `BinaryRule` and `TotalisticRule` classes
+
 ## [2.2.0] - 2021-11-30
 
 ### Added

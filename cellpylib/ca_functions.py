@@ -84,11 +84,16 @@ def evolve(cellular_automaton, timesteps, apply_rule, r=1, memoize=False):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1 (default is 1)
 
-    :param memoize: if True, then the result of applying the rule on a given neighbourhood will be cached, and used on
-                    subsequent invocations of the rule; this can result in a significant improvement to execution speed
-                    if the rule is expensive to invoke; NOTE: this should only be set to True for rules which do not
-                    store any state upon invocation, and for rules which do not depend in the cell index or timestep
-                    number (default is False)
+    :param memoize: allowed values are True, False, and "recursive"; if True, then the result of applying the rule on a
+                    given neighbourhood will be cached, and used on subsequent invocations of the rule; if "recursive",
+                    then a recursive memoized algorithm will be used, in which recursively wider neighbourhoods are
+                    cached, along with the result of applying the rule on the cells in the widened neighbourhood; the
+                    True and "recursive" options can result in a significant improvement to execution speed if the rule
+                    is expensive to invoke; the "recursive" option works best when there are strongly repetitive
+                    patterns in the CA, and when the state consists of 2^k cells; if False, then no caching will be
+                    used; NOTE: this should only be set to True or "recursive" for rules which do not store any state
+                    upon invocation, and for rules which do not depend in the cell index or timestep number (default is
+                    False)
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -119,7 +124,7 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
-    :param memoize: whether to use memoization
+    :param memoize: the memoization flag; one of True, False, or "recursive"
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -128,6 +133,7 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
     _, cols = cellular_automaton.shape
     array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
     array[0] = initial_conditions
+    cell_indices = list(range(len(initial_conditions)))
 
     memo_table = {}
 
@@ -135,10 +141,16 @@ def _evolve_fixed(cellular_automaton, timesteps, apply_rule, r, memoize):
         cells = array[t - 1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        if memoize:
+        if memoize is "recursive":
+            next_state = np.zeros(len(cells), dtype=cellular_automaton.dtype)
+            _step(cell_indices, cells, next_state, memo_table, apply_rule, r, t)
+            array[t] = next_state
+        elif memoize is True:
             array[t] = np.array([_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)])
-        else:
+        elif memoize is False:
             array[t] = np.array([apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)])
+        else:
+            raise Exception("unsupported memoization option: %s" % memoize)
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
 
@@ -164,7 +176,7 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
 
     :param r: the neighbourhood radius; the neighbourhood size will be 2r + 1
 
-    :param memoize: whether to use memoization
+    :param memoize: the memoization flag; one of True, False, or "recursive"
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified
@@ -172,6 +184,7 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
     initial_conditions = cellular_automaton[-1]
     _, cols = cellular_automaton.shape
     array = [initial_conditions]
+    cell_indices = list(range(len(initial_conditions)))
 
     memo_table = {}
 
@@ -180,14 +193,87 @@ def _evolve_dynamic(cellular_automaton, timesteps, apply_rule, r, memoize):
         cells = array[-1]
         strides = _index_strides(np.arange(len(cells)), 2 * r + 1)
         neighbourhoods = cells[strides]
-        if memoize:
+        if memoize is "recursive":
+            result = np.zeros(len(cells), dtype=cellular_automaton.dtype)
+            _step(cell_indices, cells, result, memo_table, apply_rule, r, t)
+        elif memoize is True:
             result = [_get_memoized(n, c, t, apply_rule, memo_table) for c, n in enumerate(neighbourhoods)]
-        else:
+        elif memoize is False:
             result = [apply_rule(n, c, t) for c, n in enumerate(neighbourhoods)]
+        else:
+            raise Exception("unsupported memoization option: %s" % memoize)
         array.append(np.array(result, dtype=cellular_automaton.dtype))
         t += 1
 
     return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
+def _step(indices, curr_state, next_state, cache, apply_rule, r, t):
+    """
+    Perform an update on the given next state using the current state and memoization cache, based on
+    an even split of the cell indices.
+
+    :param indices: a list of the cell indices of the cells to update
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a dictionary that maps state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param r: the neighbourhood radius
+
+    :param t: the current timestep
+    """
+    mid = len(indices) // 2
+    left_indices = indices[:mid]
+    right_indices = indices[mid:]
+    if len(left_indices) > 0:
+        _update_state(left_indices, curr_state, next_state, cache, apply_rule, r, t)
+    if len(right_indices) > 0:
+        _update_state(right_indices, curr_state, next_state, cache, apply_rule, r, t)
+
+
+def _update_state(indices, curr_state, next_state, cache, apply_rule, r, t):
+    """
+    Perform an update on the given next state using the current state and memoization cache.
+
+    :param indices: a list of the cell indices of the cells to update
+
+    :param curr_state: the current state (i.e. the state after the previous timestep)
+
+    :param next_state: the next state (i.e. the result after the current timestep)
+
+    :param cache: a dictionary that maps state neighbourhoods to their activities
+
+    :param apply_rule: the rule to apply during each cell update
+
+    :param r: the neighbourhood radius
+
+    :param t: the current timestep
+    """
+    # get the state string for the state given by the indices
+    start = indices[0]
+    end = indices[-1]
+    neighbourhood_indices = range(start - r, end + 1 + r)
+    neighbourhood = curr_state.take(neighbourhood_indices, mode='wrap')
+    state_string = neighbourhood.tobytes()
+
+    if state_string in cache:
+        # update next_state with next vals from cache
+        next_state[indices] = cache[state_string]
+    else:
+        if len(indices) > 1:
+            _step(indices, curr_state, next_state, cache, apply_rule, r, t)
+        else:
+            # invoke rule and update next_state for cell
+            val = apply_rule(neighbourhood, start, t)
+            next_state[start] = val
+        # get the result from the next_state for the left_indices and place in cache
+        vals_to_cache = next_state[indices]
+        cache[state_string] = vals_to_cache
 
 
 def _get_memoized(n, c, t, apply_rule, memoization_table):
@@ -444,6 +530,119 @@ class BaseRule:
         :return: the activity of the current cell at the next timestep
         """
         raise NotImplementedError
+
+
+class NKSRule(BaseRule):
+    """
+    An Elementary Cellular Automaton rule, indexed according the scheme in NKS.
+    """
+    def __init__(self, nks_rule_number):
+        """
+        Creates an instance of an NKS rule.
+
+        :param nks_rule_number: an int indicating the cellular automaton rule number
+        """
+        self._nks_rule_number = nks_rule_number
+
+    def __call__(self, n, c, t):
+        """
+        The NKS rule to apply.
+
+        :param n: a binary array of length 2r + 1
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, 0 or 1, of applying the given rule on the given state
+        """
+        return nks_rule(n, self._nks_rule_number)
+
+
+class BinaryRule(BaseRule):
+    """
+    A binary representation of the given rule number, which is used to determine the value to return.
+    The process is approximately described as:
+
+    .. code-block:: text
+
+        1. convert state to int, so [1,0,1] -> 5, call this state_int
+
+        2. convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
+
+        3. new value is rule_bin_array[7 - state_int]
+           we subtract 7 from state_int to be consistent with the numbering scheme used in NKS
+           in NKS, rule 254 for a 1D binary cellular automaton is described as:
+
+          [1,1,1]  [1,1,0]  [1,0,1]  [1,0,0]  [0,1,1]  [0,1,0]  [0,0,1]  [0,0,0]
+             1        1        1        1        1        1        1        0
+
+    If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of
+    the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the
+    neighbourhoods.
+    """
+    def __init__(self, rule, scheme=None, powers_of_two=None):
+        """
+        Creates an instance of a binary rule.
+
+        :param rule: an int or a binary array indicating the cellular automaton rule number
+
+        :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
+
+        :param powers_of_two: a pre-computed array containing the powers of two, e.g. [4,2,1]; can be None (default) or
+                              an array of length len(neighbourhood); if an array is given, it will used to speed up the
+                              calculation of state_int
+        """
+        self._rule = rule
+        self._scheme = scheme
+        self._powers_of_two = powers_of_two
+
+    def __call__(self, n, c, t):
+        """
+        The binary rule to apply.
+
+        :param n: a binary array of length 2r + 1
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, 0 or 1, of applying the given rule on the given state
+        """
+        return binary_rule(n, self._rule, self._scheme, self._powers_of_two)
+
+
+class TotalisticRule(BaseRule):
+    """
+    The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
+    The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
+    3k - 2 possible average colors in the 3-cell neighbourhood. There are n(k - 1) + 1 possible average colors for a
+    k-color cellular automaton with an n-cell neighbourhood.
+    """
+    def __init__(self, k, rule):
+        """
+        Creates an instance of a totalistic rule.
+
+        :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
+
+        :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
+        """
+        self._k = k
+        self._rule = rule
+
+    def __call__(self, n, c, t):
+        """
+        The totalistic rule to apply.
+
+        :param n: a k-color array of any size
+
+        :param c: the index of the current cell
+
+        :param t: the current timestep
+
+        :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
+        """
+        return totalistic_rule(n, self._k, self._rule)
 
 
 class ReversibleRule(BaseRule):

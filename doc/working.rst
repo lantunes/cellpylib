@@ -13,7 +13,7 @@ with CellPyLib:
 
     cellular_automaton = cpl.init_simple(200)
 
-    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100,
+    cellular_automaton = cpl.evolve(cellular_automaton, timesteps=100, memoize=True,
                                     apply_rule=lambda n, c, t: cpl.nks_rule(n, 30))
 
 
@@ -165,3 +165,156 @@ The program above prints:
     With memoization: 0.12 seconds elapsed
 
 *(results may differ, depending on the device used)*
+
+**Using Binary Trees and Quadtrees to Exploit Regularities**
+
+To provide a further speed improvement, memoization can be combined with recursive structures, such as binary trees and
+quadtrees. This approach is heavily inspired by the well-known
+`HashLife algorithm <https://en.wikipedia.org/wiki/Hashlife>`_ for fast cellular automata simulation, which also
+combines memoization with quadtrees.
+
+Although CellPyLib does not provide an implementation of HashLife, it does provide an option to sub-divide a finite grid
+into halves or quadrants, and apply memoization at various levels of the resulting binary tree or quadtree. This results
+in a significant speed-up when there are repetitive and regular patterns in the CA. To combine memoization with tree
+structures in CellPyLib, provide the ``memoize`` option with a value of `"recursive"` when calling the
+:py:func:`~cellpylib.ca_functions.evolve` and :py:func:`~cellpylib.ca_functions2d.evolve2d` functions. The following
+code snippets provide an example:
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    cpl.evolve(cpl.init_simple(600), timesteps=300,
+               apply_rule=lambda n, c, t: cpl.nks_rule(n, 30), memoize="recursive")
+
+And for the 2D case:
+
+.. code-block::
+
+    import cellpylib as cpl
+
+    cpl.evolve2d(ca, timesteps=60, neighbourhood="Moore",
+                 apply_rule=cpl.game_of_life_rule, memoize="recursive")
+
+Note that, as is the case when using regular memoization (by providing the ``memoize`` option with `True`), only
+stateless rules that do not depend on the cell index or timestep number are supported when supplying the ``memoize``
+option with a value of `"recursive"`. Also, only CA that exhibit regular and repetitive patterns will demonstrate a
+significant decrease in execution times. Finally, 1D CA that have :math:`2^k` cells, or 2D CA that have
+:math:`2^k \times 2^k` cells, should result in lower running times when `"recursive"` is used.
+
+To illustrate the operation of this algorithm, consider the following diagram, in which a 1D Elementary CA (radius 1) is
+organized into a binary tree:
+
+.. image:: _static/memoize-recursive-1D.png
+    :width: 475
+    :align: center
+
+There are 8 cells, which are annotated with the letters `a` through `h`. Each node in the binary tree represents the
+neighbourhood of one or more contiguous cells. At the bottom of the tree, the leaves are simply the neighbourhoods of
+each cell. For example, one node represents `h-a-b`, the neighbourhood for cell `a`. At progressively higher levels of
+the tree, each node represents wider neighbourhoods encompassing more cells. The list on the right of the tree
+represents the memoization mapping from each neighbourhood to the subsequent values of the cells in question. In this
+example, the memoization cache would contain an entry indexed by a state of the neighbourhood `h-a-b` and its associated
+value for `a` in the next timestep, as given by the CA rule being used. The idea is to start, at each timestep, from the
+root of the tree, looking in the cache for existing states that correspond to the neighbourhoods in the tree, and
+updating the values of the cells represented by a node/neighbourhood if an entry exists in the cache. This should result
+in an increase in execution speed, since the children of a node needn't be visited if a state was found in the cache.
+CA that exhibit regular and repetitive patterns will benefit the most from this approach. CA that exhibit much less
+regularity (e.g. ECA Rule 30), will not benefit from this approach, and may in fact incur a performance penalty. In
+such a case, it might be best to use a regular memoization scheme (by providing the ``memoize`` option with `True`). For
+2D CA, the same concept applies, with the difference that the cells are divided at each level into quandrants rather
+than halves, forming a quadtree.
+
+The following table illustrates the running times for 1D CA using various ``memoize`` options:
+
+.. list-table:: Comparison of running times (in seconds) for 1D ECA (1000 timesteps)
+   :widths: 25 25 25 25 25
+   :header-rows: 1
+
+   * - ECA Rule #
+     - `memoize=True`
+     - `memoize="recursive"`
+     - `memoize=False`
+     - # cells
+   * - 30
+     - 0.74
+     - 2.45
+     - 47.54
+     - 1024
+   * - 4
+     - 0.63
+     - 0.21
+     - 44.73
+     - 1024
+   * - 2
+     - 0.81
+     - 0.29
+     - 46.37
+     - 1024
+   * - 110
+     - 0.66
+     - 0.71
+     - 50.98
+     - 1024
+   * - 30
+     - 0.73
+     - 2.75
+     - \-
+     - 1000
+   * - 4
+     - 0.65
+     - 0.19
+     - \-
+     - 1000
+   * - 2
+     - 0.70
+     - 0.28
+     - \-
+     - 1000
+   * - 110
+     - 0.64
+     - 0.93
+     - \-
+     - 1000
+
+The following table illustrates the running times for 2D CA using various ``memoize`` options:
+
+.. list-table:: Comparison of running times (in seconds) for 2D CA (700 timesteps)
+   :widths: 25 25 25 25 25
+   :header-rows: 1
+
+   * - CA
+     - `memoize=True`
+     - `memoize="recursive"`
+     - `memoize=False`
+     - # cells
+   * - SDSR Loop
+     - 117.89
+     - 13.86
+     - 220.54
+     - 100x100
+   * - SDSR Loop
+     - 165.74
+     - 15.76
+     - 371.05
+     - 128x128
+   * - SDSR Loop
+     - \-
+     - 36.30
+     - \-
+     - 256x256
+   * - Game of Life
+     - 39.39
+     - 1.74
+     - 64.90
+     - 60x60
+   * - Game of Life
+     - 43.62
+     - 1.41
+     - 68.72
+     - 64x64
+   * - Game of Life
+     - \-
+     - 5.14
+     - \-
+     - 128x128

@@ -12,6 +12,6 @@ cellular_automaton[:, [18,18,19,20,21,21,21,21,20], [45,48,44,44,44,45,46,47,48]
 
 # evolve the cellular automaton for 60 time steps
 cellular_automaton = cpl.evolve2d(cellular_automaton, timesteps=60, neighbourhood='Moore',
-                                  apply_rule=cpl.game_of_life_rule)
+                                  apply_rule=cpl.game_of_life_rule, memoize="recursive")
 
 cpl.plot2d_animate(cellular_automaton)
