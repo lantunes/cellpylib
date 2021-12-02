@@ -37,6 +37,9 @@ a uniform grid (such as the Game of Life, the Abelian sandpile, Langton's Loops,
 grid, and would like to use a flexible, correct and tested library that provides access to such models as part of your 
 research
 
+_If you would like to work with Cellular Automata on arbitrary networks (i.e. non-uniform grids), have a look at
+the [Netomaton](https://github.com/lantunes/netomaton) project._
+
 ### Getting Started
 
 CellPyLib can be installed via pip:
