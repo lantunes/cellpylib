@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Changed `plot2d_animate` so that it returns the animation object, to address a problem arising in Spyder IDE
+
 ## [2.3.0] - 2021-12-01
 
 ### Added
