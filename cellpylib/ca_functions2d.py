@@ -197,6 +197,8 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
     :param show: show the plot (default is True)
 
     :param imshow_kwargs: keyword arguments for the Matplotlib `imshow` function
+
+    :return: the animation
     """
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
@@ -225,6 +227,7 @@ def plot2d_animate(ca, title='', *, colormap='Greys', show_grid=False, show_marg
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     if show:
         plt.show()
+    return ani
 
 
 def _add_grid_lines(ca, ax, show_grid):
