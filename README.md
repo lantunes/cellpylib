@@ -38,7 +38,7 @@ grid, and would like to use a flexible, correct and tested library that provides
 research
 
 _If you would like to work with Cellular Automata on arbitrary networks (i.e. non-uniform grids), have a look at
-the [Netomaton](https://github.com/lantunes/netomaton) project._
+the [Netomaton](https://github.com/lantunes/netomaton) project. If you would like to work with 3D CA, have a look at the [CellPyLib-3d](https://github.com/Cutwell/cellpylib-3d) project._
 
 ### Getting Started
 
