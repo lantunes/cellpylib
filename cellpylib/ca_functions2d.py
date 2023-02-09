@@ -258,6 +258,52 @@ def _add_grid_lines(ca, ax, show_grid):
     return grid
 
 
+def evolve2d_block(cellular_automaton, block_size, timesteps, apply_rule):
+    """
+    TODO
+    :param cellular_automaton:
+
+    :param block_size:
+
+    :param timesteps:
+
+    :param apply_rule:
+
+    :return:
+    """
+    initial_conditions = cellular_automaton[-1]
+    _, rows, cols = cellular_automaton.shape
+    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
+    array[0] = initial_conditions
+
+    if rows % block_size[0] != 0 or cols % block_size[1] != 0:
+        raise Exception("the number of cells in the CA must be divisible by the block size")
+
+    block_indices_odd = []
+    for r in list(range(rows))[::block_size[0]]:
+        for c in list(range(cols))[::block_size[1]]:
+            block_indices_odd.append((
+                list(range(r, r+block_size[0])),
+                list(range(c, c+block_size[1]))
+            ))
+
+    block_indices_even = []
+    for row_indices, col_indices in block_indices_odd:
+        block_indices_even.append((
+            [(i+1) % rows for i in row_indices],
+            [(i+1) % cols for i in col_indices]
+        ))
+
+    for t in range(1, timesteps):
+        cell_layer = array[t - 1]
+        strides = block_indices_even if t % 2 == 0 else block_indices_odd
+        for row_indices, col_indices in strides:
+            n = cell_layer[np.ix_(row_indices, col_indices)]
+            array[t][np.ix_(row_indices, col_indices)] = apply_rule(n, t)
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore', memoize=False):
     """
     Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during

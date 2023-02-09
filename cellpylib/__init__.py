@@ -19,7 +19,7 @@ from .entropy import mutual_information, average_cell_entropy, average_mutual_in
     joint_shannon_entropy
 
 from .ca_functions2d import evolve2d, plot2d, plot2d_slice, plot2d_animate, plot2d_spacetime, init_simple2d, \
-    init_random2d, game_of_life_rule
+    init_random2d, game_of_life_rule, evolve2d_block
 
 from .bien import binary_derivative, cyclic_binary_derivative, ktbien, tbien, bien
 
