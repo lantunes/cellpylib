@@ -60,12 +60,24 @@ def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time'
 
 def evolve_block(cellular_automaton, block_size, timesteps, apply_rule):
     """
-    TODO
+    Evolves the given block cellular automaton for the specified time steps. Applies the given function to each block
+    during the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function
+    expects an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton.
+    The final result is a matrix, where the number of rows equal the number of time steps specified.
 
-    :param cellular_automaton:
-    :param block_size:
-    :param timesteps:
-    :param apply_rule:
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step,
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param block_size: the number of cells in the block; the total number of cells in the CA must be divisible by the
+                       block size
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps
+                      in this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each block during the evolution; this function
+                       will be given two arguments, in the following order: a tuple containing the activities of the
+                       cells in the block, and a scalar representing the timestep in the evolution; this function must
+                       return a tuple with the new activities for the block
 
     :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
              specified

@@ -260,16 +260,27 @@ def _add_grid_lines(ca, ax, show_grid):
 
 def evolve2d_block(cellular_automaton, block_size, timesteps, apply_rule):
     """
-    TODO
-    :param cellular_automaton:
+    Evolves the given block cellular automaton for the specified time steps. Applies the given function to each block
+    during the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function
+    expects an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton.
+    The final result is a matrix, where the number of rows equal the number of time steps specified.
 
-    :param block_size:
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
 
-    :param timesteps:
+    :param block_size: a 2-tuple representing the number of rows and columns in the block; the total number of cells in
+                       the CA must be divisible by the block size
 
-    :param apply_rule:
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps
+                      in this cellular automaton evolution, which includes the initial condition
 
-    :return:
+    :param apply_rule: a function representing the rule to be applied to each block during the evolution; this function
+                       will be given two arguments, in the following order: the block, which is a numpy 2D array with
+                       the number of rows and columns specified in the `block_size`, and the time step, which is a
+                       scalar representing the time step in the evolution; this function must return a 2D array
+                       containing the new values of the block
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
     """
     initial_conditions = cellular_automaton[-1]
     _, rows, cols = cellular_automaton.shape
