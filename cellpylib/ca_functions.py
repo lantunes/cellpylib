@@ -58,6 +58,56 @@ def plot_multiple(ca_list, titles, *, colormap='Greys', xlabel='', ylabel='time'
         plt.show()
 
 
+def evolve_block(cellular_automaton, block_size, timesteps, apply_rule):
+    """
+    Evolves the given block cellular automaton for the specified time steps. Applies the given function to each block
+    during the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function
+    expects an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton.
+    The final result is a matrix, where the number of rows equal the number of time steps specified.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step,
+                               e.g. [[0,0,0,0,1,0,0,0,0]]
+
+    :param block_size: the number of cells in the block; the total number of cells in the CA must be divisible by the
+                       block size
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps
+                      in this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each block during the evolution; this function
+                       will be given two arguments, in the following order: a tuple containing the activities of the
+                       cells in the block, and a scalar representing the timestep in the evolution; this function must
+                       return a tuple with the new activities for the block
+
+    :return: a matrix, containing the results of the evolution, where the number of rows equal the number of time steps
+             specified
+    """
+    initial_conditions = cellular_automaton[-1]
+    _, cols = cellular_automaton.shape
+
+    if cols % block_size != 0:
+        raise Exception("the number of cells in the CA must be divisible by the block size")
+
+    array = np.zeros((timesteps, cols), dtype=cellular_automaton.dtype)
+    array[0] = initial_conditions
+    cell_indices = list(range(len(initial_conditions)))
+    block_indices_odd = [cell_indices[i:i + block_size] for i in range(0, len(cell_indices), block_size)]
+    cell_indices = [cell_indices[-1]] + cell_indices[:-1]
+    block_indices_even = [cell_indices[i:i + block_size] for i in range(0, len(cell_indices), block_size)]
+
+    for t in range(1, timesteps):
+        cells = array[t - 1]
+        strides = block_indices_even if t % 2 == 0 else block_indices_odd
+        arr = np.zeros(cols, dtype=cellular_automaton.dtype)
+        for stride in strides:
+            res = apply_rule(tuple(cells[stride]), t)
+            for i, r in zip(stride, res):
+                arr[i] = r
+        array[t] = arr
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
 def evolve(cellular_automaton, timesteps, apply_rule, r=1, memoize=False):
     """
     Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during

@@ -607,6 +607,19 @@ class TestCellularAutomataFunctions(unittest.TestCase):
         self.assertTrue(0.0 <= arr[0][1] < 1.0)
         self.assertTrue(0.0 <= arr[0][2] < 1.0)
 
+    def test_evolve_block(self):
+        expected = self._convert_to_numpy_matrix("block_1d.ca")
+        initial_conditions = np.array([[0] * 13 + [1] * 2 + [0] * 201])
+
+        def block_rule(n, t):
+            if n == (1, 1): return 1, 1
+            elif n == (1, 0): return 1, 0
+            elif n == (0, 1): return 0, 0
+            elif n == (0, 0): return 0, 1
+
+        actual = cpl.evolve_block(initial_conditions, block_size=2, timesteps=200, apply_rule=block_rule)
+        np.testing.assert_equal(expected.tolist(), actual.tolist())
+
     def _convert_to_numpy_matrix(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()

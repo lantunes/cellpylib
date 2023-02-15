@@ -258,6 +258,63 @@ def _add_grid_lines(ca, ax, show_grid):
     return grid
 
 
+def evolve2d_block(cellular_automaton, block_size, timesteps, apply_rule):
+    """
+    Evolves the given block cellular automaton for the specified time steps. Applies the given function to each block
+    during the evolution. A cellular automaton is represented here as an array of arrays, or matrix. This function
+    expects an array containing the initial time step (i.e. initial condition, an array) for the cellular automaton.
+    The final result is a matrix, where the number of rows equal the number of time steps specified.
+
+    :param cellular_automaton: the cellular automaton starting condition representing the first time step
+
+    :param block_size: a 2-tuple representing the number of rows and columns in the block; the total number of cells in
+                       the CA must be divisible by the block size
+
+    :param timesteps: the number of time steps in this evolution; this value refers to the total number of time steps
+                      in this cellular automaton evolution, which includes the initial condition
+
+    :param apply_rule: a function representing the rule to be applied to each block during the evolution; this function
+                       will be given two arguments, in the following order: the block, which is a numpy 2D array with
+                       the number of rows and columns specified in the `block_size`, and the time step, which is a
+                       scalar representing the time step in the evolution; this function must return a 2D array
+                       containing the new values of the block
+
+    :return: a list of matrices, containing the results of the evolution, where the number of rows equal the number
+             of time steps specified
+    """
+    initial_conditions = cellular_automaton[-1]
+    _, rows, cols = cellular_automaton.shape
+    array = np.zeros((timesteps, rows, cols), dtype=cellular_automaton.dtype)
+    array[0] = initial_conditions
+
+    if rows % block_size[0] != 0 or cols % block_size[1] != 0:
+        raise Exception("the number of cells in the CA must be divisible by the block size")
+
+    block_indices_odd = []
+    for r in list(range(rows))[::block_size[0]]:
+        for c in list(range(cols))[::block_size[1]]:
+            block_indices_odd.append((
+                list(range(r, r+block_size[0])),
+                list(range(c, c+block_size[1]))
+            ))
+
+    block_indices_even = []
+    for row_indices, col_indices in block_indices_odd:
+        block_indices_even.append((
+            [(i+1) % rows for i in row_indices],
+            [(i+1) % cols for i in col_indices]
+        ))
+
+    for t in range(1, timesteps):
+        cell_layer = array[t - 1]
+        strides = block_indices_even if t % 2 == 0 else block_indices_odd
+        for row_indices, col_indices in strides:
+            n = cell_layer[np.ix_(row_indices, col_indices)]
+            array[t][np.ix_(row_indices, col_indices)] = apply_rule(n, t)
+
+    return np.concatenate((cellular_automaton, array[1:]), axis=0)
+
+
 def evolve2d(cellular_automaton, timesteps, apply_rule, r=1, neighbourhood='Moore', memoize=False):
     """
     Evolves the given cellular automaton for the specified time steps. Applies the given function to each cell during

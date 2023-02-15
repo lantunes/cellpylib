@@ -265,7 +265,36 @@ For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
 
-### Increasing Execution Speed with Memoization
+## Block Cellular Automata
+
+Instead of a rule applying to a single cell at a time (given its neighbourhood), a rule can apply to a block of cells, 
+given only the states of the cells in the block. Such a system is called a block cellular automaton. For example, the
+following code reproduces the block CA at the bottom of page 460 of [Wolfram's NKS](https://www.wolframscience.com/nks/):
+
+```python
+import cellpylib as cpl
+import numpy as np
+
+initial_conditions = np.array([[0]*13 + [1]*2 + [0]*201])
+
+def block_rule(n, t):
+    if n == (1, 1): return 1, 1
+    elif n == (1, 0): return 1, 0
+    elif n == (0, 1): return 0, 0
+    elif n == (0, 0): return 0, 1
+
+ca = cpl.evolve_block(initial_conditions, block_size=2, 
+                      timesteps=200, apply_rule=block_rule)
+cpl.plot(ca)
+```
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/block_ca_1d.png" width="50%"/>
+
+Block cellular automata can also exist in 2 dimensions, as the following example demonstrates:
+
+<img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/block_ca_2d.gif" width="65%"/>
+
+## Increasing Execution Speed with Memoization
 
 Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking 
 the rule. Only stateless rules that depend only on the cell neighbourhood are supported. Consider the following
