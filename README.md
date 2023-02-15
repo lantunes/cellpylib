@@ -294,6 +294,8 @@ Block cellular automata can also exist in 2 dimensions, as the following example
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/block_ca_2d.gif" width="65%"/>
 
+The full source code for this example can be found [here](demos/block2d_rotated_ca_demo.py).
+
 ## Increasing Execution Speed with Memoization
 
 Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking 
