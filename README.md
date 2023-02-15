@@ -265,7 +265,7 @@ For more information about Conway's Game of Life, see:
 
 > Conway, J. (1970). The game of life. Scientific American, 223(4), 4.
 
-### Block Cellular Automata
+## Block Cellular Automata
 
 Instead of a rule applying to a single cell at a time (given its neighbourhood), a rule can apply to a block of cells, 
 given only the states of the cells in the block. Such a system is called a block cellular automaton. For example, the
@@ -294,7 +294,7 @@ Block cellular automata can also exist in 2 dimensions, as the following example
 
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/block_ca_2d.gif" width="65%"/>
 
-### Increasing Execution Speed with Memoization
+## Increasing Execution Speed with Memoization
 
 Memoization is expected to provide an increase to execution speed when there is some overhead involved when invoking 
 the rule. Only stateless rules that depend only on the cell neighbourhood are supported. Consider the following
