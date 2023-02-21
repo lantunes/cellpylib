@@ -43,6 +43,7 @@ the Shannon entropy and mutual information, are provided.
   langtons_loop
   sdsr_evoloop
   sandpile
+  block_ca
 
 .. toctree::
   :caption: API Docs and License
