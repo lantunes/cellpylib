@@ -94,7 +94,8 @@ The code for this Block CA is given below:
         elif n == (2, 1): return 2, 1
         elif n == (1, 2): return 1, 2
 
-    ca = cpl.evolve_block(initial_conditions, block_size=2, timesteps=200, apply_rule=block_rule)
+    ca = cpl.evolve_block(initial_conditions, block_size=2,
+                          timesteps=200, apply_rule=block_rule)
 
     cpl.plot(ca)
 
@@ -112,11 +113,12 @@ The code for this 2D Block CA is given below:
     import cellpylib as cpl
     import numpy as np
 
+    # visit https://github.com/lantunes/cellpylib/tree/master/demos
+    #  for the initial conditions file
     initial_conditions = np.loadtxt('block2d_rotated_initial_conditions.txt', dtype=int)
     initial_conditions = np.array([initial_conditions])
 
-    def block2d_rule(n, t):
-        n = tuple(tuple(i) for i in n)
+    def make_block2d_rule():
         base_rules = {
             ((0, 0), (0, 0)): ((0, 0), (0, 0)),
             ((0, 0), (0, 2)): ((2, 0), (0, 0)),
@@ -154,9 +156,13 @@ The code for this 2D Block CA is given below:
                 v = ((v[1][0], v[0][0]), (v[1][1], v[0][1]))
                 if r not in rules:
                     rules[r] = v
-        return rules[n]
+        def _apply_rule(n, t):
+            n = tuple(tuple(i) for i in n)
+            return rules[n]
+        return _apply_rule
 
-    ca = cpl.evolve2d_block(initial_conditions, block_size=(2, 2), timesteps=251, apply_rule=block2d_rule)
+    ca = cpl.evolve2d_block(initial_conditions, block_size=(2, 2),
+                            timesteps=251, apply_rule=make_block2d_rule())
 
     cpl.plot2d_animate(ca)
 

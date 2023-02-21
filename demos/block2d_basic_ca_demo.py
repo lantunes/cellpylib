@@ -28,8 +28,7 @@ initial_conditions = np.array([[
 ]])
 
 
-def block2d_rule(n, t):
-    n = tuple(tuple(i) for i in n)
+def make_block2d_rule():
     base_rules = {
         ((0, 0), (0, 0)): ((0, 0), (0, 0)),
         ((0, 0), (0, 2)): ((2, 0), (0, 0)),
@@ -65,9 +64,13 @@ def block2d_rule(n, t):
             v = ((v[1][0], v[0][0]), (v[1][1], v[0][1]))
             if r not in rules:
                 rules[r] = v
-    return rules[n]
+    def _apply_rule(n, t):
+        n = tuple(tuple(i) for i in n)
+        return rules[n]
+    return _apply_rule
 
 
-ca = cpl.evolve2d_block(initial_conditions, block_size=(2, 2), timesteps=40, apply_rule=block2d_rule)
+ca = cpl.evolve2d_block(initial_conditions, block_size=(2, 2),
+                        timesteps=40, apply_rule=make_block2d_rule())
 
 cpl.plot2d_animate(ca)
