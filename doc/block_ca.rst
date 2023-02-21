@@ -106,6 +106,7 @@ seen in physical systems consisting of diffusing particles, as this "gas-like" 2
     :width: 500
     :align: center
 
+CellPyLib supports 2D Block CA through the built-in function :py:func:`~cellpylib.ca_functions2d.evolve2d_block`.
 The code for this 2D Block CA is given below:
 
 .. code-block::
